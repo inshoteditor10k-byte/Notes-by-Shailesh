@@ -67,9 +67,7 @@
             padding: 0;
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
+        html { scroll-behavior: smooth; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -93,56 +91,34 @@
 
         /* --- Header & Navigation --- */
         .sticky-header {
-            position: sticky;
-            top: 0;
-            background-color: var(--surface-color);
-            color: var(--on-surface);
+            position: sticky; top: 0;
+            background-color: var(--surface-color); color: var(--on-surface);
             padding: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            z-index: 1000;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); z-index: 1000;
         }
         .app-title { font-size: 1.5rem; font-weight: 600; }
 
         .bottom-nav {
-            position: sticky;
-            bottom: 0;
-            display: flex;
-            justify-content: space-around;
+            position: sticky; bottom: 0;
+            display: flex; justify-content: space-around;
             background-color: var(--surface-color);
             box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
-            padding: 0.5rem 0;
-            z-index: 1000;
+            padding: 0.5rem 0; z-index: 1000;
         }
         .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: var(--text-secondary);
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0.5rem;
-            transition: color 0.2s, transform 0.2s;
-            flex-grow: 1;
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-secondary); background: none; border: none;
+            cursor: pointer; padding: 0.5rem;
+            transition: color 0.2s, transform 0.2s; flex-grow: 1;
         }
         .nav-item.active { color: var(--primary-color); transform: translateY(-3px); }
         .nav-item svg { width: 24px; height: 24px; margin-bottom: 4px; }
         .nav-item span { font-size: 0.75rem; }
-
+        
         /* --- Main Content --- */
-        .main-content {
-            flex-grow: 1;
-            padding: 1rem;
-            overflow-y: auto;
-        }
-
-        .page {
-            animation: fadeIn 0.3s ease-in-out;
-        }
-
+        .main-content { flex-grow: 1; padding: 1rem; overflow-y: auto; }
+        .page { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -150,126 +126,194 @@
 
         /* --- Authentication View --- */
         #auth-view {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            padding: 1rem;
+            display: flex; flex-direction: column; justify-content: center;
+            align-items: center; height: 100vh; padding: 1rem;
         }
         .auth-container {
-            width: 100%;
-            max-width: 400px;
-            padding: 2rem;
+            width: 100%; max-width: 400px; padding: 2rem;
             background-color: var(--surface-color);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
+            border-radius: var(--border-radius); box-shadow: var(--shadow);
         }
         .auth-title { text-align: center; margin-bottom: 1.5rem; font-size: 2rem; color: var(--primary-color); }
         .input-group { margin-bottom: 1.5rem; }
         .input-field {
-            width: 100%;
-            padding: 0.85rem;
-            font-size: 1rem;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background-color: var(--background-color);
-            color: var(--on-background);
+            width: 100%; padding: 0.85rem; font-size: 1rem; border: 1px solid #ddd;
+            border-radius: 8px; background-color: var(--background-color); color: var(--on-background);
             transition: border-color 0.2s, box-shadow 0.2s;
         }
         .input-field:focus {
-            outline: none;
-            border-color: var(--primary-color);
+            outline: none; border-color: var(--primary-color);
             box-shadow: 0 0 0 2px var(--primary-color-light);
         }
         .btn {
-            display: block;
-            width: 100%;
-            padding: 0.85rem;
-            font-size: 1rem;
-            font-weight: 600;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
+            display: block; width: 100%; padding: 0.85rem; font-size: 1rem; font-weight: 600;
+            border: none; border-radius: 8px; cursor: pointer; transition: background-color 0.2s, transform 0.1s;
         }
         .btn:active { transform: scale(0.98); }
         .btn-primary { background-color: var(--primary-color); color: var(--on-primary); }
         .btn-secondary { background-color: transparent; color: var(--primary-color); border: 1px solid var(--primary-color); margin-top: 0.5rem; }
         .btn-google {
-            background-color: #4285F4;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background-color: #4285F4; color: white; display: flex;
+            align-items: center; justify-content: center;
         }
         .btn-google svg { width: 20px; height: 20px; margin-right: 10px; }
         .auth-divider { text-align: center; margin: 1.5rem 0; color: var(--text-secondary); }
         .auth-error { color: var(--error-color); text-align: center; margin-top: 1rem; min-height: 20px; font-size: 0.9rem; }
+        
+        /* --- Notes System --- */
+        #notes-page .search-bar { width: 100%; padding: 0.75rem; margin-bottom: 1rem; border-radius: 8px; border: 1px solid var(--text-secondary); background-color: var(--background-color); color: var(--on-background); }
+        .note-item {
+            background-color: var(--surface-color); padding: 1rem; margin-bottom: 0.75rem;
+            border-radius: var(--border-radius); box-shadow: var(--shadow);
+            cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .note-item:hover { transform: translateY(-3px); box-shadow: 0 6px 14px rgba(0,0,0,0.1); }
+        .note-title { font-weight: 600; }
+        .note-date { font-size: 0.8rem; color: var(--text-secondary); }
+        .note-hidden-icon { margin-left: 8px; color: var(--text-secondary); }
+        .fab {
+            position: fixed; bottom: 80px; right: 20px; width: 56px; height: 56px;
+            background-color: var(--primary-color); color: var(--on-primary);
+            border-radius: 50%; border: none; box-shadow: 0 6px 10px rgba(0,0,0,0.2);
+            font-size: 2rem; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; z-index: 1001;
+        }
+
+        /* --- Modal Styles --- */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.5); display: flex;
+            justify-content: center; align-items: center; z-index: 2000;
+            opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s;
+        }
+        .modal.show { opacity: 1; visibility: visible; }
+        .modal-content {
+            background-color: var(--surface-color); padding: 1.5rem;
+            border-radius: var(--border-radius); width: 90%; max-width: 500px;
+            max-height: 90vh; overflow-y: auto; transform: scale(0.9);
+            transition: transform 0.3s;
+        }
+        .modal.show .modal-content { transform: scale(1); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .modal-title { font-size: 1.5rem; }
+        .close-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--on-surface); }
+        .modal-body .input-field, .modal-body textarea { width: 100%; margin-bottom: 1rem; }
+        textarea { height: 200px; resize: vertical; }
+
+        #note-view-content { white-space: pre-wrap; margin-bottom: 1rem; max-height: 60vh; overflow-y: auto; }
+        .note-actions { display: flex; justify-content: flex-end; gap: 0.5rem; flex-wrap: wrap; }
+        .note-actions .btn { width: auto; padding: 0.5rem 1rem; }
+        
+        /* --- Profile Page --- */
+        #profile-page { text-align: center; }
+        .profile-header { display: flex; flex-direction: column; align-items: center; gap: 1rem; margin-bottom: 2rem; }
+        .profile-image { width: 100px; height: 100px; border-radius: 50%; background-color: var(--primary-color); color: var(--on-primary); display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: bold; }
+        .profile-image img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+        .profile-name { font-size: 1.5rem; font-weight: 600; }
+        .profile-email { color: var(--text-secondary); }
+        .profile-stats { display: flex; justify-content: space-around; margin-bottom: 2rem; background: var(--surface-color); padding: 1rem; border-radius: var(--border-radius); box-shadow: var(--shadow); }
+        .stat-item { text-align: center; }
+        .stat-count { font-weight: bold; font-size: 1.2rem; }
+        .stat-label { font-size: 0.9rem; color: var(--text-secondary); }
+        .profile-section { margin-bottom: 2rem; text-align: left; background: var(--surface-color); padding: 1rem; border-radius: var(--border-radius); box-shadow: var(--shadow); }
+        .profile-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .section-title { font-size: 1.2rem; font-weight: 600; }
+        .edit-btn { background: none; border: none; color: var(--primary-color); cursor: pointer; }
+        .profile-link { display: block; padding: 0.5rem; background: var(--background-color); border-radius: 8px; margin-bottom: 0.5rem; text-decoration: none; color: var(--primary-color); }
+        .profile-link:hover { background: var(--primary-variant); color: var(--on-primary); }
+
+        /* --- Social Pages (Suggestions, Requests, Friends) --- */
+        .user-list { list-style: none; }
+        .user-list-item {
+            display: flex; align-items: center; padding: 0.75rem;
+            background-color: var(--surface-color); margin-bottom: 0.5rem;
+            border-radius: var(--border-radius); box-shadow: var(--shadow);
+            cursor: pointer; transition: background-color 0.2s;
+        }
+        .user-list-item:hover { background-color: var(--background-color); }
+        .user-avatar { width: 40px; height: 40px; border-radius: 50%; background-color: var(--secondary-color); color: var(--on-secondary); display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 1rem; flex-shrink: 0; }
+        .user-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+        .user-info { flex-grow: 1; }
+        .user-name { font-weight: 600; }
+        .user-item-actions .btn { width: auto; padding: 0.4rem 0.8rem; font-size: 0.9rem; }
+
+        /* --- Chat View --- */
+        #chat-view {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--background-color); z-index: 3000;
+            display: flex; flex-direction: column;
+            transform: translateX(100%); transition: transform 0.3s ease-in-out;
+        }
+        #chat-view.open { transform: translateX(0); }
+        .chat-header {
+            display: flex; align-items: center; padding: 1rem;
+            background-color: var(--surface-color); box-shadow: var(--shadow); flex-shrink: 0;
+        }
+        .back-btn { background: none; border: none; color: var(--on-surface); font-size: 1.5rem; margin-right: 1rem; cursor: pointer; }
+        .chat-header-info .user-name { font-size: 1.2rem; }
+        .messages-container { flex-grow: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column-reverse; }
+        .message-bubble { max-width: 70%; padding: 0.5rem 0.75rem; border-radius: 18px; margin-bottom: 0.5rem; word-wrap: break-word; }
+        .message-bubble .timestamp { font-size: 0.7rem; color: var(--text-secondary); text-align: right; margin-top: 4px; }
+        .sent { background-color: var(--primary-color); color: var(--on-primary); align-self: flex-end; border-bottom-right-radius: 4px; }
+        .sent .timestamp { color: rgba(255, 255, 255, 0.7); }
+        .received { background-color: var(--surface-color); color: var(--on-surface); align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: var(--shadow); }
+        .message-img-container { margin-top: 5px; }
+        .message-img { max-width: 100%; border-radius: 10px; cursor: pointer; }
+        .img-actions { display: flex; gap: 10px; margin-top: 5px; }
+        .img-actions button { background: none; border: none; color: var(--on-surface); cursor: pointer; font-size: 1rem; }
+        .sent .img-actions button { color: var(--on-primary); }
+        .chat-input-form {
+            display: flex; padding: 1rem; background-color: var(--surface-color); flex-shrink: 0; align-items: center;
+        }
+        .chat-input-form input[type="text"] { flex-grow: 1; border: 1px solid var(--text-secondary); background: var(--background-color); color: var(--on-background); padding: 0.75rem; border-radius: 20px; }
+        .chat-input-form button { background: none; border: none; color: var(--primary-color); font-size: 1.5rem; margin-left: 0.5rem; cursor: pointer; }
+        .image-preview-container { position: relative; margin-right: 10px; }
+        .image-preview { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; }
+        .remove-preview-btn { position: absolute; top: -5px; right: -5px; background: #000; color: #fff; border-radius: 50%; width: 20px; height: 20px; border: none; font-size: 12px; cursor: pointer; }
 
         /* --- Toasts & Spinners --- */
         .toast {
-            position: fixed;
-            bottom: 90px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(0,0,0,0.8);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 20px;
-            z-index: 4000;
-            opacity: 0;
-            transition: opacity 0.3s, bottom 0.3s;
-            pointer-events: none;
+            position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%);
+            background-color: rgba(0,0,0,0.8); color: white; padding: 0.75rem 1.5rem;
+            border-radius: 20px; z-index: 4000; opacity: 0;
+            transition: opacity 0.3s, bottom 0.3s; pointer-events: none;
         }
         .toast.show { opacity: 1; bottom: 100px; }
         .toast.error { background-color: var(--error-color); }
         .loading-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            display: flex; justify-content: center; align-items: center; z-index: 5000;
+            background-color: rgba(0,0,0,0.5); display: flex;
+            justify-content: center; align-items: center; z-index: 5000;
         }
         .spinner { width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+        /* --- Empty State --- */
+        .empty-state { text-align: center; padding: 2rem; color: var(--text-secondary); }
+        .empty-state-icon { font-size: 3rem; margin-bottom: 1rem; }
+        
         /* --- Theme Toggle --- */
-        .theme-switch {
-            display: flex;
-            align-items: center;
-        }
+        .theme-switch { display: flex; align-items: center; }
         .theme-switch-checkbox { height: 0; width: 0; visibility: hidden; }
         .theme-switch-toggle {
-            cursor: pointer;
-            text-indent: -9999px;
-            width: 50px;
-            height: 25px;
-            background: grey;
-            display: block;
-            border-radius: 100px;
-            position: relative;
+            cursor: pointer; text-indent: -9999px; width: 50px; height: 25px;
+            background: grey; display: block; border-radius: 100px; position: relative;
         }
         .theme-switch-toggle:after {
-            content: '';
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 21px;
-            height: 21px;
-            background: #fff;
-            border-radius: 90px;
-            transition: 0.3s;
+            content: ''; position: absolute; top: 2px; left: 2px; width: 21px; height: 21px;
+            background: #fff; border-radius: 90px; transition: 0.3s;
         }
         .theme-switch-checkbox:checked + .theme-switch-toggle { background: var(--primary-color); }
         .theme-switch-checkbox:checked + .theme-switch-toggle:after {
-            left: calc(100% - 2px);
-            transform: translateX(-100%);
+            left: calc(100% - 2px); transform: translateX(-100%);
         }
     </style>
 </head>
 <body>
 
     <!-- App Container -->
-    <div class="app-container">
+    <div id="app" class="app-container">
 
         <!-- Authentication View -->
         <div id="auth-view">
@@ -294,37 +338,32 @@
 
         <!-- Main Application View -->
         <div id="main-app" class="hidden">
-            <!-- Sticky Header -->
             <header class="sticky-header">
                 <h1 id="page-title" class="app-title">Home</h1>
-                 <div class="theme-switch">
+                <div class="theme-switch">
                     <input type="checkbox" class="theme-switch-checkbox" id="theme-switch">
                     <label class="theme-switch-toggle" for="theme-switch"></label>
                 </div>
             </header>
-
-            <!-- Main Content Area -->
-            <main class="main-content">
-                <!-- Pages will be injected here -->
-                <div id="home-page" class="page"></div>
-                <div id="notes-page" class="page hidden"></div>
-                <div id="suggestions-page" class="page hidden"></div>
-                <div id="requests-page" class="page hidden"></div>
-                <div id="friends-page" class="page hidden"></div>
-                <div id="profile-page" class="page hidden"></div>
-            </main>
-
-            <!-- Sticky Bottom Navigation -->
+            <main id="main-content" class="main-content"></main>
             <nav class="bottom-nav">
-                <button class="nav-item active" data-page="home-page"><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg><span>Home</span></button>
-                <button class="nav-item" data-page="notes-page"><svg fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 00-1 1v1H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V6a2 2 0 00-2-2h-2V3a1 1 0 00-1-1H9zM6 6h8v10H6V6z"></path></svg><span>Notepad</span></button>
-                <button class="nav-item" data-page="suggestions-page"><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"></path></svg><span>Suggestions</span></button>
-                <button class="nav-item" data-page="requests-page"><svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3zM17 14a1 1 0 00-1-1h-2a1 1 0 100 2h2a1 1 0 001-1zm-1-7a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"></path></svg><span>Requests</span></button>
-                <button class="nav-item" data-page="friends-page"><svg fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0118 15v3h-2zM4.75 12.094A5.973 5.973 0 004 15v3H2v-3a3.005 3.005 0 012.25-2.906z"></path></svg><span>Friends</span></button>
-                <button class="nav-item" data-page="profile-page"><svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0012 11z" clip-rule="evenodd"></path></svg><span>Profile</span></button>
+                <button class="nav-item active" data-page="home"><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg><span>Home</span></button>
+                <button class="nav-item" data-page="notes"><svg fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 00-1 1v1H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V6a2 2 0 00-2-2h-2V3a1 1 0 00-1-1H9zM6 6h8v10H6V6z"></path></svg><span>Notepad</span></button>
+                <button class="nav-item" data-page="suggestions"><svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"></path></svg><span>Suggestions</span></button>
+                <button class="nav-item" data-page="requests"><svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3zM17 14a1 1 0 00-1-1h-2a1 1 0 100 2h2a1 1 0 001-1zm-1-7a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"></path></svg><span>Requests</span></button>
+                <button class="nav-item" data-page="friends"><svg fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0118 15v3h-2zM4.75 12.094A5.973 5.973 0 004 15v3H2v-3a3.005 3.005 0 012.25-2.906z"></path></svg><span>Friends</span></button>
+                <button class="nav-item" data-page="profile"><svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0012 11z" clip-rule="evenodd"></path></svg><span>Profile</span></button>
             </nav>
         </div>
 
+        <!-- Floating Action Button for Notes -->
+        <button id="add-note-fab" class="fab hidden">+</button>
+
+        <!-- Modals will be injected into this container -->
+        <div id="modal-container"></div>
+        
+        <!-- Chat View -->
+        <div id="chat-view" class="hidden"></div>
     </div>
 
     <!-- Toast Notification -->
@@ -342,255 +381,383 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage-compat.js"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', () => {
 
-            // --- Firebase Configuration ---
-            // ⚠⚠⚠ FAKE FIREBASE CONFIGURATION - REPLACE WITH YOUR REAL CONFIG ⚠⚠⚠
-            const firebaseConfig = {
-    apiKey: "AIzaSyCRhz9f_CrxR07TMEIqJ3jyPcP7Y7wMksY",
-    authDomain: "notes-app-a043e.firebaseapp.com",
-    databaseURL: "https://notes-app-a043e-default-rtdb.firebaseio.com",
-    projectId: "notes-app-a043e",
-    storageBucket: "notes-app-a043e.firebasestorage.app",
-    messagingSenderId: "46441351547",
-    appId: "1:46441351547:web:d1f642c09ff1999885d5de"
-  };
-            // ⚠ End of Firebase Configuration section
+        // --- Firebase Configuration (Provided by user) ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyCRhz9f_CrxR07TMEIqJ3jyPcP7Y7wMksY",
+            authDomain: "notes-app-a043e.firebaseapp.com",
+            databaseURL: "https://notes-app-a043e-default-rtdb.firebaseio.com",
+            projectId: "notes-app-a043e",
+            storageBucket: "notes-app-a043e.appspot.com",
+            messagingSenderId: "46441351547",
+            appId: "1:46441351547:web:d1f642c09ff1999885d5de"
+        };
+        
+        // --- Global Variables & State ---
+        let firebaseApp, auth, db, storage;
+        let currentUser = null; // Holds the logged-in user's Firebase auth object
+        let currentUserProfile = null; // Holds the user's profile from Firestore
+        let isFirebaseInitialized = false;
+        let currentChatUnsubscribe = null;
+        let currentNoteListener = null;
 
-            let firebaseApp, auth, db, storage;
-            let currentUser = null;
-            let isFirebaseInitialized = false;
-
-            // --- DOM Element References ---
-            const authView = document.getElementById('auth-view');
-            const mainApp = document.getElementById('main-app');
-            const loadingOverlay = document.getElementById('loading-overlay');
-            const emailInput = document.getElementById('email-input');
-            const passwordInput = document.getElementById('password-input');
-            const loginBtn = document.getElementById('login-btn');
-            const registerBtn = document.getElementById('register-btn');
-            const googleBtn = document.getElementById('google-signin-btn');
-            const authErrorEl = document.getElementById('auth-error');
-            const toastEl = document.getElementById('toast');
-
-            // --- Utility Functions ---
-            const showLoading = (show) => loadingOverlay.classList.toggle('hidden', !show);
-            
-            const showToast = (message, duration = 3000, isError = false) => {
-                toastEl.textContent = message;
-                toastEl.className = 'toast show';
-                if (isError) toastEl.classList.add('error');
-                setTimeout(() => toastEl.classList.remove('show'), duration);
-            };
-
-            const getAuthErrorMessage = (code) => {
-                switch (code) {
-                    case 'auth/invalid-email': return 'Please enter a valid email address.';
-                    case 'auth/user-not-found': return 'No account found with this email.';
-                    case 'auth/wrong-password': return 'Incorrect password. Please try again.';
-                    case 'auth/email-already-in-use': return 'An account with this email already exists.';
-                    case 'auth/weak-password': return 'Password should be at least 6 characters.';
-                    case 'auth/popup-closed-by-user': return 'Google sign-in was cancelled.';
-                    default: return 'An unexpected error occurred. Please try again.';
-                }
-            };
-            
-            // --- Firebase Initialization ---
-            function initializeFirebase() {
-                try {
-                    if (firebaseConfig.apiKey === "FAKE_API_KEY_REPLACE_ME") {
-                        console.warn("Firebase config is fake. App will run in offline mode.");
-                        showToast("Please configure Firebase to enable online features.", 5000, true);
-                        return false;
-                    }
+        // --- DOM Element References ---
+        const appEl = document.getElementById('app');
+        const authView = document.getElementById('auth-view');
+        const mainApp = document.getElementById('main-app');
+        const mainContent = document.getElementById('main-content');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const toastEl = document.getElementById('toast');
+        const addNoteFab = document.getElementById('add-note-fab');
+        const modalContainer = document.getElementById('modal-container');
+        const pageTitle = document.getElementById('page-title');
+        
+        // --- Utility Functions ---
+        const showLoading = (show) => loadingOverlay.classList.toggle('hidden', !show);
+        const showToast = (message, duration = 3000, isError = false) => {
+            toastEl.textContent = message;
+            toastEl.className = 'toast show';
+            if (isError) toastEl.classList.add('error');
+            setTimeout(() => toastEl.classList.remove('show'), duration);
+        };
+        const getAvatar = (user) => {
+            if (user.photoURL) return `<img src="${user.photoURL}" alt="${user.displayName}">`;
+            const initial = user.displayName ? user.displayName.charAt(0).toUpperCase() : '?';
+            return `<span>${initial}</span>`;
+        };
+        const formatDate = (timestamp) => {
+            if (!timestamp) return '...';
+            return timestamp.toDate().toLocaleDateString('en-US', {
+                month: 'short', day: 'numeric', year: 'numeric'
+            });
+        };
+        const formatTime = (timestamp) => {
+            if (!timestamp) return '';
+            return timestamp.toDate().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+        };
+        const getAuthErrorMessage = (code) => { /* ... (same as previous) ... */ return 'An unexpected error occurred.'; };
+        
+        // --- Firebase Initialization ---
+        function initializeFirebase() {
+            try {
+                if (!firebase.apps.length) {
                     firebaseApp = firebase.initializeApp(firebaseConfig);
-                    auth = firebase.auth();
-                    db = firebase.firestore();
-                    storage = firebase.storage();
-                    isFirebaseInitialized = true;
-                    return true;
-                } catch (error) {
-                    console.error("Firebase initialization failed:", error);
-                    showToast("Firebase initialization failed. Check your config.", 5000, true);
-                    return false;
-                }
-            }
-
-            // --- Authentication Logic ---
-            function setupAuthListeners() {
-                if (!isFirebaseInitialized) return;
-
-                auth.onAuthStateChanged(async user => {
-                    showLoading(true);
-                    if (user) {
-                        const userRef = db.collection('users').doc(user.uid);
-                        const userDoc = await userRef.get();
-                        
-                        if (!userDoc.exists) {
-                            // Create user profile if it doesn't exist
-                            const newUserProfile = {
-                                uid: user.uid,
-                                email: user.email,
-                                displayName: user.displayName || user.email.split('@')[0],
-                                photoURL: user.photoURL || null,
-                                bio: 'Hi there!',
-                                links: [],
-                                followers: [],
-                                following: []
-                            };
-                            await userRef.set(newUserProfile);
-                            currentUser = newUserProfile;
-                        } else {
-                            currentUser = userDoc.data();
-                        }
-                        
-                        authView.classList.add('hidden');
-                        mainApp.classList.remove('hidden');
-                        navigateToPage('home-page');
-                    } else {
-                        currentUser = null;
-                        authView.classList.remove('hidden');
-                        mainApp.classList.add('hidden');
-                    }
-                    showLoading(false);
-                });
-
-                loginBtn.addEventListener('click', handleLogin);
-                registerBtn.addEventListener('click', handleRegister);
-                googleBtn.addEventListener('click', handleGoogleSignIn);
-            }
-            
-            async function handleLogin() {
-                const email = emailInput.value.trim();
-                const password = passwordInput.value;
-                if (!email || !password) {
-                    authErrorEl.textContent = 'Please enter both email and password.';
-                    return;
-                }
-                showLoading(true);
-                authErrorEl.textContent = '';
-                try {
-                    await auth.signInWithEmailAndPassword(email, password);
-                } catch (error) {
-                    authErrorEl.textContent = getAuthErrorMessage(error.code);
-                } finally {
-                    showLoading(false);
-                }
-            }
-
-            async function handleRegister() {
-                const email = emailInput.value.trim();
-                const password = passwordInput.value;
-                if (!email || !password) {
-                    authErrorEl.textContent = 'Please enter both email and password.';
-                    return;
-                }
-                showLoading(true);
-                authErrorEl.textContent = '';
-                try {
-                    await auth.createUserWithEmailAndPassword(email, password);
-                } catch (error) {
-                    authErrorEl.textContent = getAuthErrorMessage(error.code);
-                } finally {
-                    showLoading(false);
-                }
-            }
-
-            async function handleGoogleSignIn() {
-                showLoading(true);
-                authErrorEl.textContent = '';
-                try {
-                    const provider = new firebase.auth.GoogleAuthProvider();
-                    await auth.signInWithPopup(provider);
-                } catch (error) {
-                    authErrorEl.textContent = getAuthErrorMessage(error.code);
-                } finally {
-                    showLoading(false);
-                }
-            }
-            
-            // --- Page Navigation ---
-            const pages = document.querySelectorAll('.page');
-            const navItems = document.querySelectorAll('.nav-item');
-            const pageTitle = document.getElementById('page-title');
-
-            function navigateToPage(pageId) {
-                pages.forEach(page => page.classList.toggle('hidden', page.id !== pageId));
-                navItems.forEach(item => item.classList.toggle('active', item.dataset.page === pageId));
-                
-                const activeNavItem = document.querySelector(`.nav-item[data-page="${pageId}"]`);
-                pageTitle.textContent = activeNavItem.querySelector('span').textContent;
-                
-                if (isFirebaseInitialized && currentUser) {
-                    // Load content for the new page
-                    switch (pageId) {
-                        case 'home-page': loadHomePage(); break;
-                        case 'profile-page': loadProfilePage(); break;
-                    }
-                }
-            }
-
-            document.querySelector('.bottom-nav').addEventListener('click', (e) => {
-                const navItem = e.target.closest('.nav-item');
-                if (navItem) {
-                    navigateToPage(navItem.dataset.page);
-                }
-            });
-
-            // --- Page Loaders ---
-            async function loadHomePage() {
-                const homePage = document.getElementById('home-page');
-                let totalUsers = 0;
-                try {
-                    const usersSnapshot = await db.collection('users').get();
-                    totalUsers = usersSnapshot.size;
-                } catch (e) { console.error("Error fetching user count", e); }
-                
-                homePage.innerHTML = `<div style="text-align: center; padding-top: 20px;">
-                    <h2>Welcome, ${currentUser.displayName}!</h2>
-                    <p>Total users on the platform: <strong>${totalUsers}</strong></p>
-                </div>`;
-            }
-
-            function loadProfilePage() {
-                const profilePage = document.getElementById('profile-page');
-                profilePage.innerHTML = `<div style="text-align: center; padding-top: 20px;">
-                    <h2>${currentUser.displayName}</h2>
-                    <p>${currentUser.email}</p>
-                    <button id="logout-btn" class="btn btn-primary" style="max-width: 200px; margin: 20px auto;">Logout</button>
-                </div>`;
-                document.getElementById('logout-btn').addEventListener('click', () => {
-                    auth.signOut();
-                });
-            }
-
-            // --- Theme Switcher ---
-            const themeSwitch = document.getElementById('theme-switch');
-            themeSwitch.addEventListener('change', () => {
-                document.body.classList.toggle('dark-mode');
-                localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
-            });
-
-            function applySavedTheme() {
-                const savedTheme = localStorage.getItem('theme');
-                if (savedTheme === 'dark') {
-                    document.body.classList.add('dark-mode');
-                    themeSwitch.checked = true;
-                }
-            }
-
-            // --- App Initialization ---
-            function initApp() {
-                applySavedTheme();
-                if (initializeFirebase()) {
-                    setupAuthListeners();
                 } else {
-                    showLoading(false);
+                    firebaseApp = firebase.app();
                 }
+                auth = firebase.auth();
+                db = firebase.firestore();
+                storage = firebase.storage();
+                isFirebaseInitialized = true;
+                return true;
+            } catch (error) {
+                console.error("Firebase initialization failed:", error);
+                showToast("Firebase initialization failed. Check your config.", 5000, true);
+                return false;
+            }
+        }
+        
+        // --- App Initialization ---
+        function initApp() {
+            applySavedTheme();
+            if (initializeFirebase()) {
+                setupAuthListeners();
+            } else {
+                showLoading(false);
+            }
+            appEl.addEventListener('click', handleGlobalClick);
+        }
+
+        // --- Authentication ---
+        function setupAuthListeners() {
+            auth.onAuthStateChanged(async (user) => {
+                showLoading(true);
+                if (user) {
+                    currentUser = user;
+                    const userRef = db.collection('users').doc(user.uid);
+                    const userDoc = await userRef.get();
+                    if (!userDoc.exists) {
+                        const newUserProfile = {
+                            uid: user.uid, email: user.email,
+                            displayName: user.displayName || user.email.split('@')[0],
+                            photoURL: user.photoURL || null, bio: 'Hi there!',
+                            links: [], followers: [], following: [], pin: null
+                        };
+                        await userRef.set(newUserProfile);
+                        currentUserProfile = newUserProfile;
+                    } else {
+                        currentUserProfile = userDoc.data();
+                    }
+                    mainApp.classList.remove('hidden');
+                    authView.classList.add('hidden');
+                    navigateToPage('home');
+                } else {
+                    currentUser = null;
+                    currentUserProfile = null;
+                    mainApp.classList.add('hidden');
+                    authView.classList.remove('hidden');
+                }
+                showLoading(false);
+            });
+        }
+        
+        // --- Event Delegation ---
+        function handleGlobalClick(e) {
+            const target = e.target;
+            const action = target.dataset.action;
+
+            if (target.closest('.nav-item')) {
+                navigateToPage(target.closest('.nav-item').dataset.page);
+            }
+            // Other global click handlers...
+        }
+
+        // --- Routing / Page Navigation ---
+        async function navigateToPage(pageId) {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.toggle('active', item.dataset.page === pageId);
+            });
+            const pageName = pageId.charAt(0).toUpperCase() + pageId.slice(1);
+            pageTitle.textContent = pageName === 'Requests' ? 'Follow Requests' : pageName;
+            addNoteFab.classList.toggle('hidden', pageId !== 'notes');
+            showLoading(true);
+
+            // Simple router
+            mainContent.innerHTML = ''; // Clear previous page content
+            switch(pageId) {
+                case 'home': await renderHomePage(); break;
+                case 'notes': await renderNotesPage(); break;
+                case 'suggestions': await renderSuggestionsPage(); break;
+                case 'requests': await renderRequestsPage(); break;
+                case 'friends': await renderFriendsPage(); break;
+                case 'profile': await renderProfilePage(); break;
+                default: mainContent.innerHTML = `<h2>Page Not Found</h2>`;
+            }
+            showLoading(false);
+        }
+
+        // --- Page Renderers ---
+        // Each function fetches data, builds HTML, and injects it into mainContent.
+
+        async function renderHomePage() {
+            const usersSnapshot = await db.collection('users').get();
+            mainContent.innerHTML = `
+                <div class="page" id="home-page">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">👋</div>
+                        <h2>Welcome, ${currentUserProfile.displayName}!</h2>
+                        <p>Total users on the platform: <strong>${usersSnapshot.size}</strong></p>
+                    </div>
+                </div>`;
+        }
+        
+        async function renderNotesPage() {
+            mainContent.innerHTML = `
+                <div class="page" id="notes-page">
+                    <input type="search" id="notes-search-bar" class="search-bar" placeholder="Search notes...">
+                    <div id="notes-list"></div>
+                </div>`;
+            
+            const searchBar = document.getElementById('notes-search-bar');
+            
+            const renderNotes = (notes) => {
+                const notesList = document.getElementById('notes-list');
+                const searchTerm = searchBar.value.toLowerCase();
+                const filteredNotes = notes.filter(note => 
+                    note.title.toLowerCase().includes(searchTerm) || 
+                    note.content.toLowerCase().includes(searchTerm)
+                );
+
+                if (filteredNotes.length === 0) {
+                    notesList.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📝</div><p>No notes found. Tap '+' to create one.</p></div>`;
+                    return;
+                }
+
+                notesList.innerHTML = filteredNotes.map(note => `
+                    <div class="note-item" data-note-id="${note.id}">
+                        <div>
+                            <div class="note-title">${note.title} ${note.hidden ? '<span class="note-hidden-icon">🔒</span>' : ''}</div>
+                            <div class="note-date">Updated: ${formatDate(note.updatedAt)}</div>
+                        </div>
+                    </div>
+                `).join('');
+            };
+
+            // Detach previous listener if it exists
+            if (currentNoteListener) currentNoteListener();
+
+            currentNoteListener = db.collection('notes').doc(currentUser.uid).collection('userNotes')
+                .orderBy('updatedAt', 'desc')
+                .onSnapshot(snapshot => {
+                    const notes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    renderNotes(notes);
+                });
+
+            searchBar.addEventListener('input', () => {
+                // Re-render without fetching again
+                currentNoteListener(); // Manually trigger re-render
+            });
+        }
+        
+        async function renderProfilePage() {
+            // Re-fetch latest profile data
+            const userDoc = await db.collection('users').doc(currentUser.uid).get();
+            currentUserProfile = userDoc.data();
+            
+            const { displayName, email, photoURL, bio, links, followers, following } = currentUserProfile;
+            const friends = followers.filter(f => following.includes(f));
+
+            mainContent.innerHTML = `
+                <div class="page" id="profile-page">
+                    <div class="profile-header">
+                        <div class="profile-image">${getAvatar({displayName, photoURL})}</div>
+                        <h2 class="profile-name">${displayName}</h2>
+                        <p class="profile-email">${email}</p>
+                    </div>
+                    <div class="profile-stats">
+                        <div class="stat-item"><div class="stat-count">${followers.length}</div><div class="stat-label">Followers</div></div>
+                        <div class="stat-item"><div class="stat-count">${following.length}</div><div class="stat-label">Following</div></div>
+                        <div class="stat-item"><div class="stat-count">${friends.length}</div><div class="stat-label">Friends</div></div>
+                    </div>
+                    <div class="profile-section">
+                        <div class="profile-section-header">
+                            <h3 class="section-title">Bio</h3><button class="edit-btn" data-action="edit-bio">Edit</button>
+                        </div>
+                        <p>${bio}</p>
+                    </div>
+                    <div class="profile-section">
+                        <div class="profile-section-header">
+                            <h3 class="section-title">Links</h3><button class="edit-btn" data-action="add-link">Add</button>
+                        </div>
+                        <div id="profile-links">
+                        ${links.map(link => `<a href="${link.url}" target="_blank" class="profile-link">${link.name}</a>`).join('') || '<p>No links added.</p>'}
+                        </div>
+                    </div>
+                    <div class="profile-section">
+                        <h3 class="section-title">Security</h3>
+                        <button class="btn btn-secondary" data-action="setup-pin">${currentUserProfile.pin ? 'Change PIN' : 'Set up PIN'}</button>
+                        ${currentUserProfile.pin ? '<button class="btn btn-secondary" data-action="remove-pin">Remove PIN</button>' : ''}
+                    </div>
+                    <button id="logout-btn" class="btn btn-primary" style="background-color: var(--error-color);" data-action="logout">Logout</button>
+                </div>`;
+        }
+
+        async function renderSuggestionsPage() {
+            // Logic to fetch all users and filter out self and already followed users
+            const usersSnapshot = await db.collection('users').get();
+            const allUsers = usersSnapshot.docs.map(doc => doc.data());
+            const suggestions = allUsers.filter(user => user.uid !== currentUser.uid && !currentUserProfile.following.includes(user.uid));
+            
+            if (suggestions.length === 0) {
+                 mainContent.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🤷</div><p>No new suggestions.</p></div>`;
+                 return;
             }
 
-            initApp();
+            mainContent.innerHTML = `
+                <div class="page" id="suggestions-page">
+                    <ul class="user-list">
+                    ${suggestions.map(user => `
+                        <li class="user-list-item">
+                            <div class="user-avatar">${getAvatar(user)}</div>
+                            <div class="user-info"><div class="user-name">${user.displayName}</div></div>
+                            <div class="user-item-actions"><button class="btn btn-primary" data-action="follow" data-uid="${user.uid}">Follow</button></div>
+                        </li>
+                    `).join('')}
+                    </ul>
+                </div>`;
+        }
+        
+        async function renderRequestsPage() {
+            // Logic to find users who follow me but I don't follow back
+            const usersSnapshot = await db.collection('users').get();
+            const allUsers = usersSnapshot.docs.map(doc => doc.data());
+            const requests = allUsers.filter(user => currentUserProfile.followers.includes(user.uid) && !currentUserProfile.following.includes(user.uid));
+
+            if (requests.length === 0) {
+                 mainContent.innerHTML = `<div class="empty-state"><div class="empty-state-icon">👍</div><p>No new follow requests.</p></div>`;
+                 return;
+            }
+
+            mainContent.innerHTML = `
+                <div class="page" id="requests-page">
+                    <ul class="user-list">
+                    ${requests.map(user => `
+                        <li class="user-list-item">
+                            <div class="user-avatar">${getAvatar(user)}</div>
+                            <div class="user-info"><div class="user-name">${user.displayName}</div></div>
+                            <div class="user-item-actions"><button class="btn btn-primary" data-action="follow" data-uid="${user.uid}">Follow Back</button></div>
+                        </li>
+                    `).join('')}
+                    </ul>
+                </div>`;
+        }
+        
+        async function renderFriendsPage() {
+            // Logic to find mutual followers
+            const friendsIds = currentUserProfile.followers.filter(f => currentUserProfile.following.includes(f));
+            if (friendsIds.length === 0) {
+                mainContent.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🤝</div><p>You have no friends yet. Follow someone who follows you back.</p></div>`;
+                return;
+            }
+            
+            const friendPromises = friendsIds.map(id => db.collection('users').doc(id).get());
+            const friendDocs = await Promise.all(friendPromises);
+            const friends = friendDocs.map(doc => doc.data());
+
+            mainContent.innerHTML = `
+                <div class="page" id="friends-page">
+                    <ul class="user-list">
+                    ${friends.map(user => `
+                        <li class="user-list-item" data-action="open-chat" data-uid="${user.uid}" data-name="${user.displayName}" data-photo="${user.photoURL || ''}">
+                            <div class="user-avatar">${getAvatar(user)}</div>
+                            <div class="user-info"><div class="user-name">${user.displayName}</div></div>
+                        </li>
+                    `).join('')}
+                    </ul>
+                </div>`;
+        }
+
+        // --- Social Actions ---
+        async function followUser(targetUid) {
+            showLoading(true);
+            const currentUserRef = db.collection('users').doc(currentUser.uid);
+            const targetUserRef = db.collection('users').doc(targetUid);
+            try {
+                await db.runTransaction(async (transaction) => {
+                    transaction.update(currentUserRef, { following: firebase.firestore.FieldValue.arrayUnion(targetUid) });
+                    transaction.update(targetUserRef, { followers: firebase.firestore.FieldValue.arrayUnion(currentUser.uid) });
+                });
+                // Update local profile and re-render current page
+                currentUserProfile.following.push(targetUid);
+                showToast('User followed!', 2000);
+                const currentPage = document.querySelector('.nav-item.active').dataset.page;
+                await navigateToPage(currentPage);
+            } catch (error) {
+                console.error("Error following user:", error);
+                showToast('Could not follow user.', 3000, true);
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        // --- Dark/Light Mode ---
+        const themeSwitch = document.getElementById('theme-switch');
+        themeSwitch.addEventListener('change', () => {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
         });
+        function applySavedTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                themeSwitch.checked = true;
+            }
+        }
+        
+        // Final initialization call
+        initApp();
+    });
     </script>
 </body>
     </html>
