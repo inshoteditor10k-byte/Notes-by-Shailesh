@@ -3,161 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pro Notes & Social</title>
+    <title>Ultima Note & Social</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root { --primary: #6200ea; --accent: #00e5ff; --bg: #f5f5f5; --card: #ffffff; --text: #333; --red: #d50000; }
-        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-        
+        :root { --primary: #2979ff; --bg: #f0f2f5; --white: #ffffff; --text: #050505; --red: #ff3d00; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
         /* AUTH SCREEN */
-        #auth-screen { position: fixed; inset: 0; background: #fff; z-index: 2000; display: flex; flex-direction: column; justify-content: center; padding: 30px; }
-        .auth-input { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
-        .btn { width: 100%; padding: 15px; border: none; border-radius: 30px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; }
-        .btn-login { background: var(--primary); color: white; }
-        .btn-google { background: #fff; border: 1px solid #ccc; color: #333; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .error-box { color: red; font-size: 13px; text-align: center; display: none; margin-bottom: 10px; }
-
-        /* HEADER */
-        header { padding: 15px; background: var(--card); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .app-title { font-weight: 900; font-size: 22px; color: var(--primary); }
-
-        /* MAIN LIST */
-        #main-container { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 80px; }
+        #auth-screen { position: fixed; inset: 0; background: var(--white); z-index: 2000; display: flex; flex-direction: column; justify-content: center; padding: 30px; }
+        .input-field { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 12px; background: #f9f9f9; }
+        .btn-auth { width: 100%; padding: 15px; border-radius: 30px; border: none; font-weight: bold; font-size: 16px; margin-top: 10px; cursor: pointer; }
+        .btn-blue { background: var(--primary); color: white; }
+        .btn-google { background: white; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center; gap: 10px; }
         
-        /* NOTE CARD (Only Title) */
-        .note-item { background: var(--card); padding: 20px; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer; border-left: 5px solid var(--primary); }
-        .note-item.private { border-left-color: var(--red); }
-        .note-title { font-weight: bold; font-size: 18px; }
+        /* APP LAYOUT */
+        #app-layout { display: none; flex-direction: column; height: 100%; }
+        header { padding: 15px; background: var(--white); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 5px rgba(0,0,0,0.05); z-index: 10; }
+        .profile-thumb { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
         
-        /* SOCIAL USER CARD */
-        .user-card { display: flex; align-items: center; background: var(--card); padding: 10px; margin-bottom: 10px; border-radius: 10px; }
-        .avatar { width: 40px; height: 40px; border-radius: 50%; background: #ddd; margin-right: 15px; object-fit: cover; }
+        /* PAGES */
+        .page { flex: 1; overflow-y: auto; padding: 15px; display: none; padding-bottom: 90px; }
+        .page.active { display: block; }
         
-        /* FULL NOTE MODAL */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: none; justify-content: center; align-items: flex-end; }
-        .modal-content { background: var(--bg); width: 100%; height: 90%; border-radius: 20px 20px 0 0; padding: 20px; display: flex; flex-direction: column; animation: slideUp 0.3s; }
-        @keyframes slideUp { from {transform: translateY(100%);} to {transform: translateY(0);} }
+        /* NOTES */
+        .note-card { background: var(--white); padding: 15px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); border-left: 5px solid var(--primary); position: relative; }
+        .note-card.private { border-left-color: var(--red); opacity: 0.8; }
+        .note-title { font-weight: bold; font-size: 18px; margin-bottom: 5px; }
         
-        .modal-header { display: flex; justify-content: space-between; margin-bottom: 20px; }
-        .note-view-body { flex: 1; overflow-y: auto; background: var(--card); padding: 15px; border-radius: 10px; margin-bottom: 10px; white-space: pre-wrap; }
+        /* PROFILE MODAL */
+        .modal { position: fixed; inset: 0; background: var(--white); z-index: 1500; display: none; flex-direction: column; overflow-y: auto; }
+        .profile-header { background: linear-gradient(to bottom right, #2979ff, #00b0ff); padding: 40px 20px; color: white; text-align: center; border-radius: 0 0 30px 30px; }
+        .profile-img-lg { width: 100px; height: 100px; border-radius: 50%; border: 4px solid white; margin-bottom: 10px; object-fit: cover; }
+        .stats-row { display: flex; justify-content: center; gap: 30px; margin: 20px 0; }
+        .stat-item { text-align: center; }
+        .stat-val { font-weight: bold; font-size: 20px; }
         
-        /* MEDIA DISPLAY */
-        .media-container img, .media-container video { max-width: 100%; border-radius: 10px; margin-top: 10px; }
-
-        /* FAB & NAV */
-        .fab { position: fixed; bottom: 85px; right: 20px; width: 60px; height: 60px; background: var(--primary); border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px 12px rgba(98, 0, 234, 0.4); cursor: pointer; }
-        .btm-nav { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #eee; }
-        .nav-icon { color: #888; font-size: 20px; cursor: pointer; }
+        /* BIO LINKS */
+        .bio-link-btn { display: block; width: 100%; background: #e3f2fd; color: var(--primary); padding: 12px; margin: 5px 0; text-align: center; border-radius: 10px; text-decoration: none; font-weight: bold; }
+        
+        /* NAV & FAB */
+        .fab { position: fixed; bottom: 85px; right: 20px; width: 60px; height: 60px; background: var(--primary); border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 5px 15px rgba(41, 121, 255, 0.4); cursor: pointer; }
+        .btm-nav { position: fixed; bottom: 0; width: 100%; background: var(--white); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #eee; }
+        .nav-icon { font-size: 22px; color: #aaa; cursor: pointer; }
         .nav-icon.active { color: var(--primary); }
 
-        /* UTILS */
-        .hide { display: none !important; }
+        /* USER LIST */
+        .user-row { display: flex; align-items: center; background: var(--white); padding: 10px; margin-bottom: 10px; border-radius: 12px; }
+        .follow-btn { margin-left: auto; background: var(--primary); color: white; border: none; padding: 5px 15px; border-radius: 20px; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <!-- AUTH SCREEN -->
     <div id="auth-screen">
-        <h1 style="text-align:center; color:var(--primary); margin-bottom:30px;">SecureNote App</h1>
-        <div class="error-box" id="login-error"></div>
-        <input type="email" id="email" class="auth-input" placeholder="Email Address">
-        <input type="password" id="password" class="auth-input" placeholder="Password">
-        <button class="btn btn-login" onclick="emailLogin()">Login / Register</button>
+        <h1 style="text-align:center; margin-bottom:20px; color:var(--primary);">App Login</h1>
+        <input type="email" id="email" class="input-field" placeholder="Email">
+        <input type="password" id="password" class="input-field" placeholder="Password">
+        <button class="btn-auth btn-blue" onclick="emailAuth()">Login / Register</button>
         <div style="text-align:center; margin:15px; color:#888;">OR</div>
-        <button class="btn btn-google" onclick="googleLogin()">
+        <button class="btn-auth btn-google" onclick="googleAuth()">
             <i class="fab fa-google"></i> Continue with Google
         </button>
     </div>
 
-    <!-- APP HEADER -->
-    <div id="main-app" class="hide">
+    <!-- MAIN APP -->
+    <div id="app-layout">
         <header>
-            <div class="app-title">My Notes</div>
-            <div style="font-size: 12px; color: #666;">
-                <span id="user-total">0</span> Users Online
-                <i class="fas fa-ellipsis-v" style="margin-left: 15px;" onclick="toggleMenu()"></i>
-            </div>
-            <!-- Hidden Menu -->
-            <div id="menu-dropdown" style="position:absolute; top:50px; right:10px; background:white; padding:10px; border-radius:5px; box-shadow:0 5px 15px rgba(0,0,0,0.1); display:none;">
-                <div onclick="togglePrivateMode()" style="padding:10px; border-bottom:1px solid #eee;">🔐 Show Hidden</div>
-                <div onclick="logout()" style="padding:10px; color:red;">Logout</div>
-            </div>
+            <h2 style="font-weight:900;">Notes<span style="color:var(--primary);">.</span></h2>
+            <img id="header-pic" src="" class="profile-thumb" onclick="openProfile()">
         </header>
 
-        <!-- CONTENT AREA -->
-        <div id="main-container">
-            <!-- Content injected by JS -->
-            <div id="notes-list"></div>
-            <div id="social-list" class="hide"></div>
+        <!-- TABS -->
+        <div id="tab-notes" class="page active">
+            <div id="notes-container"></div>
+        </div>
+        
+        <div id="tab-search" class="page">
+            <h3 style="margin-bottom:15px;">Discover People</h3>
+            <div id="users-list">Loading...</div>
         </div>
 
-        <!-- FAB (Add Note) -->
-        <div class="fab" id="add-btn" onclick="openAddModal()">
-            <i class="fas fa-plus"></i>
-        </div>
+        <!-- FAB -->
+        <div class="fab" id="add-btn" onclick="openNoteModal()"><i class="fas fa-plus"></i></div>
 
-        <!-- BOTTOM NAV -->
+        <!-- NAVIGATION -->
         <div class="btm-nav">
-            <i class="fas fa-sticky-note nav-icon active" onclick="switchTab('notes', this)"></i>
-            <i class="fas fa-users nav-icon" onclick="switchTab('social', this)"></i>
-            <i class="fas fa-user-circle nav-icon" onclick="alert('Profile Settings')"></i>
+            <i class="fas fa-home nav-icon active" onclick="switchTab('tab-notes', this)"></i>
+            <i class="fas fa-search nav-icon" onclick="switchTab('tab-search', this)"></i>
+            <i class="fas fa-user nav-icon" onclick="openProfile()"></i>
         </div>
     </div>
 
-    <!-- ADD/VIEW NOTE MODAL -->
-    <div id="note-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button onclick="closeModal()" style="border:none; background:transparent; font-size:16px;">Back</button>
-                <div id="view-actions" class="hide" style="display:flex; gap:15px;">
-                    <i class="fas fa-copy" onclick="copyNoteContent()" style="font-size:20px; color:#555;"></i>
-                    <i class="fas fa-trash" onclick="deleteCurrentNote()" style="font-size:20px; color:var(--red);"></i>
-                </div>
-                <button id="save-btn" onclick="saveNote()" style="border:none; background:var(--primary); color:white; padding:5px 15px; border-radius:20px;">Save</button>
+    <!-- NOTE MODAL (Add/Edit) -->
+    <div id="note-modal" class="modal" style="padding:20px; z-index:1600;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+            <button onclick="closeNoteModal()" style="border:none; background:transparent; font-size:16px;">Cancel</button>
+            <button onclick="saveNote()" style="border:none; background:var(--primary); color:white; padding:8px 20px; border-radius:20px;">Save</button>
+        </div>
+        <input type="text" id="note-title" placeholder="Title" style="font-size:24px; border:none; outline:none; font-weight:bold; width:100%; margin-bottom:10px;">
+        <textarea id="note-body" placeholder="Start typing..." style="width:100%; height:200px; border:none; outline:none; resize:none; font-size:16px;"></textarea>
+        
+        <!-- Media & Options -->
+        <div style="margin-top:20px; border-top:1px solid #eee; padding-top:20px;">
+            <button onclick="copyNote()" style="width:100%; padding:10px; background:#eee; border:none; border-radius:10px; margin-bottom:10px;">
+                <i class="fas fa-copy"></i> Copy to Clipboard
+            </button>
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                <input type="checkbox" id="note-private" style="width:20px; height:20px;">
+                <label>Hide this note (Private)</label>
             </div>
+             <input type="file" id="note-media" accept="image/*">
+        </div>
+    </div>
+
+    <!-- PROFILE MODAL -->
+    <div id="profile-modal" class="modal">
+        <button onclick="closeProfile()" style="position:absolute; top:20px; left:20px; background:rgba(0,0,0,0.2); border:none; color:white; padding:10px; border-radius:50%;"><i class="fas fa-arrow-left"></i></button>
+        <div class="profile-header">
+            <img id="p-img" src="" class="profile-img-lg">
+            <h2 id="p-name">Name</h2>
+            <p id="p-email" style="font-size:14px; opacity:0.8;">email</p>
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-val" id="p-followers">0</div>Followers</div>
+                <div class="stat-item"><div class="stat-val" id="p-following">0</div>Following</div>
+            </div>
+            <button onclick="editBio()" style="background:rgba(255,255,255,0.2); border:1px solid white; color:white; padding:5px 15px; border-radius:20px; font-size:12px;">Edit Bio & Links</button>
+        </div>
+        
+        <div style="padding:20px;">
+            <h4 style="color:#888; margin-bottom:10px;">ABOUT ME</h4>
+            <p id="p-bio" style="margin-bottom:20px;">No bio set.</p>
             
-            <!-- Inputs -->
-            <input type="text" id="note-title" placeholder="Note Name (Title)" style="width:100%; padding:10px; font-size:20px; font-weight:bold; border:none; outline:none; background:transparent;">
-            <textarea id="note-text" placeholder="Write your note here..." style="width:100%; flex:1; padding:10px; font-size:16px; border:none; outline:none; background:transparent; resize:none;"></textarea>
-            
-            <!-- Media & Privacy -->
-            <div id="media-preview" class="media-container"></div>
-            <div style="margin-top:10px; display:flex; gap:10px; align-items:center;">
-                <label style="background:#eee; padding:8px; border-radius:50%; cursor:pointer;">
-                    <i class="fas fa-camera"></i>
-                    <input type="file" id="file-input" hidden accept="image/*,video/*" onchange="previewMedia()">
-                </label>
-                <label style="display:flex; align-items:center; gap:5px;">
-                    <input type="checkbox" id="is-private"> Hide/Private
-                </label>
+            <h4 style="color:#888; margin-bottom:10px;">LINKS</h4>
+            <div id="p-links"></div>
+
+            <h4 style="color:#888; margin-top:30px; margin-bottom:10px;">SETTINGS</h4>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:15px; background:#f9f9f9; border-radius:10px;">
+                <span>Show Hidden Notes</span>
+                <input type="checkbox" id="toggle-hidden" onchange="toggleHiddenNotes()">
             </div>
+            <button onclick="logout()" style="width:100%; margin-top:20px; padding:15px; background:var(--red); color:white; border:none; border-radius:10px;">Logout</button>
         </div>
     </div>
 
-    <!-- CHAT MODAL -->
-    <div id="chat-modal" class="modal" style="z-index: 1100;">
-        <div class="modal-content" style="height:100%;">
-            <div class="modal-header">
-                <button onclick="document.getElementById('chat-modal').style.display='none'">Close</button>
-                <strong id="chat-user-name">Chat</strong>
-                <span></span>
-            </div>
-            <div id="chat-box" style="flex:1; overflow-y:auto; background:#f0f0f0; padding:10px; border-radius:10px;"></div>
-            <div style="display:flex; margin-top:10px; gap:10px;">
-                <input type="text" id="msg-input" placeholder="Type message..." style="flex:1; padding:10px; border-radius:20px; border:1px solid #ddd;">
-                <button onclick="sendMsg()" style="background:var(--primary); color:white; border:none; padding:10px 20px; border-radius:20px;"><i class="fas fa-paper-plane"></i></button>
-                <button onclick="sendAudioMock()" style="background:var(--accent); color:white; border:none; padding:10px; border-radius:50%;"><i class="fas fa-microphone"></i></button>
-            </div>
-        </div>
-    </div>
-
-    <!-- FIREBASE & LOGIC -->
+    <!-- FIREBASE LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, where, onSnapshot, orderBy, doc, deleteDoc, updateDoc, setDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, query, where, onSnapshot, orderBy, doc, deleteDoc, updateDoc, setDoc, getDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-firestore.js";
 
-        // --- PASTE FIREBASE CONFIG HERE ---
+        // --- IMPORTANT: PUT YOUR KEYS HERE ---
         const firebaseConfig = {
     apiKey: "AIzaSyCRhz9f_CrxR07TMEIqJ3jyPcP7Y7wMksY",
     authDomain: "notes-app-a043e.firebaseapp.com",
@@ -168,300 +164,191 @@
     appId: "1:46441351547:web:d1f642c09ff1999885d5de"
   };
 
-        let app, auth, db;
-        try {
-            app = initializeApp(firebaseConfig);
-            auth = getAuth(app);
-            db = getFirestore(app);
-        } catch(e) { console.error("Firebase not set"); }
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
         let currentUser = null;
-        let currentNoteId = null;
         let showHidden = false;
-        let currentChatUser = null;
 
-        // AUTH FUNCTIONS
-        window.emailLogin = () => {
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('password').value;
-            const errBox = document.getElementById('login-error');
-            
-            signInWithEmailAndPassword(auth, email, pass)
-            .catch(err => {
-                if(err.code === 'auth/user-not-found') {
-                    if(confirm("Account nahi mila. Create karna hai?")) {
-                        createUserWithEmailAndPassword(auth, email, pass).catch(e => {
-                            errBox.innerText = e.message; errBox.style.display = "block";
-                        });
-                    }
-                } else if(err.code === 'auth/wrong-password') {
-                    errBox.innerText = "Wrong Password! Sahi password daliye."; errBox.style.display = "block";
-                } else {
-                    errBox.innerText = err.message; errBox.style.display = "block";
-                }
+        // AUTH
+        window.googleAuth = () => signInWithPopup(auth, new GoogleAuthProvider());
+        window.emailAuth = () => {
+            const e = document.getElementById('email').value;
+            const p = document.getElementById('password').value;
+            signInWithEmailAndPassword(auth, e, p).catch(err => {
+                if(err.code === 'auth/user-not-found') createUserWithEmailAndPassword(auth, e, p);
+                else alert(err.message);
             });
-        }
+        };
+        window.logout = () => signOut(auth).then(()=>location.reload());
 
-        window.googleLogin = () => {
-            signInWithPopup(auth, new GoogleAuthProvider()).catch(e => alert(e.message));
-        }
-
-        window.logout = () => signOut(auth).then(() => location.reload());
-
-        // STATE LISTENER
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             if(user) {
                 currentUser = user;
-                document.getElementById('auth-screen').classList.add('hide');
-                document.getElementById('main-app').classList.remove('hide');
-                loadNotes();
-                updateUserDB(user);
-                loadTotalUsers();
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('app-layout').style.display = 'flex';
+                
+                // Sync User to DB
+                await setDoc(doc(db, "users", user.uid), {
+                    uid: user.uid,
+                    name: user.displayName || user.email.split('@')[0],
+                    email: user.email,
+                    photo: user.photoURL || `https://ui-avatars.com/api/?name=${user.email}`,
+                    lastSeen: Date.now()
+                }, { merge: true });
+
+                loadMyNotes();
+                setupProfile();
+                loadAllUsers();
             }
         });
 
-        async function updateUserDB(user) {
-            await setDoc(doc(db, "users", user.uid), {
-                name: user.displayName || user.email.split('@')[0],
-                email: user.email,
-                uid: user.uid,
-                lastSeen: Date.now()
-            }, { merge: true });
+        // --- PROFILE SYSTEM ---
+        function setupProfile() {
+            onSnapshot(doc(db, "users", currentUser.uid), (doc) => {
+                const data = doc.data();
+                document.getElementById('header-pic').src = data.photo;
+                document.getElementById('p-img').src = data.photo;
+                document.getElementById('p-name').innerText = data.name;
+                document.getElementById('p-email').innerText = data.email;
+                document.getElementById('p-bio').innerText = data.bio || "No bio yet.";
+                document.getElementById('p-followers').innerText = (data.followers || []).length;
+                document.getElementById('p-following').innerText = (data.following || []).length;
+
+                const linksDiv = document.getElementById('p-links');
+                linksDiv.innerHTML = "";
+                if(data.links) {
+                    data.links.forEach(link => {
+                        linksDiv.innerHTML += `<a href="${link.url}" target="_blank" class="bio-link-btn"><i class="fas fa-link"></i> ${link.label}</a>`;
+                    });
+                }
+            });
         }
 
-        // NOTES SYSTEM
-        function loadNotes() {
-            const q = query(collection(db, "notes"), where("uid", "==", currentUser.uid), orderBy("timestamp", "desc"));
-            onSnapshot(q, (snapshot) => {
-                const list = document.getElementById('notes-list');
-                list.innerHTML = "";
-                snapshot.forEach(docSnap => {
-                    const note = docSnap.data();
-                    // Hidden Logic
-                    if(note.isPrivate && !showHidden) return;
+        window.editBio = async () => {
+            const newBio = prompt("Enter Bio:");
+            const linkName = prompt("Link Name (e.g. My Insta):");
+            const linkUrl = prompt("Link URL (e.g. instagram.com/me):");
+            
+            let updateData = {};
+            if(newBio) updateData.bio = newBio;
+            if(linkName && linkUrl) {
+                updateData.links = arrayUnion({ label: linkName, url: linkUrl.startsWith('http') ? linkUrl : 'https://' + linkUrl });
+            }
+            
+            await updateDoc(doc(db, "users", currentUser.uid), updateData);
+        };
 
-                    const div = document.createElement('div');
-                    div.className = `note-item ${note.isPrivate ? 'private' : ''}`;
-                    div.innerHTML = `
-                        <div>
-                            <div class="note-title">${note.title || 'Untitled'}</div>
-                            <small style="color:#888">${new Date(note.timestamp).toLocaleDateString()}</small>
-                        </div>
-                        ${note.isPrivate ? '<i class="fas fa-lock" style="color:red"></i>' : '<i class="fas fa-chevron-right"></i>'}
+        // --- NOTES SYSTEM ---
+        function loadMyNotes() {
+            const q = query(collection(db, "notes"), where("uid", "==", currentUser.uid), orderBy("timestamp", "desc"));
+            onSnapshot(q, (snap) => {
+                const div = document.getElementById('notes-container');
+                div.innerHTML = "";
+                snap.forEach(d => {
+                    const n = d.data();
+                    if(n.isPrivate && !showHidden) return;
+
+                    const card = document.createElement('div');
+                    card.className = `note-card ${n.isPrivate ? 'private' : ''}`;
+                    card.innerHTML = `
+                        <div class="note-title">${n.title}</div>
+                        <p>${n.text.substring(0, 50)}...</p>
+                        ${n.isPrivate ? '<i class="fas fa-eye-slash" style="color:red; float:right;"></i>' : ''}
                     `;
-                    div.onclick = () => openViewModal(docSnap.id, note);
-                    list.appendChild(div);
+                    card.onclick = () => {
+                        alert(`Full Note:\n\n${n.title}\n\n${n.text}`);
+                    };
+                    div.appendChild(card);
                 });
             });
         }
 
-        // OPEN NOTE TO VIEW/EDIT
-        window.openViewModal = (id, note) => {
-            currentNoteId = id;
-            document.getElementById('note-modal').style.display = "flex";
-            document.getElementById('save-btn').innerText = "Update";
-            document.getElementById('view-actions').classList.remove('hide');
-            
-            document.getElementById('note-title').value = note.title;
-            document.getElementById('note-text').value = note.text;
-            document.getElementById('is-private').checked = note.isPrivate;
-            
-            const mediaDiv = document.getElementById('media-preview');
-            mediaDiv.innerHTML = "";
-            if(note.media) {
-                mediaDiv.innerHTML = note.mediaType.includes('video') 
-                    ? `<video src="${note.media}" controls style="width:100%"></video>`
-                    : `<img src="${note.media}" style="width:100%">`;
-            }
-        }
-
-        window.openAddModal = () => {
-            currentNoteId = null;
-            document.getElementById('note-modal').style.display = "flex";
-            document.getElementById('save-btn').innerText = "Save";
-            document.getElementById('view-actions').classList.add('hide');
-            // Clear inputs
-            document.getElementById('note-title').value = "";
-            document.getElementById('note-text').value = "";
-            document.getElementById('media-preview').innerHTML = "";
-            document.getElementById('file-input').value = "";
-            document.getElementById('is-private').checked = false;
-        }
-
-        window.closeModal = () => document.getElementById('note-modal').style.display = "none";
-
-        // SAVE / UPDATE NOTE
         window.saveNote = async () => {
             const title = document.getElementById('note-title').value;
-            const text = document.getElementById('note-text').value;
-            const isPrivate = document.getElementById('is-private').checked;
-            const file = document.getElementById('file-input').files[0];
+            const text = document.getElementById('note-body').value;
+            const isPrivate = document.getElementById('note-private').checked;
             
-            if(!title && !text) return alert("Kuch likho bhai!");
-
-            let mediaBase64 = null;
-            let mediaType = null;
-
-            // Simple File Reader for Demo (Base64)
-            if(file) {
-                const reader = new FileReader();
-                reader.onload = async (e) => {
-                    mediaBase64 = e.target.result;
-                    mediaType = file.type;
-                    await pushData(title, text, isPrivate, mediaBase64, mediaType);
-                };
-                reader.readAsDataURL(file);
-            } else {
-                // Keep old media if updating and no new file
-                if(currentNoteId) {
-                     // Fetch old data logic skipped for brevity, assuming replace or text update
-                     // In real app, fetch old media url if not replaced
-                }
-                await pushData(title, text, isPrivate, null, null);
-            }
-        }
-
-        async function pushData(title, text, isPrivate, media, type) {
-            const data = {
+            if(!title) return alert("Title required");
+            
+            await addDoc(collection(db, "notes"), {
                 uid: currentUser.uid,
                 title, text, isPrivate,
                 timestamp: Date.now()
-            };
-            if(media) { data.media = media; data.mediaType = type; }
+            });
+            document.getElementById('note-modal').style.display = 'none';
+            // Reset fields
+            document.getElementById('note-title').value = "";
+            document.getElementById('note-body').value = "";
+        };
 
-            if(currentNoteId) {
-                await updateDoc(doc(db, "notes", currentNoteId), data);
-            } else {
-                await addDoc(collection(db, "notes"), data);
+        window.copyNote = () => {
+            const txt = document.getElementById('note-body').value;
+            navigator.clipboard.writeText(txt).then(() => alert("Copied!"));
+        }
+
+        window.toggleHiddenNotes = () => {
+            showHidden = document.getElementById('toggle-hidden').checked;
+            if(showHidden) {
+                const pin = prompt("Enter Vault PIN (for demo just press OK):");
+                if(!pin) { document.getElementById('toggle-hidden').checked = false; showHidden = false; }
             }
-            closeModal();
+            loadMyNotes();
         }
 
-        // COPY & DELETE
-        window.copyNoteContent = () => {
-            const text = document.getElementById('note-text').value;
-            navigator.clipboard.writeText(text).then(() => alert("Copied to keyboard!"));
-        }
-
-        window.deleteCurrentNote = async () => {
-            if(confirm("Confirm Delete?")) {
-                await deleteDoc(doc(db, "notes", currentNoteId));
-                closeModal();
-            }
-        }
-
-        // HIDE/UNHIDE SYSTEM
-        window.toggleMenu = () => {
-            const menu = document.getElementById('menu-dropdown');
-            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-        }
-
-        window.togglePrivateMode = () => {
-            showHidden = !showHidden;
-            alert(showHidden ? "Hidden Notes ab dikh rahe hain!" : "Private notes hide ho gaye.");
-            loadNotes();
-            document.getElementById('menu-dropdown').style.display = 'none';
-        }
-
-        // SOCIAL & CHAT
-        window.switchTab = (tab, elem) => {
-            document.querySelectorAll('.nav-icon').forEach(i => i.classList.remove('active'));
-            elem.classList.add('active');
-            
-            if(tab === 'notes') {
-                document.getElementById('notes-list').classList.remove('hide');
-                document.getElementById('social-list').classList.add('hide');
-                document.getElementById('add-btn').style.display = 'flex';
-            } else {
-                document.getElementById('notes-list').classList.add('hide');
-                document.getElementById('social-list').classList.remove('hide');
-                document.getElementById('add-btn').style.display = 'none';
-                loadUsers();
-            }
-        }
-
-        function loadUsers() {
-            const list = document.getElementById('social-list');
-            list.innerHTML = "Loading...";
-            
-            getDocs(collection(db, "users")).then(snap => {
-                list.innerHTML = "";
+        // --- SOCIAL SYSTEM ---
+        function loadAllUsers() {
+            const q = query(collection(db, "users"));
+            onSnapshot(q, (snap) => {
+                const div = document.getElementById('users-list');
+                div.innerHTML = "";
                 snap.forEach(d => {
                     const u = d.data();
-                    if(u.uid === currentUser.uid) return; // Don't show self
+                    if(u.uid === currentUser.uid) return;
                     
-                    const div = document.createElement('div');
-                    div.className = "user-card";
-                    div.innerHTML = `
-                        <img src="https://ui-avatars.com/api/?name=${u.name}" class="avatar">
-                        <div style="flex:1;">
-                            <b>${u.name}</b><br>
-                            <small>User</small>
+                    const isFollowing = (u.followers || []).includes(currentUser.uid);
+                    
+                    div.innerHTML += `
+                        <div class="user-row">
+                            <img src="${u.photo}" class="profile-thumb" style="margin-right:10px;">
+                            <div>
+                                <b>${u.name}</b><br>
+                                <small>${u.bio || 'No bio'}</small>
+                            </div>
+                            <button class="follow-btn" onclick="toggleFollow('${u.uid}', ${isFollowing})">
+                                ${isFollowing ? 'Unfollow' : 'Follow'}
+                            </button>
                         </div>
-                        <button onclick="openChat('${u.uid}', '${u.name}')" style="background:var(--primary); color:white; border:none; padding:5px 10px; border-radius:5px;">Chat</button>
                     `;
-                    list.appendChild(div);
                 });
             });
         }
 
-        // CHAT LOGIC (Real-time)
-        window.openChat = (uid, name) => {
-            currentChatUser = uid;
-            document.getElementById('chat-modal').style.display = 'flex';
-            document.getElementById('chat-user-name').innerText = name;
-            loadMessages(uid);
-        }
-
-        function loadMessages(friendUid) {
-            const chatId = [currentUser.uid, friendUid].sort().join("_");
-            const q = query(collection(db, "chats", chatId, "messages"), orderBy("timestamp"));
+        window.toggleFollow = async (targetUid, isFollowing) => {
+            const targetRef = doc(db, "users", targetUid);
+            const myRef = doc(db, "users", currentUser.uid);
             
-            onSnapshot(q, (snap) => {
-                const box = document.getElementById('chat-box');
-                box.innerHTML = "";
-                snap.forEach(d => {
-                    const msg = d.data();
-                    const isMe = msg.sender === currentUser.uid;
-                    box.innerHTML += `
-                        <div style="text-align:${isMe?'right':'left'}; margin:5px;">
-                            <span style="background:${isMe?'#d1c4e9':'white'}; padding:5px 10px; border-radius:10px; display:inline-block;">
-                                ${msg.audio ? '<i class="fas fa-play"></i> Audio' : msg.text}
-                            </span>
-                        </div>
-                    `;
-                });
-                box.scrollTop = box.scrollHeight;
-            });
-        }
+            if(isFollowing) {
+                await updateDoc(targetRef, { followers: arrayRemove(currentUser.uid) });
+                await updateDoc(myRef, { following: arrayRemove(targetUid) });
+            } else {
+                await updateDoc(targetRef, { followers: arrayUnion(currentUser.uid) });
+                await updateDoc(myRef, { following: arrayUnion(targetUid) });
+            }
+        };
 
-        window.sendMsg = async () => {
-            const txt = document.getElementById('msg-input').value;
-            if(!txt) return;
-            const chatId = [currentUser.uid, currentChatUser].sort().join("_");
-            await addDoc(collection(db, "chats", chatId, "messages"), {
-                text: txt, sender: currentUser.uid, timestamp: Date.now()
-            });
-            document.getElementById('msg-input').value = "";
-        }
-
-        window.sendAudioMock = async () => {
-             const chatId = [currentUser.uid, currentChatUser].sort().join("_");
-             await addDoc(collection(db, "chats", chatId, "messages"), {
-                text: "Audio Message", audio: true, sender: currentUser.uid, timestamp: Date.now()
-            });
-        }
-
-        function loadTotalUsers() {
-            onSnapshot(collection(db, "users"), snap => {
-                document.getElementById('user-total').innerText = snap.size;
-            });
-        }
-
-        // Preview File
-        window.previewMedia = () => {
-            const file = document.getElementById('file-input').files[0];
-            if(file) document.getElementById('media-preview').innerText = "File Selected: " + file.name;
+        // UI HELPERS
+        window.openProfile = () => document.getElementById('profile-modal').style.display = 'flex';
+        window.closeProfile = () => document.getElementById('profile-modal').style.display = 'none';
+        window.openNoteModal = () => document.getElementById('note-modal').style.display = 'block';
+        window.closeNoteModal = () => document.getElementById('note-modal').style.display = 'none';
+        
+        window.switchTab = (tabId, el) => {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            document.querySelectorAll('.nav-icon').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
         }
     </script>
 </body>
