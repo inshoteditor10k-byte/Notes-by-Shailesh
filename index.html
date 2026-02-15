@@ -3,157 +3,248 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ultima Note & Social</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <title>Modern Notes | User App</title>
     <style>
-        :root { --primary: #2979ff; --bg: #f0f2f5; --white: #ffffff; --text: #050505; --red: #ff3d00; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        /* 🎨 CORE CSS VARIABLES & THEMES */
+        :root {
+            --primary: #6C63FF; --bg: #f0f2f5; --card: #ffffff; --text: #1f1f1f; --sub: #757575;
+            --glass: rgba(255, 255, 255, 0.7); --border: rgba(0,0,0,0.05);
+            --shadow: 0 10px 30px rgba(0,0,0,0.08); --radius: 20px;
+            --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
 
-        /* AUTH SCREEN */
-        #auth-screen { position: fixed; inset: 0; background: var(--white); z-index: 2000; display: flex; flex-direction: column; justify-content: center; padding: 30px; }
-        .input-field { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 12px; background: #f9f9f9; }
-        .btn-auth { width: 100%; padding: 15px; border-radius: 30px; border: none; font-weight: bold; font-size: 16px; margin-top: 10px; cursor: pointer; }
-        .btn-blue { background: var(--primary); color: white; }
-        .btn-google { background: white; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        /* Dark Mode */
+        [data-theme="dark"] { --primary: #8a84ff; --bg: #121212; --card: #1e1e1e; --text: #e0e0e0; --sub: #a0a0a0; --glass: rgba(30,30,30, 0.8); --border: rgba(255,255,255,0.1); }
+        /* AMOLED */
+        [data-theme="amoled"] { --primary: #ffffff; --bg: #000000; --card: #000000; --text: #ffffff; --sub: #888; --glass: rgba(0,0,0,0.9); --border: #333; }
+        /* Ocean */
+        [data-theme="ocean"] { --primary: #00d2ff; --bg: #0f2027; --card: #203a43; --text: #fff; --glass: rgba(32,58,67, 0.8); }
+        /* Neon */
+        [data-theme="neon"] { --primary: #0aff00; --bg: #050505; --card: #111; --text: #0aff00; --sub: #008f00; --border: #0aff00; }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: var(--font); -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--text); overflow: hidden; transition: 0.3s; }
         
-        /* APP LAYOUT */
-        #app-layout { display: none; flex-direction: column; height: 100%; }
-        header { padding: 15px; background: var(--white); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 5px rgba(0,0,0,0.05); z-index: 10; }
+        /* 📱 UTILITIES */
+        .hidden { display: none !important; }
+        .flex-center { display: flex; justify-content: center; align-items: center; }
+        .glass-panel { background: var(--glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--border); }
+        .btn { padding: 12px 24px; border-radius: 50px; border: none; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 15px rgba(108, 99, 255, 0.3); }
+        .btn-ghost { background: transparent; color: var(--text); }
+        .btn:active { transform: scale(0.95); }
+        input, textarea { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text); outline: none; transition: 0.3s; }
+        input:focus, textarea:focus { border-color: var(--primary); }
+        
+        /* 🚀 SPLASH SCREEN */
+        #splash { position: fixed; inset: 0; background: var(--bg); z-index: 9999; flex-direction: column; }
+        .loader { width: 50px; height: 50px; border: 4px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s infinite linear; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* 🔐 AUTH PAGE */
+        #auth-view { position: fixed; inset: 0; z-index: 1000; padding: 20px; overflow-y: auto; }
+        .auth-card { width: 100%; max-width: 400px; padding: 30px; border-radius: 30px; box-shadow: var(--shadow); margin: auto; }
+        .social-btn { width: 100%; margin-top: 15px; background: white; color: #333; border: 1px solid #ddd; }
+
+        /* 🏠 MAIN LAYOUT */
+        #app-view { display: flex; flex-direction: column; height: 100vh; }
+        
+        /* Header */
+        header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 100; position: sticky; top: 0; }
         .profile-thumb { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
-        
-        /* PAGES */
-        .page { flex: 1; overflow-y: auto; padding: 15px; display: none; padding-bottom: 90px; }
-        .page.active { display: block; }
-        
-        /* NOTES */
-        .note-card { background: var(--white); padding: 15px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); border-left: 5px solid var(--primary); position: relative; }
-        .note-card.private { border-left-color: var(--red); opacity: 0.8; }
-        .note-title { font-weight: bold; font-size: 18px; margin-bottom: 5px; }
-        
-        /* PROFILE MODAL */
-        .modal { position: fixed; inset: 0; background: var(--white); z-index: 1500; display: none; flex-direction: column; overflow-y: auto; }
-        .profile-header { background: linear-gradient(to bottom right, #2979ff, #00b0ff); padding: 40px 20px; color: white; text-align: center; border-radius: 0 0 30px 30px; }
-        .profile-img-lg { width: 100px; height: 100px; border-radius: 50%; border: 4px solid white; margin-bottom: 10px; object-fit: cover; }
-        .stats-row { display: flex; justify-content: center; gap: 30px; margin: 20px 0; }
-        .stat-item { text-align: center; }
-        .stat-val { font-weight: bold; font-size: 20px; }
-        
-        /* BIO LINKS */
-        .bio-link-btn { display: block; width: 100%; background: #e3f2fd; color: var(--primary); padding: 12px; margin: 5px 0; text-align: center; border-radius: 10px; text-decoration: none; font-weight: bold; }
-        
-        /* NAV & FAB */
-        .fab { position: fixed; bottom: 85px; right: 20px; width: 60px; height: 60px; background: var(--primary); border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 5px 15px rgba(41, 121, 255, 0.4); cursor: pointer; }
-        .btm-nav { position: fixed; bottom: 0; width: 100%; background: var(--white); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #eee; }
-        .nav-icon { font-size: 22px; color: #aaa; cursor: pointer; }
-        .nav-icon.active { color: var(--primary); }
 
-        /* USER LIST */
-        .user-row { display: flex; align-items: center; background: var(--white); padding: 10px; margin-bottom: 10px; border-radius: 12px; }
-        .follow-btn { margin-left: auto; background: var(--primary); color: white; border: none; padding: 5px 15px; border-radius: 20px; cursor: pointer; }
+        /* Content Area */
+        main { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; }
+        
+        /* Notes Grid */
+        .notes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+        .note-card { padding: 15px; border-radius: var(--radius); position: relative; transition: 0.2s; height: 200px; display: flex; flex-direction: column; cursor: pointer; overflow: hidden; }
+        .note-card h3 { font-size: 1.1rem; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .note-card p { font-size: 0.9rem; color: var(--sub); flex: 1; display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; white-space: pre-wrap; }
+        .note-badge { position: absolute; top: 10px; right: 10px; font-size: 12px; background: var(--primary); color: white; padding: 2px 8px; border-radius: 10px; }
+
+        /* Bottom Nav */
+        .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; height: 70px; border-radius: 35px; display: flex; justify-content: space-around; align-items: center; box-shadow: var(--shadow); z-index: 200; }
+        .nav-item { font-size: 1.5rem; color: var(--sub); cursor: pointer; transition: 0.2s; position: relative; }
+        .nav-item.active { color: var(--primary); transform: translateY(-5px); }
+        .fab { position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%); width: 60px; height: 60px; background: var(--primary); border-radius: 50%; color: white; font-size: 2rem; box-shadow: 0 5px 20px rgba(108,99,255,0.4); border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; }
+
+        /* 🛠 MODALS */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: 0.3s; }
+        .modal.open { opacity: 1; pointer-events: all; }
+        .modal-content { background: var(--bg); width: 100%; height: 90vh; border-radius: 30px 30px 0 0; padding: 25px; display: flex; flex-direction: column; transform: translateY(100%); transition: 0.3s; }
+        .modal.open .modal-content { transform: translateY(0); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        
+        /* Chat UI */
+        .chat-list { display: flex; flex-direction: column; gap: 15px; }
+        .user-row { display: flex; align-items: center; gap: 15px; padding: 10px; border-radius: 15px; background: var(--card); }
+        .chat-box { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 10px; }
+        .msg { max-width: 70%; padding: 10px 15px; border-radius: 15px; font-size: 0.9rem; }
+        .msg.me { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 2px; }
+        .msg.them { align-self: flex-start; background: var(--card); border-bottom-left-radius: 2px; }
+        
+        /* Toast */
+        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: #333; color: white; padding: 10px 20px; border-radius: 50px; z-index: 3000; transition: 0.3s; }
+        #toast.show { transform: translateX(-50%) translateY(0); }
+
     </style>
+    <!-- Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 </head>
 <body>
 
-    <!-- AUTH SCREEN -->
-    <div id="auth-screen">
-        <h1 style="text-align:center; margin-bottom:20px; color:var(--primary);">App Login</h1>
-        <input type="email" id="email" class="input-field" placeholder="Email">
-        <input type="password" id="password" class="input-field" placeholder="Password">
-        <button class="btn-auth btn-blue" onclick="emailAuth()">Login / Register</button>
-        <div style="text-align:center; margin:15px; color:#888;">OR</div>
-        <button class="btn-auth btn-google" onclick="googleAuth()">
-            <i class="fab fa-google"></i> Continue with Google
-        </button>
+    <!-- 🔥 SPLASH SCREEN -->
+    <div id="splash" class="flex-center">
+        <h1 style="margin-bottom: 20px; font-weight: 800; color: var(--primary)">NOTES APP</h1>
+        <div class="loader"></div>
     </div>
 
-    <!-- MAIN APP -->
-    <div id="app-layout">
-        <header>
-            <h2 style="font-weight:900;">Notes<span style="color:var(--primary);">.</span></h2>
-            <img id="header-pic" src="" class="profile-thumb" onclick="openProfile()">
+    <!-- 🔥 AUTH VIEW -->
+    <div id="auth-view" class="hidden flex-center">
+        <div class="auth-card glass-panel">
+            <h2 style="text-align: center; margin-bottom: 20px;">Welcome Back</h2>
+            <input type="email" id="email" placeholder="Email Address" style="margin-bottom: 10px;">
+            <input type="password" id="password" placeholder="Password" style="margin-bottom: 20px;">
+            <button class="btn btn-primary" style="width: 100%" onclick="handleLogin()">Login</button>
+            <button class="btn btn-ghost" style="width: 100%; margin-top: 10px" onclick="toggleAuthMode()">No account? Register</button>
+            <div style="text-align: center; margin: 15px; opacity: 0.5;">OR</div>
+            <button class="btn social-btn" onclick="googleLogin()">
+                <span class="material-icons-round" style="color: #DB4437;">g_translate</span> Continue with Google
+            </button>
+        </div>
+    </div>
+
+    <!-- 🔥 APP VIEW -->
+    <div id="app-view" class="hidden">
+        <!-- Header -->
+        <header class="glass-panel">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <img id="header-profile" src="https://via.placeholder.com/40" class="profile-thumb" onclick="openProfile()">
+                <div>
+                    <h4 id="header-name">User</h4>
+                    <small id="user-count" style="font-size: 10px; color: var(--sub)">Online: 0</small>
+                </div>
+            </div>
+            <div>
+                <span class="material-icons-round" onclick="toggleVault()" style="cursor: pointer; padding: 8px;">lock</span>
+                <span class="material-icons-round" onclick="openSettings()" style="cursor: pointer; padding: 8px;">settings</span>
+            </div>
         </header>
 
-        <!-- TABS -->
-        <div id="tab-notes" class="page active">
-            <div id="notes-container"></div>
-        </div>
-        
-        <div id="tab-search" class="page">
-            <h3 style="margin-bottom:15px;">Discover People</h3>
-            <div id="users-list">Loading...</div>
-        </div>
-
-        <!-- FAB -->
-        <div class="fab" id="add-btn" onclick="openNoteModal()"><i class="fas fa-plus"></i></div>
-
-        <!-- NAVIGATION -->
-        <div class="btm-nav">
-            <i class="fas fa-home nav-icon active" onclick="switchTab('tab-notes', this)"></i>
-            <i class="fas fa-search nav-icon" onclick="switchTab('tab-search', this)"></i>
-            <i class="fas fa-user nav-icon" onclick="openProfile()"></i>
-        </div>
-    </div>
-
-    <!-- NOTE MODAL (Add/Edit) -->
-    <div id="note-modal" class="modal" style="padding:20px; z-index:1600;">
-        <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
-            <button onclick="closeNoteModal()" style="border:none; background:transparent; font-size:16px;">Cancel</button>
-            <button onclick="saveNote()" style="border:none; background:var(--primary); color:white; padding:8px 20px; border-radius:20px;">Save</button>
-        </div>
-        <input type="text" id="note-title" placeholder="Title" style="font-size:24px; border:none; outline:none; font-weight:bold; width:100%; margin-bottom:10px;">
-        <textarea id="note-body" placeholder="Start typing..." style="width:100%; height:200px; border:none; outline:none; resize:none; font-size:16px;"></textarea>
-        
-        <!-- Media & Options -->
-        <div style="margin-top:20px; border-top:1px solid #eee; padding-top:20px;">
-            <button onclick="copyNote()" style="width:100%; padding:10px; background:#eee; border:none; border-radius:10px; margin-bottom:10px;">
-                <i class="fas fa-copy"></i> Copy to Clipboard
-            </button>
-            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
-                <input type="checkbox" id="note-private" style="width:20px; height:20px;">
-                <label>Hide this note (Private)</label>
+        <!-- Main Content -->
+        <main id="main-content">
+            <!-- Search -->
+            <div style="margin-bottom: 20px;">
+                <input type="text" id="search-bar" placeholder="Search notes..." onkeyup="filterNotes()">
             </div>
-             <input type="file" id="note-media" accept="image/*">
-        </div>
-    </div>
-
-    <!-- PROFILE MODAL -->
-    <div id="profile-modal" class="modal">
-        <button onclick="closeProfile()" style="position:absolute; top:20px; left:20px; background:rgba(0,0,0,0.2); border:none; color:white; padding:10px; border-radius:50%;"><i class="fas fa-arrow-left"></i></button>
-        <div class="profile-header">
-            <img id="p-img" src="" class="profile-img-lg">
-            <h2 id="p-name">Name</h2>
-            <p id="p-email" style="font-size:14px; opacity:0.8;">email</p>
-            <div class="stats-row">
-                <div class="stat-item"><div class="stat-val" id="p-followers">0</div>Followers</div>
-                <div class="stat-item"><div class="stat-val" id="p-following">0</div>Following</div>
-            </div>
-            <button onclick="editBio()" style="background:rgba(255,255,255,0.2); border:1px solid white; color:white; padding:5px 15px; border-radius:20px; font-size:12px;">Edit Bio & Links</button>
-        </div>
-        
-        <div style="padding:20px;">
-            <h4 style="color:#888; margin-bottom:10px;">ABOUT ME</h4>
-            <p id="p-bio" style="margin-bottom:20px;">No bio set.</p>
             
-            <h4 style="color:#888; margin-bottom:10px;">LINKS</h4>
-            <div id="p-links"></div>
-
-            <h4 style="color:#888; margin-top:30px; margin-bottom:10px;">SETTINGS</h4>
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:15px; background:#f9f9f9; border-radius:10px;">
-                <span>Show Hidden Notes</span>
-                <input type="checkbox" id="toggle-hidden" onchange="toggleHiddenNotes()">
+            <!-- Notes Grid -->
+            <div id="notes-container" class="notes-grid">
+                <!-- Notes injected here -->
             </div>
-            <button onclick="logout()" style="width:100%; margin-top:20px; padding:15px; background:var(--red); color:white; border:none; border-radius:10px;">Logout</button>
+        </main>
+
+        <!-- Bottom Nav -->
+        <div class="bottom-nav glass-panel">
+            <span class="material-icons-round nav-item active" onclick="switchTab('home')">home</span>
+            <span class="material-icons-round nav-item" onclick="openChatList()">chat</span>
+            <button class="fab" onclick="openNoteEditor()">+</button>
+            <span class="material-icons-round nav-item" onclick="openSocial()">people</span>
+            <span class="material-icons-round nav-item" onclick="openProfile()">person</span>
         </div>
     </div>
 
-    <!-- FIREBASE LOGIC -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, where, onSnapshot, orderBy, doc, deleteDoc, updateDoc, setDoc, getDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-firestore.js";
+    <!-- 🔥 MODALS -->
+    
+    <!-- Note Editor -->
+    <div id="note-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Note</h3>
+                <div>
+                    <span class="material-icons-round" onclick="togglePin()" id="pin-btn" style="cursor:pointer; margin-right: 15px; color: var(--sub)">push_pin</span>
+                    <span class="material-icons-round" onclick="closeModal('note-modal')" style="cursor:pointer">close</span>
+                </div>
+            </div>
+            <input type="text" id="note-title" placeholder="Title" style="font-size: 1.2rem; font-weight: bold; border: none; padding-left: 0; background: transparent;">
+            <textarea id="note-body" placeholder="Start typing..." style="flex: 1; border: none; padding-left: 0; background: transparent; resize: none;"></textarea>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button class="btn btn-ghost" onclick="copyNote()">Copy</button>
+                <button class="btn btn-ghost" style="color: red" onclick="deleteNote()">Delete</button>
+                <button class="btn btn-primary" style="margin-left: auto" onclick="saveNoteAndClose()">Save</button>
+            </div>
+        </div>
+    </div>
 
-        // --- IMPORTANT: PUT YOUR KEYS HERE ---
+    <!-- Vault PIN -->
+    <div id="vault-modal" class="modal" style="align-items: center; justify-content: center;">
+        <div class="glass-panel" style="padding: 30px; border-radius: 20px; width: 300px; text-align: center;">
+            <h3>Private Vault</h3>
+            <p style="margin-bottom: 15px; color: var(--sub)">Enter 4-digit PIN</p>
+            <input type="password" id="vault-pin" maxlength="4" style="text-align: center; font-size: 2rem; letter-spacing: 10px; width: 100%;">
+            <div style="margin-top: 20px; display: flex; justify-content: space-between;">
+                <button class="btn btn-ghost" onclick="closeModal('vault-modal')">Cancel</button>
+                <button class="btn btn-primary" onclick="unlockVault()">Unlock</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Modal -->
+    <div id="chat-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="chat-with-name">Chat</h3>
+                <span class="material-icons-round" onclick="closeModal('chat-modal')" style="cursor:pointer">close</span>
+            </div>
+            <div id="messages-container" class="chat-box"></div>
+            <div style="display: flex; gap: 10px; margin-top: 10px; align-items: center;">
+                <button class="btn btn-ghost" style="padding: 10px; border-radius: 50%" onmousedown="startRecord()" onmouseup="stopRecord()"><span class="material-icons-round">mic</span></button>
+                <input type="text" id="msg-input" placeholder="Type a message...">
+                <button class="btn btn-primary" onclick="sendTextMsg()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Settings</h3>
+                <span class="material-icons-round" onclick="closeModal('settings-modal')" style="cursor:pointer">close</span>
+            </div>
+            <div style="overflow-y: auto;">
+                <h4>Theme</h4>
+                <div style="display: flex; gap: 10px; overflow-x: auto; padding: 10px 0;">
+                    <button class="btn" style="background:#fff; color:#000" onclick="setTheme('light')">Light</button>
+                    <button class="btn" style="background:#121212; color:#fff" onclick="setTheme('dark')">Dark</button>
+                    <button class="btn" style="background:#000; color:#fff" onclick="setTheme('amoled')">AMOLED</button>
+                    <button class="btn" style="background:#0f2027; color:#00d2ff" onclick="setTheme('ocean')">Ocean</button>
+                    <button class="btn" style="background:#000; color:#0aff00" onclick="setTheme('neon')">Neon</button>
+                </div>
+                <hr style="margin: 20px 0; opacity: 0.1">
+                <h4>Security</h4>
+                <button class="btn btn-ghost" onclick="setupPin()">Set/Change Vault PIN</button>
+                <hr style="margin: 20px 0; opacity: 0.1">
+                <button class="btn btn-primary" style="width: 100%; background: #ff4757;" onclick="logout()">Logout</button>
+                <button class="btn btn-ghost" style="width: 100%; margin-top: 10px; color: red;" onclick="deleteAccount()">Delete Account</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast">Notification</div>
+
+    <!-- 🔥 FIREBASE SDK (Compat for single file simplicity) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        /* 
+           🔥 FIREBASE CONFIGURATION 🔥 
+           Replace this object with your real Firebase Config from the Console 
+        */
         const firebaseConfig = {
     apiKey: "AIzaSyCRhz9f_CrxR07TMEIqJ3jyPcP7Y7wMksY",
     authDomain: "notes-app-a043e.firebaseapp.com",
@@ -164,192 +255,381 @@
     appId: "1:46441351547:web:d1f642c09ff1999885d5de"
   };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
 
+        // Enable Offline Persistence
+        db.enablePersistence().catch(err => console.log("Persistence Error:", err));
+
+        // Global State
         let currentUser = null;
-        let showHidden = false;
+        let notesData = [];
+        let currentNoteId = null;
+        let isVaultUnlocked = false;
+        let isRegistering = false;
+        let chatRecipientId = null;
+        let mediaRecorder;
+        let audioChunks = [];
 
-        // AUTH
-        window.googleAuth = () => signInWithPopup(auth, new GoogleAuthProvider());
-        window.emailAuth = () => {
-            const e = document.getElementById('email').value;
-            const p = document.getElementById('password').value;
-            signInWithEmailAndPassword(auth, e, p).catch(err => {
-                if(err.code === 'auth/user-not-found') createUserWithEmailAndPassword(auth, e, p);
-                else alert(err.message);
-            });
-        };
-        window.logout = () => signOut(auth).then(()=>location.reload());
-
-        onAuthStateChanged(auth, async (user) => {
-            if(user) {
+        // DOM Elements
+        const views = { splash: '#splash', auth: '#auth-view', app: '#app-view' };
+        
+        // 🚀 INIT
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
                 currentUser = user;
-                document.getElementById('auth-screen').style.display = 'none';
-                document.getElementById('app-layout').style.display = 'flex';
-                
                 // Sync User to DB
-                await setDoc(doc(db, "users", user.uid), {
+                const userRef = db.collection('users').doc(user.uid);
+                await userRef.set({
                     uid: user.uid,
-                    name: user.displayName || user.email.split('@')[0],
                     email: user.email,
-                    photo: user.photoURL || `https://ui-avatars.com/api/?name=${user.email}`,
-                    lastSeen: Date.now()
+                    displayName: user.displayName || 'User',
+                    photoURL: user.photoURL || `https://ui-avatars.com/api/?name=${user.email}`,
+                    lastActive: firebase.firestore.FieldValue.serverTimestamp(),
+                    isOnline: true
                 }, { merge: true });
 
-                loadMyNotes();
-                setupProfile();
-                loadAllUsers();
+                updateUI(user);
+                loadNotes();
+                loadTheme();
+                switchView('app');
+            } else {
+                switchView('auth');
             }
+            document.querySelector(views.splash).classList.add('hidden');
         });
 
-        // --- PROFILE SYSTEM ---
-        function setupProfile() {
-            onSnapshot(doc(db, "users", currentUser.uid), (doc) => {
-                const data = doc.data();
-                document.getElementById('header-pic').src = data.photo;
-                document.getElementById('p-img').src = data.photo;
-                document.getElementById('p-name').innerText = data.name;
-                document.getElementById('p-email').innerText = data.email;
-                document.getElementById('p-bio').innerText = data.bio || "No bio yet.";
-                document.getElementById('p-followers').innerText = (data.followers || []).length;
-                document.getElementById('p-following').innerText = (data.following || []).length;
+        function switchView(viewName) {
+            Object.values(views).forEach(sel => document.querySelector(sel).classList.add('hidden'));
+            document.querySelector(views[viewName]).classList.remove('hidden');
+        }
 
-                const linksDiv = document.getElementById('p-links');
-                linksDiv.innerHTML = "";
-                if(data.links) {
-                    data.links.forEach(link => {
-                        linksDiv.innerHTML += `<a href="${link.url}" target="_blank" class="bio-link-btn"><i class="fas fa-link"></i> ${link.label}</a>`;
+        function updateUI(user) {
+            document.getElementById('header-name').innerText = user.displayName || user.email.split('@')[0];
+            document.getElementById('header-profile').src = user.photoURL || 'https://via.placeholder.com/40';
+            
+            // Get total user count
+            db.collection('users').onSnapshot(snap => {
+                document.getElementById('user-count').innerText = `Users: ${snap.size}`;
+            });
+        }
+
+        // 🔐 AUTH LOGIC
+        function toggleAuthMode() {
+            isRegistering = !isRegistering;
+            document.querySelector('h2').innerText = isRegistering ? "Create Account" : "Welcome Back";
+            document.querySelector('.btn-primary').innerText = isRegistering ? "Register" : "Login";
+            document.querySelector('.btn-ghost').innerText = isRegistering ? "Have account? Login" : "No account? Register";
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            try {
+                if (isRegistering) {
+                    await auth.createUserWithEmailAndPassword(email, pass);
+                } else {
+                    await auth.signInWithEmailAndPassword(email, pass);
+                }
+            } catch (error) {
+                showToast(error.message);
+            }
+        }
+
+        async function googleLogin() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            try {
+                await auth.signInWithPopup(provider);
+            } catch (error) {
+                showToast(error.message);
+            }
+        }
+
+        function logout() {
+            if(currentUser) {
+                db.collection('users').doc(currentUser.uid).update({ isOnline: false });
+            }
+            auth.signOut();
+            window.location.reload();
+        }
+
+        async function deleteAccount() {
+            if(!confirm("Are you sure? This cannot be undone.")) return;
+            const uid = currentUser.uid;
+            await db.collection('users').doc(uid).delete();
+            // In real app, cloud function deletes sub-collections
+            await currentUser.delete();
+            window.location.reload();
+        }
+
+        // 📝 NOTES SYSTEM
+        function loadNotes() {
+            db.collection('notes').where('uid', '==', currentUser.uid)
+                .onSnapshot(snapshot => {
+                    notesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    renderNotes();
+                });
+        }
+
+        function renderNotes() {
+            const container = document.getElementById('notes-container');
+            container.innerHTML = '';
+            const term = document.getElementById('search-bar').value.toLowerCase();
+
+            notesData.forEach(note => {
+                // Vault Filter
+                if (note.isHidden && !isVaultUnlocked) return;
+                // Search Filter
+                if (term && !note.title.toLowerCase().includes(term) && !note.content.toLowerCase().includes(term)) return;
+
+                const el = document.createElement('div');
+                el.className = 'glass-panel note-card';
+                el.innerHTML = `
+                    <h3>${note.title || 'Untitled'}</h3>
+                    <p>${note.content}</p>
+                    ${note.isPinned ? '<span class="note-badge">Pinned</span>' : ''}
+                `;
+                el.onclick = () => openNoteEditor(note);
+                container.appendChild(el);
+            });
+        }
+
+        function openNoteEditor(note = null) {
+            currentNoteId = note ? note.id : null;
+            document.getElementById('note-title').value = note ? note.title : '';
+            document.getElementById('note-body').value = note ? note.content : '';
+            
+            // Set Pin state visual
+            const pinBtn = document.getElementById('pin-btn');
+            pinBtn.style.color = (note && note.isPinned) ? 'var(--primary)' : 'var(--sub)';
+            pinBtn.dataset.pinned = (note && note.isPinned) ? 'true' : 'false';
+
+            openModal('note-modal');
+        }
+
+        async function saveNoteAndClose() {
+            const title = document.getElementById('note-title').value;
+            const content = document.getElementById('note-body').value;
+            const isPinned = document.getElementById('pin-btn').dataset.pinned === 'true';
+
+            if (!title && !content) return closeModal('note-modal');
+
+            const payload = {
+                uid: currentUser.uid,
+                title,
+                content,
+                isPinned,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                isHidden: isVaultUnlocked // New notes created in vault are hidden
+            };
+
+            if (currentNoteId) {
+                await db.collection('notes').doc(currentNoteId).update(payload);
+            } else {
+                await db.collection('notes').add(payload);
+            }
+            closeModal('note-modal');
+            showToast('Note Saved');
+        }
+
+        async function deleteNote() {
+            if (currentNoteId) {
+                await db.collection('notes').doc(currentNoteId).delete();
+                closeModal('note-modal');
+                showToast('Note Deleted');
+            }
+        }
+
+        function togglePin() {
+            const btn = document.getElementById('pin-btn');
+            const state = btn.dataset.pinned === 'true';
+            btn.dataset.pinned = !state;
+            btn.style.color = !state ? 'var(--primary)' : 'var(--sub)';
+        }
+
+        function copyNote() {
+            const txt = document.getElementById('note-title').value + "\n" + document.getElementById('note-body').value;
+            navigator.clipboard.writeText(txt);
+            showToast('Copied to clipboard');
+        }
+
+        // 🙈 VAULT SYSTEM
+        function toggleVault() {
+            if (isVaultUnlocked) {
+                isVaultUnlocked = false;
+                showToast('Vault Locked');
+                renderNotes();
+            } else {
+                openModal('vault-modal');
+            }
+        }
+
+        async function unlockVault() {
+            const input = document.getElementById('vault-pin').value;
+            // Fetch user pin
+            const userDoc = await db.collection('users').doc(currentUser.uid).get();
+            const savedPin = userDoc.data().pin;
+
+            if (!savedPin) {
+                // First time set
+                await db.collection('users').doc(currentUser.uid).update({ pin: input });
+                isVaultUnlocked = true;
+                closeModal('vault-modal');
+                renderNotes();
+                showToast('PIN Set & Vault Unlocked');
+            } else if (savedPin === input) {
+                isVaultUnlocked = true;
+                closeModal('vault-modal');
+                renderNotes();
+                showToast('Vault Unlocked');
+            } else {
+                showToast('Wrong PIN');
+                document.getElementById('vault-pin').value = '';
+            }
+        }
+
+        // 🎨 THEME SYSTEM
+        function setTheme(themeName) {
+            document.documentElement.setAttribute('data-theme', themeName);
+            db.collection('users').doc(currentUser.uid).update({ theme: themeName });
+            localStorage.setItem('theme', themeName);
+        }
+
+        function loadTheme() {
+            const saved = localStorage.getItem('theme');
+            if (saved) document.documentElement.setAttribute('data-theme', saved);
+        }
+
+        // 💬 CHAT SYSTEM
+        async function openChatList() {
+            // Simplified: Just shows all users to chat with
+            const snap = await db.collection('users').limit(20).get();
+            const list = document.querySelector('.modal-content'); // Reuse modal logic or creating specific list
+            // For simplicity in single file, reusing settings modal style but injecting list
+            let html = `<div class="modal-header"><h3>Chats</h3><span class="material-icons-round" onclick="closeModal('settings-modal')">close</span></div><div class="chat-list">`;
+            snap.forEach(doc => {
+                if (doc.id === currentUser.uid) return;
+                const d = doc.data();
+                html += `
+                    <div class="user-row" onclick="startChat('${doc.id}', '${d.displayName}')">
+                        <img src="${d.photoURL}" class="profile-thumb">
+                        <div><b>${d.displayName}</b><br><small>${d.isOnline?'Online':'Offline'}</small></div>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+            document.querySelector('#settings-modal .modal-content').innerHTML = html;
+            openModal('settings-modal');
+        }
+
+        function startChat(uid, name) {
+            chatRecipientId = uid;
+            document.getElementById('chat-with-name').innerText = name;
+            closeModal('settings-modal'); // Close list
+            openModal('chat-modal');
+            
+            // Generate Chat ID (alphabetical sort to ensure uniqueness between two users)
+            const chatId = [currentUser.uid, uid].sort().join('_');
+            
+            db.collection('chats').doc(chatId).collection('messages')
+                .orderBy('timestamp')
+                .onSnapshot(snap => {
+                    const box = document.getElementById('messages-container');
+                    box.innerHTML = '';
+                    snap.forEach(doc => {
+                        const d = doc.data();
+                        const isMe = d.senderId === currentUser.uid;
+                        box.innerHTML += `
+                            <div class="msg ${isMe ? 'me' : 'them'}">
+                                ${d.type === 'audio' ? `<audio controls src="${d.content}"></audio>` : d.content}
+                            </div>
+                        `;
+                    });
+                    box.scrollTop = box.scrollHeight;
+                });
+        }
+
+        async function sendTextMsg() {
+            const input = document.getElementById('msg-input');
+            const text = input.value;
+            if(!text) return;
+            
+            const chatId = [currentUser.uid, chatRecipientId].sort().join('_');
+            await db.collection('chats').doc(chatId).collection('messages').add({
+                senderId: currentUser.uid,
+                content: text,
+                type: 'text',
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            input.value = '';
+        }
+
+        // 🎤 AUDIO RECORDING (Base64 for simplicity in this constraints)
+        function startRecord() {
+            navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.start();
+                audioChunks = [];
+                mediaRecorder.addEventListener("dataavailable", event => {
+                    audioChunks.push(event.data);
+                });
+                showToast("Recording...");
+            });
+        }
+
+        function stopRecord() {
+            if(!mediaRecorder) return;
+            mediaRecorder.stop();
+            mediaRecorder.addEventListener("stop", () => {
+                const audioBlob = new Blob(audioChunks);
+                const reader = new FileReader();
+                reader.readAsDataURL(audioBlob); 
+                reader.onloadend = async function() {
+                    const base64data = reader.result;
+                    // Limit check (Firestore doc limit 1MB, careful)
+                    if(base64data.length > 900000) return showToast("Audio too long!");
+                    
+                    const chatId = [currentUser.uid, chatRecipientId].sort().join('_');
+                    await db.collection('chats').doc(chatId).collection('messages').add({
+                        senderId: currentUser.uid,
+                        content: base64data,
+                        type: 'audio',
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
                     });
                 }
             });
         }
 
-        window.editBio = async () => {
-            const newBio = prompt("Enter Bio:");
-            const linkName = prompt("Link Name (e.g. My Insta):");
-            const linkUrl = prompt("Link URL (e.g. instagram.com/me):");
-            
-            let updateData = {};
-            if(newBio) updateData.bio = newBio;
-            if(linkName && linkUrl) {
-                updateData.links = arrayUnion({ label: linkName, url: linkUrl.startsWith('http') ? linkUrl : 'https://' + linkUrl });
-            }
-            
-            await updateDoc(doc(db, "users", currentUser.uid), updateData);
-        };
-
-        // --- NOTES SYSTEM ---
-        function loadMyNotes() {
-            const q = query(collection(db, "notes"), where("uid", "==", currentUser.uid), orderBy("timestamp", "desc"));
-            onSnapshot(q, (snap) => {
-                const div = document.getElementById('notes-container');
-                div.innerHTML = "";
-                snap.forEach(d => {
-                    const n = d.data();
-                    if(n.isPrivate && !showHidden) return;
-
-                    const card = document.createElement('div');
-                    card.className = `note-card ${n.isPrivate ? 'private' : ''}`;
-                    card.innerHTML = `
-                        <div class="note-title">${n.title}</div>
-                        <p>${n.text.substring(0, 50)}...</p>
-                        ${n.isPrivate ? '<i class="fas fa-eye-slash" style="color:red; float:right;"></i>' : ''}
-                    `;
-                    card.onclick = () => {
-                        alert(`Full Note:\n\n${n.title}\n\n${n.text}`);
-                    };
-                    div.appendChild(card);
-                });
-            });
+        // 🛠 HELPERS
+        function openModal(id) { document.getElementById(id).classList.add('open'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+        function openSettings() { 
+            // Reset content of settings modal if overwritten by chat list
+            document.querySelector('#settings-modal .modal-content').innerHTML = `
+                <div class="modal-header"><h3>Settings</h3><span class="material-icons-round" onclick="closeModal('settings-modal')">close</span></div>
+                <div style="overflow-y: auto;">
+                    <h4>Theme</h4>
+                    <div style="display: flex; gap: 10px; overflow-x: auto; padding: 10px 0;">
+                        <button class="btn" onclick="setTheme('light')">Light</button>
+                        <button class="btn" style="background:#333; color:#fff" onclick="setTheme('dark')">Dark</button>
+                    </div>
+                    <hr style="margin: 20px 0; opacity: 0.1">
+                    <button class="btn btn-primary" onclick="logout()">Logout</button>
+                </div>`; // Simplified restore
+            openModal('settings-modal'); 
         }
-
-        window.saveNote = async () => {
-            const title = document.getElementById('note-title').value;
-            const text = document.getElementById('note-body').value;
-            const isPrivate = document.getElementById('note-private').checked;
-            
-            if(!title) return alert("Title required");
-            
-            await addDoc(collection(db, "notes"), {
-                uid: currentUser.uid,
-                title, text, isPrivate,
-                timestamp: Date.now()
-            });
-            document.getElementById('note-modal').style.display = 'none';
-            // Reset fields
-            document.getElementById('note-title').value = "";
-            document.getElementById('note-body').value = "";
-        };
-
-        window.copyNote = () => {
-            const txt = document.getElementById('note-body').value;
-            navigator.clipboard.writeText(txt).then(() => alert("Copied!"));
+        function openProfile() { showToast('Profile View Coming Soon'); }
+        function openSocial() { openChatList(); }
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
         }
+        function filterNotes() { renderNotes(); }
 
-        window.toggleHiddenNotes = () => {
-            showHidden = document.getElementById('toggle-hidden').checked;
-            if(showHidden) {
-                const pin = prompt("Enter Vault PIN (for demo just press OK):");
-                if(!pin) { document.getElementById('toggle-hidden').checked = false; showHidden = false; }
-            }
-            loadMyNotes();
-        }
-
-        // --- SOCIAL SYSTEM ---
-        function loadAllUsers() {
-            const q = query(collection(db, "users"));
-            onSnapshot(q, (snap) => {
-                const div = document.getElementById('users-list');
-                div.innerHTML = "";
-                snap.forEach(d => {
-                    const u = d.data();
-                    if(u.uid === currentUser.uid) return;
-                    
-                    const isFollowing = (u.followers || []).includes(currentUser.uid);
-                    
-                    div.innerHTML += `
-                        <div class="user-row">
-                            <img src="${u.photo}" class="profile-thumb" style="margin-right:10px;">
-                            <div>
-                                <b>${u.name}</b><br>
-                                <small>${u.bio || 'No bio'}</small>
-                            </div>
-                            <button class="follow-btn" onclick="toggleFollow('${u.uid}', ${isFollowing})">
-                                ${isFollowing ? 'Unfollow' : 'Follow'}
-                            </button>
-                        </div>
-                    `;
-                });
-            });
-        }
-
-        window.toggleFollow = async (targetUid, isFollowing) => {
-            const targetRef = doc(db, "users", targetUid);
-            const myRef = doc(db, "users", currentUser.uid);
-            
-            if(isFollowing) {
-                await updateDoc(targetRef, { followers: arrayRemove(currentUser.uid) });
-                await updateDoc(myRef, { following: arrayRemove(targetUid) });
-            } else {
-                await updateDoc(targetRef, { followers: arrayUnion(currentUser.uid) });
-                await updateDoc(myRef, { following: arrayUnion(targetUid) });
-            }
-        };
-
-        // UI HELPERS
-        window.openProfile = () => document.getElementById('profile-modal').style.display = 'flex';
-        window.closeProfile = () => document.getElementById('profile-modal').style.display = 'none';
-        window.openNoteModal = () => document.getElementById('note-modal').style.display = 'block';
-        window.closeNoteModal = () => document.getElementById('note-modal').style.display = 'none';
-        
-        window.switchTab = (tabId, el) => {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            document.querySelectorAll('.nav-icon').forEach(i => i.classList.remove('active'));
-            el.classList.add('active');
-        }
     </script>
 </body>
 </html>
