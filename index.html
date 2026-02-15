@@ -10,7 +10,7 @@
             --primary-color-light: #6200EE;
             --primary-variant-light: #3700B3;
             --secondary-color-light: #03DAC6;
-            --background-light: #FFFFFF;
+            --background-light: #F7F8FA;
             --surface-light: #FFFFFF;
             --error-light: #B00020;
             --on-primary-light: #FFFFFF;
@@ -42,7 +42,7 @@
             --on-background: var(--on-background-light);
             --on-surface: var(--on-surface-light);
             --text-secondary: var(--text-secondary-light);
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             --border-radius: 12px;
         }
 
@@ -58,7 +58,7 @@
             --on-background: var(--on-background-dark);
             --on-surface: var(--on-surface-dark);
             --text-secondary: var(--text-secondary-dark);
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
 
         *, *::before, *::after {
@@ -101,7 +101,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: var(--shadow);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             z-index: 1000;
         }
         .app-title { font-size: 1.5rem; font-weight: 600; }
@@ -112,7 +112,7 @@
             display: flex;
             justify-content: space-around;
             background-color: var(--surface-color);
-            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
             padding: 0.5rem 0;
             z-index: 1000;
         }
@@ -130,6 +130,7 @@
         }
         .nav-item.active { color: var(--primary-color); transform: translateY(-3px); }
         .nav-item svg { width: 24px; height: 24px; margin-bottom: 4px; }
+        .nav-item span { font-size: 0.75rem; }
 
         /* --- Main Content --- */
         .main-content {
@@ -164,21 +165,27 @@
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
         }
-        .auth-title { text-align: center; margin-bottom: 1.5rem; font-size: 2rem; }
+        .auth-title { text-align: center; margin-bottom: 1.5rem; font-size: 2rem; color: var(--primary-color); }
         .input-group { margin-bottom: 1.5rem; }
         .input-field {
             width: 100%;
-            padding: 0.75rem;
+            padding: 0.85rem;
             font-size: 1rem;
-            border: 1px solid var(--text-secondary);
+            border: 1px solid #ddd;
             border-radius: 8px;
             background-color: var(--background-color);
             color: var(--on-background);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px var(--primary-color-light);
         }
         .btn {
             display: block;
             width: 100%;
-            padding: 0.75rem;
+            padding: 0.85rem;
             font-size: 1rem;
             font-weight: 600;
             border: none;
@@ -198,167 +205,7 @@
         }
         .btn-google svg { width: 20px; height: 20px; margin-right: 10px; }
         .auth-divider { text-align: center; margin: 1.5rem 0; color: var(--text-secondary); }
-        .auth-error { color: var(--error-color); text-align: center; margin-top: 1rem; min-height: 20px; }
-
-        /* --- Notes System --- */
-        #notes-page .search-bar { width: 100%; padding: 0.75rem; margin-bottom: 1rem; border-radius: 8px; border: 1px solid var(--text-secondary); background-color: var(--background-color); color: var(--on-background); }
-        .note-item {
-            background-color: var(--surface-color);
-            padding: 1rem;
-            margin-bottom: 0.75rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .note-item:hover { transform: translateY(-3px); }
-        .note-title { font-weight: 600; }
-        .note-date { font-size: 0.8rem; color: var(--text-secondary); }
-        .fab {
-            position: fixed;
-            bottom: 80px;
-            right: 20px;
-            width: 56px;
-            height: 56px;
-            background-color: var(--primary-color);
-            color: var(--on-primary);
-            border-radius: 50%;
-            border: none;
-            box-shadow: 0 6px 10px rgba(0,0,0,0.2);
-            font-size: 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 1001;
-        }
-
-        /* --- Modal Styles --- */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s, visibility 0.3s;
-        }
-        .modal.show { opacity: 1; visibility: visible; }
-        .modal-content {
-            background-color: var(--surface-color);
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
-            width: 90%;
-            max-width: 500px;
-            max-height: 90vh;
-            overflow-y: auto;
-            transform: scale(0.9);
-            transition: transform 0.3s;
-        }
-        .modal.show .modal-content { transform: scale(1); }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-        .modal-title { font-size: 1.5rem; }
-        .close-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--on-surface); }
-        .modal-body .input-field, .modal-body textarea { width: 100%; margin-bottom: 1rem; }
-        textarea { height: 200px; resize: vertical; }
-
-        /* --- Note View Modal --- */
-        #note-view-content { white-space: pre-wrap; margin-bottom: 1rem; max-height: 60vh; overflow-y: auto; }
-        .note-actions { display: flex; justify-content: flex-end; gap: 0.5rem; }
-        .note-actions .btn { width: auto; padding: 0.5rem 1rem; }
-        
-        /* --- Profile Page --- */
-        #profile-page { text-align: center; }
-        .profile-header { display: flex; flex-direction: column; align-items: center; gap: 1rem; margin-bottom: 2rem; }
-        .profile-image { width: 100px; height: 100px; border-radius: 50%; background-color: var(--primary-color); color: var(--on-primary); display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: bold; }
-        .profile-image img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-        .profile-name { font-size: 1.5rem; font-weight: 600; }
-        .profile-email { color: var(--text-secondary); }
-        .profile-stats { display: flex; justify-content: space-around; margin-bottom: 2rem; }
-        .stat-item { text-align: center; }
-        .stat-count { font-weight: bold; font-size: 1.2rem; }
-        .stat-label { font-size: 0.9rem; color: var(--text-secondary); }
-        .profile-section { margin-bottom: 2rem; text-align: left; }
-        .profile-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-        .section-title { font-size: 1.2rem; font-weight: 600; }
-        .edit-btn { background: none; border: none; color: var(--primary-color); cursor: pointer; }
-
-        /* --- Social Pages (Suggestions, Requests, Friends) --- */
-        .user-list { list-style: none; }
-        .user-list-item {
-            display: flex;
-            align-items: center;
-            padding: 0.75rem;
-            background-color: var(--surface-color);
-            margin-bottom: 0.5rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            cursor: pointer;
-        }
-        .user-avatar { width: 40px; height: 40px; border-radius: 50%; background-color: var(--secondary-color); color: var(--on-secondary); display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 1rem; }
-        .user-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-        .user-info { flex-grow: 1; }
-        .user-name { font-weight: 600; }
-        .user-item-actions .btn { width: auto; padding: 0.4rem 0.8rem; font-size: 0.9rem; }
-
-        /* --- Chat View --- */
-        #chat-view {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: var(--background-color);
-            z-index: 3000;
-            display: flex; flex-direction: column;
-            transform: translateX(100%);
-            transition: transform 0.3s ease-in-out;
-        }
-        #chat-view.open { transform: translateX(0); }
-        .chat-header {
-            display: flex;
-            align-items: center;
-            padding: 1rem;
-            background-color: var(--surface-color);
-            box-shadow: var(--shadow);
-            flex-shrink: 0;
-        }
-        .back-btn { background: none; border: none; color: var(--on-surface); font-size: 1.5rem; margin-right: 1rem; cursor: pointer; }
-        .chat-header-info .user-name { font-size: 1.2rem; }
-        .messages-container { flex-grow: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column-reverse; }
-        .message-bubble {
-            max-width: 70%;
-            padding: 0.5rem 0.75rem;
-            border-radius: 18px;
-            margin-bottom: 0.5rem;
-            word-wrap: break-word;
-        }
-        .message-bubble .timestamp { font-size: 0.7rem; color: var(--text-secondary); text-align: right; margin-top: 4px; }
-        .sent {
-            background-color: var(--primary-color);
-            color: var(--on-primary);
-            align-self: flex-end;
-            border-bottom-right-radius: 4px;
-        }
-        .sent .timestamp { color: rgba(255, 255, 255, 0.7); }
-        .received {
-            background-color: var(--surface-color);
-            color: var(--on-surface);
-            align-self: flex-start;
-            border-bottom-left-radius: 4px;
-        }
-        .message-img { max-width: 100%; border-radius: 10px; margin-top: 5px; cursor: pointer; }
-        .chat-input-form {
-            display: flex;
-            padding: 1rem;
-            background-color: var(--surface-color);
-            flex-shrink: 0;
-        }
-        .chat-input-form input[type="text"] { flex-grow: 1; border: 1px solid var(--text-secondary); background: var(--background-color); color: var(--on-background); padding: 0.75rem; border-radius: 20px; }
-        .chat-input-form button { background: none; border: none; color: var(--primary-color); font-size: 1.5rem; margin-left: 0.5rem; cursor: pointer; }
+        .auth-error { color: var(--error-color); text-align: center; margin-top: 1rem; min-height: 20px; font-size: 0.9rem; }
 
         /* --- Toasts & Spinners --- */
         .toast {
@@ -373,6 +220,7 @@
             z-index: 4000;
             opacity: 0;
             transition: opacity 0.3s, bottom 0.3s;
+            pointer-events: none;
         }
         .toast.show { opacity: 1; bottom: 100px; }
         .toast.error { background-color: var(--error-color); }
@@ -384,23 +232,12 @@
         .spinner { width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* --- Empty State --- */
-        .empty-state { text-align: center; padding: 2rem; color: var(--text-secondary); }
-        .empty-state-icon { font-size: 3rem; margin-bottom: 1rem; }
-
         /* --- Theme Toggle --- */
         .theme-switch {
             display: flex;
             align-items: center;
         }
-        .theme-switch-label {
-            margin-right: 10px;
-        }
-        .theme-switch-checkbox {
-            height: 0;
-            width: 0;
-            visibility: hidden;
-        }
+        .theme-switch-checkbox { height: 0; width: 0; visibility: hidden; }
         .theme-switch-toggle {
             cursor: pointer;
             text-indent: -9999px;
@@ -422,14 +259,11 @@
             border-radius: 90px;
             transition: 0.3s;
         }
-        .theme-switch-checkbox:checked + .theme-switch-toggle {
-            background: var(--primary-color);
-        }
+        .theme-switch-checkbox:checked + .theme-switch-toggle { background: var(--primary-color); }
         .theme-switch-checkbox:checked + .theme-switch-toggle:after {
             left: calc(100% - 2px);
             transform: translateX(-100%);
         }
-
     </style>
 </head>
 <body>
@@ -442,10 +276,10 @@
             <div class="auth-container">
                 <h1 class="auth-title">Notes & Chat</h1>
                 <div class="input-group">
-                    <input type="email" id="email-input" class="input-field" placeholder="Email">
+                    <input type="email" id="email-input" class="input-field" placeholder="Email" autocomplete="email">
                 </div>
                 <div class="input-group">
-                    <input type="password" id="password-input" class="input-field" placeholder="Password">
+                    <input type="password" id="password-input" class="input-field" placeholder="Password" autocomplete="current-password">
                 </div>
                 <p id="auth-error" class="auth-error"></p>
                 <button id="login-btn" class="btn btn-primary">Login</button>
@@ -491,82 +325,6 @@
             </nav>
         </div>
 
-        <!-- Floating Action Button for Notes -->
-        <button id="add-note-fab" class="fab hidden">+</button>
-
-    </div>
-
-    <!-- Modals -->
-    <!-- Note Create/Edit Modal -->
-    <div id="note-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="note-modal-title" class="modal-title">Create Note</h2>
-                <button class="close-btn" data-modal="note-modal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="note-id-input">
-                <input type="text" id="note-title-input" class="input-field" placeholder="Title">
-                <textarea id="note-content-input" class="input-field" placeholder="Content..."></textarea>
-                <button id="save-note-btn" class="btn btn-primary">Save</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Note View Modal -->
-    <div id="note-view-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="note-view-title" class="modal-title"></h2>
-                <button class="close-btn" data-modal="note-view-modal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p id="note-view-content"></p>
-                <div class="note-actions">
-                     <button id="hide-note-btn" class="btn btn-secondary">Hide</button>
-                    <button id="copy-note-btn" class="btn btn-secondary">Copy</button>
-                    <button id="edit-note-btn" class="btn btn-secondary">Edit</button>
-                    <button id="delete-note-btn" class="btn btn-primary" style="background-color: var(--error-color);">Delete</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- PIN Modal -->
-    <div id="pin-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="pin-modal-title" class="modal-title">Enter PIN</h2>
-                <button class="close-btn" data-modal="pin-modal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <input type="password" id="pin-input" class="input-field" placeholder="4-digit PIN" maxlength="4" pattern="\d*">
-                <input type="password" id="pin-confirm-input" class="input-field hidden" placeholder="Confirm PIN" maxlength="4">
-                <p id="pin-error" class="auth-error"></p>
-                <button id="pin-submit-btn" class="btn btn-primary">Submit</button>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- Chat View -->
-    <div id="chat-view">
-        <header class="chat-header">
-            <button class="back-btn" id="chat-back-btn">&larr;</button>
-            <div class="user-avatar" id="chat-header-avatar"></div>
-            <div class="chat-header-info">
-                <div class="user-name" id="chat-header-name"></div>
-            </div>
-        </header>
-        <div class="messages-container" id="messages-container">
-            <!-- Messages will be injected here -->
-        </div>
-        <form class="chat-input-form" id="message-form">
-            <button type="button" id="attach-image-btn">&#128247;</button>
-            <input type="file" id="image-input" accept="image/*" class="hidden">
-            <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off">
-            <button type="submit">&#10148;</button>
-        </form>
     </div>
 
     <!-- Toast Notification -->
@@ -588,10 +346,6 @@
 
             // --- Firebase Configuration ---
             // ⚠⚠⚠ FAKE FIREBASE CONFIGURATION - REPLACE WITH YOUR REAL CONFIG ⚠⚠⚠
-            // To get your real Firebase config:
-            // 1. Go to your Firebase project console.
-            // 2. In the project settings, find your web app.
-            // 3. Copy the firebaseConfig object and paste it here.
             const firebaseConfig = {
     apiKey: "AIzaSyCRhz9f_CrxR07TMEIqJ3jyPcP7Y7wMksY",
     authDomain: "notes-app-a043e.firebaseapp.com",
@@ -605,14 +359,45 @@
 
             let firebaseApp, auth, db, storage;
             let currentUser = null;
-            let currentChatUnsubscribe = null;
+            let isFirebaseInitialized = false;
+
+            // --- DOM Element References ---
+            const authView = document.getElementById('auth-view');
+            const mainApp = document.getElementById('main-app');
+            const loadingOverlay = document.getElementById('loading-overlay');
+            const emailInput = document.getElementById('email-input');
+            const passwordInput = document.getElementById('password-input');
+            const loginBtn = document.getElementById('login-btn');
+            const registerBtn = document.getElementById('register-btn');
+            const googleBtn = document.getElementById('google-signin-btn');
+            const authErrorEl = document.getElementById('auth-error');
+            const toastEl = document.getElementById('toast');
+
+            // --- Utility Functions ---
+            const showLoading = (show) => loadingOverlay.classList.toggle('hidden', !show);
             
-            // --- Defensive Firebase Initialization ---
-            // This function attempts to initialize Firebase.
-            // If the config is fake, it will fail gracefully without crashing the app.
+            const showToast = (message, duration = 3000, isError = false) => {
+                toastEl.textContent = message;
+                toastEl.className = 'toast show';
+                if (isError) toastEl.classList.add('error');
+                setTimeout(() => toastEl.classList.remove('show'), duration);
+            };
+
+            const getAuthErrorMessage = (code) => {
+                switch (code) {
+                    case 'auth/invalid-email': return 'Please enter a valid email address.';
+                    case 'auth/user-not-found': return 'No account found with this email.';
+                    case 'auth/wrong-password': return 'Incorrect password. Please try again.';
+                    case 'auth/email-already-in-use': return 'An account with this email already exists.';
+                    case 'auth/weak-password': return 'Password should be at least 6 characters.';
+                    case 'auth/popup-closed-by-user': return 'Google sign-in was cancelled.';
+                    default: return 'An unexpected error occurred. Please try again.';
+                }
+            };
+            
+            // --- Firebase Initialization ---
             function initializeFirebase() {
                 try {
-                    // Check if the config looks like the placeholder
                     if (firebaseConfig.apiKey === "FAKE_API_KEY_REPLACE_ME") {
                         console.warn("Firebase config is fake. App will run in offline mode.");
                         showToast("Please configure Firebase to enable online features.", 5000, true);
@@ -622,6 +407,7 @@
                     auth = firebase.auth();
                     db = firebase.firestore();
                     storage = firebase.storage();
+                    isFirebaseInitialized = true;
                     return true;
                 } catch (error) {
                     console.error("Firebase initialization failed:", error);
@@ -629,51 +415,30 @@
                     return false;
                 }
             }
-            
-            const isFirebaseInitialized = initializeFirebase();
-            
-            // --- DOM Element References ---
-            const authView = document.getElementById('auth-view');
-            const mainApp = document.getElementById('main-app');
-            const loadingOverlay = document.getElementById('loading-overlay');
-            // ... (many more element references)
-            
-            // --- Utility Functions ---
-            const showLoading = (show) => loadingOverlay.classList.toggle('hidden', !show);
-            
-            const toast = document.getElementById('toast');
-            const showToast = (message, duration = 3000, isError = false) => {
-                toast.textContent = message;
-                toast.className = 'toast show';
-                if (isError) toast.classList.add('error');
-                setTimeout(() => toast.classList.remove('show'), duration);
-            };
-
-            const getAvatar = (user) => {
-                if (user.photoURL) return `<img src="${user.photoURL}" alt="${user.displayName}">`;
-                const initial = user.displayName ? user.displayName.charAt(0).toUpperCase() : '?';
-                return `<span>${initial}</span>`;
-            };
 
             // --- Authentication Logic ---
-            if (isFirebaseInitialized) {
+            function setupAuthListeners() {
+                if (!isFirebaseInitialized) return;
+
                 auth.onAuthStateChanged(async user => {
                     showLoading(true);
                     if (user) {
-                        const userDoc = await db.collection('users').doc(user.uid).get();
+                        const userRef = db.collection('users').doc(user.uid);
+                        const userDoc = await userRef.get();
+                        
                         if (!userDoc.exists) {
-                            // Create user profile if it doesn't exist (e.g., first Google sign-in)
+                            // Create user profile if it doesn't exist
                             const newUserProfile = {
                                 uid: user.uid,
                                 email: user.email,
                                 displayName: user.displayName || user.email.split('@')[0],
                                 photoURL: user.photoURL || null,
-                                bio: '',
+                                bio: 'Hi there!',
                                 links: [],
                                 followers: [],
                                 following: []
                             };
-                            await db.collection('users').doc(user.uid).set(newUserProfile);
+                            await userRef.set(newUserProfile);
                             currentUser = newUserProfile;
                         } else {
                             currentUser = userDoc.data();
@@ -682,24 +447,72 @@
                         authView.classList.add('hidden');
                         mainApp.classList.remove('hidden');
                         navigateToPage('home-page');
-                        showLoading(false);
                     } else {
                         currentUser = null;
                         authView.classList.remove('hidden');
                         mainApp.classList.add('hidden');
-                        showLoading(false);
                     }
+                    showLoading(false);
                 });
-            } else {
-                // If firebase isn't initialized, stay on the auth screen.
-                showLoading(false);
+
+                loginBtn.addEventListener('click', handleLogin);
+                registerBtn.addEventListener('click', handleRegister);
+                googleBtn.addEventListener('click', handleGoogleSignIn);
+            }
+            
+            async function handleLogin() {
+                const email = emailInput.value.trim();
+                const password = passwordInput.value;
+                if (!email || !password) {
+                    authErrorEl.textContent = 'Please enter both email and password.';
+                    return;
+                }
+                showLoading(true);
+                authErrorEl.textContent = '';
+                try {
+                    await auth.signInWithEmailAndPassword(email, password);
+                } catch (error) {
+                    authErrorEl.textContent = getAuthErrorMessage(error.code);
+                } finally {
+                    showLoading(false);
+                }
             }
 
+            async function handleRegister() {
+                const email = emailInput.value.trim();
+                const password = passwordInput.value;
+                if (!email || !password) {
+                    authErrorEl.textContent = 'Please enter both email and password.';
+                    return;
+                }
+                showLoading(true);
+                authErrorEl.textContent = '';
+                try {
+                    await auth.createUserWithEmailAndPassword(email, password);
+                } catch (error) {
+                    authErrorEl.textContent = getAuthErrorMessage(error.code);
+                } finally {
+                    showLoading(false);
+                }
+            }
+
+            async function handleGoogleSignIn() {
+                showLoading(true);
+                authErrorEl.textContent = '';
+                try {
+                    const provider = new firebase.auth.GoogleAuthProvider();
+                    await auth.signInWithPopup(provider);
+                } catch (error) {
+                    authErrorEl.textContent = getAuthErrorMessage(error.code);
+                } finally {
+                    showLoading(false);
+                }
+            }
+            
             // --- Page Navigation ---
             const pages = document.querySelectorAll('.page');
             const navItems = document.querySelectorAll('.nav-item');
             const pageTitle = document.getElementById('page-title');
-            const addNoteFab = document.getElementById('add-note-fab');
 
             function navigateToPage(pageId) {
                 pages.forEach(page => page.classList.toggle('hidden', page.id !== pageId));
@@ -707,17 +520,11 @@
                 
                 const activeNavItem = document.querySelector(`.nav-item[data-page="${pageId}"]`);
                 pageTitle.textContent = activeNavItem.querySelector('span').textContent;
-
-                addNoteFab.classList.toggle('hidden', pageId !== 'notes-page');
                 
-                // Load content for the new page
                 if (isFirebaseInitialized && currentUser) {
+                    // Load content for the new page
                     switch (pageId) {
                         case 'home-page': loadHomePage(); break;
-                        case 'notes-page': loadNotesPage(); break;
-                        case 'suggestions-page': loadSuggestionsPage(); break;
-                        case 'requests-page': loadRequestsPage(); break;
-                        case 'friends-page': loadFriendsPage(); break;
                         case 'profile-page': loadProfilePage(); break;
                     }
                 }
@@ -730,7 +537,7 @@
                 }
             });
 
-            // --- Home Page Logic ---
+            // --- Page Loaders ---
             async function loadHomePage() {
                 const homePage = document.getElementById('home-page');
                 let totalUsers = 0;
@@ -739,81 +546,51 @@
                     totalUsers = usersSnapshot.size;
                 } catch (e) { console.error("Error fetching user count", e); }
                 
-                homePage.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">👋</div>
-                        <h2>Welcome, ${currentUser.displayName}!</h2>
-                        <p>Total users on the platform: <strong>${totalUsers}</strong></p>
-                    </div>`;
+                homePage.innerHTML = `<div style="text-align: center; padding-top: 20px;">
+                    <h2>Welcome, ${currentUser.displayName}!</h2>
+                    <p>Total users on the platform: <strong>${totalUsers}</strong></p>
+                </div>`;
             }
 
-            // --- More logic for Notes, Social, Chat, Profile etc. would follow here ---
-            // This is a placeholder for the vast amount of JS required for all features.
-            // A real implementation would be thousands of lines long.
-            // Let's stub out a few more features to demonstrate the structure.
-
-            // --- Notes Page Logic ---
-            async function loadNotesPage() {
-                const notesPage = document.getElementById('notes-page');
-                notesPage.innerHTML = `<input type="search" id="notes-search-bar" class="search-bar" placeholder="Search notes...">
-                                       <div id="notes-list"></div>`;
-                
-                // In a full app, this would fetch notes from Firestore and render them.
-                document.getElementById('notes-list').innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">📝</div>
-                        <p>You have no notes. Tap the '+' button to create one.</p>
-                    </div>`;
-            }
-
-            // --- Profile Page Logic ---
-            async function loadProfilePage() {
+            function loadProfilePage() {
                 const profilePage = document.getElementById('profile-page');
-                // Fetch full user data including counts
-                const userDoc = await db.collection('users').doc(currentUser.uid).get();
-                const userData = userDoc.data();
-                
-                const followersCount = userData.followers?.length || 0;
-                const followingCount = userData.following?.length || 0;
-
-                profilePage.innerHTML = `
-                    <div class="profile-header">
-                        <div class="profile-image">${getAvatar(userData)}</div>
-                        <h2 class="profile-name">${userData.displayName}</h2>
-                        <p class="profile-email">${userData.email}</p>
-                    </div>
-                    <div class="profile-stats">
-                        <div class="stat-item">
-                            <div class="stat-count">${followersCount}</div>
-                            <div class="stat-label">Followers</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-count">${followingCount}</div>
-                            <div class="stat-label">Following</div>
-                        </div>
-                        <div class="stat-item">
-                             <div class="stat-count">0</div> <!-- Friends logic needed -->
-                            <div class="stat-label">Friends</div>
-                        </div>
-                    </div>
-                    <div class="profile-section">
-                        <!-- Bio, Links, PIN settings etc. -->
-                    </div>
-                    <button id="logout-btn" class="btn btn-primary">Logout</button>
-                `;
-
-                document.getElementById('logout-btn').onclick = () => auth.signOut();
+                profilePage.innerHTML = `<div style="text-align: center; padding-top: 20px;">
+                    <h2>${currentUser.displayName}</h2>
+                    <p>${currentUser.email}</p>
+                    <button id="logout-btn" class="btn btn-primary" style="max-width: 200px; margin: 20px auto;">Logout</button>
+                </div>`;
+                document.getElementById('logout-btn').addEventListener('click', () => {
+                    auth.signOut();
+                });
             }
 
-            // --- Initial Load ---
-            if (!isFirebaseInitialized) {
-                authView.classList.remove('hidden');
-                mainApp.classList.add('hidden');
-                showLoading(false);
+            // --- Theme Switcher ---
+            const themeSwitch = document.getElementById('theme-switch');
+            themeSwitch.addEventListener('change', () => {
+                document.body.classList.toggle('dark-mode');
+                localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+            });
+
+            function applySavedTheme() {
+                const savedTheme = localStorage.getItem('theme');
+                if (savedTheme === 'dark') {
+                    document.body.classList.add('dark-mode');
+                    themeSwitch.checked = true;
+                }
             }
-            // All event listeners would be set up here
+
+            // --- App Initialization ---
+            function initApp() {
+                applySavedTheme();
+                if (initializeFirebase()) {
+                    setupAuthListeners();
+                } else {
+                    showLoading(false);
+                }
+            }
+
+            initApp();
         });
-
     </script>
 </body>
-</html>
+    </html>
