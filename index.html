@@ -11,7 +11,7 @@
         :root {
             --bg-color: #0a0a0a;
             --surface-color: #1a1a1a;
-            --surface-glass: rgba(26, 26, 26, 0.7);
+            --surface-glass: rgba(30, 30, 30, 0.7);
             --primary-text: #e0e0e0;
             --secondary-text: #a0a0a0;
             --border-color: #333333;
@@ -56,28 +56,19 @@
 
         /* --- UTILITY & ANIMATION CLASSES --- */
         .hidden { display: none !important; }
+        .visually-hidden { opacity: 0; pointer-events: none; }
 
         .screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
             padding: 20px;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity var(--transition-speed) ease, transform var(--transition-speed) ease;
-            pointer-events: none;
+            background-color: var(--bg-color);
+            z-index: 10;
+            transition: opacity var(--transition-speed) ease;
         }
-        .screen.active {
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: auto;
-        }
+
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
@@ -91,12 +82,25 @@
         }
         .fingerprint-scanning::before {
             content: '';
-            position: absolute;
-            top: 0; left: 0;
+            position: absolute; top: 0; left: 0;
             width: 100%; height: 100%;
             background: linear-gradient(90deg, transparent, rgba(138, 43, 226, 0.5), transparent);
             background-size: 200% 100%;
             animation: fingerprint-scan 1.5s linear infinite;
+        }
+        
+        /* --- LOADING SPINNER --- */
+        #loading-screen { z-index: 9999; }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border-color);
+            border-top-color: var(--accent-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         /* --- COMPONENTS --- */
@@ -105,464 +109,124 @@
             padding: 15px;
             border: none;
             border-radius: var(--border-radius);
-            font-size: 16px;
-            font-weight: 600;
+            font-size: 16px; font-weight: 600;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
             color: white;
             background: var(--accent-gradient);
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
-        .btn:active { transform: scale(0.98); box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
-
-        .btn-secondary {
-            background: var(--surface-color);
-            border: 1px solid var(--border-color);
-            color: var(--primary-text);
+        .btn:active { transform: scale(0.98); }
+        .btn:disabled { background: var(--surface-color); color: var(--secondary-text); cursor: not-allowed; }
+        .btn-secondary { background: var(--surface-color); border: 1px solid var(--border-color); color: var(--primary-text); }
+        .btn-icon {
+            background: var(--surface-color); border: 1px solid var(--border-color); color: var(--primary-text);
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            font-size: 14px; padding: 12px;
         }
+        .btn-icon svg { width: 18px; height: 18px; }
 
         .input-field {
-            width: 100%;
-            padding: 15px;
+            width: 100%; padding: 15px;
             background-color: var(--surface-color);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            color: var(--primary-text);
-            font-size: 16px;
+            border: 1px solid var(--border-color); border-radius: var(--border-radius);
+            color: var(--primary-text); font-size: 16px;
         }
-        .input-field:focus {
-            outline: none;
-            border-color: var(--accent-color);
-            box-shadow: 0 0 0 2px rgba(138, 43, 226, 0.3);
-        }
+        .input-field:focus { outline: none; border-color: var(--accent-color); box-shadow: 0 0 0 2px rgba(138, 43, 226, 0.3); }
 
-        /* --- LOGIN SCREEN --- */
-        #login-screen h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-        #login-screen h1 .icon { font-size: 1.2em; }
-        #login-screen p {
-            color: var(--secondary-text);
-            margin-bottom: 40px;
-        }
-        #google-signin-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
+        /* --- LOGIN & SETUP --- */
+        #login-screen h1, #lock-setup-screen h1 { font-size: 2.5em; margin-bottom: 10px; }
+        #login-screen p, #lock-setup-screen p { color: var(--secondary-text); margin-bottom: 40px; }
+        #google-signin-btn { display: flex; align-items: center; justify-content: center; gap: 10px; }
         #google-signin-btn svg { width: 20px; height: 20px; }
-
-        /* --- LOCK SETUP SCREEN --- */
         #lock-setup-screen { justify-content: flex-start; padding-top: 50px; }
         .setup-stage { width: 100%; }
         .setup-stage h2 { margin-bottom: 10px; }
-        .setup-stage p { color: var(--secondary-text); margin-bottom: 20px; }
-        
-        /* PIN Setup */
-        .pin-inputs {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin: 20px 0;
-        }
+        .pin-inputs { display: flex; justify-content: center; gap: 10px; margin: 20px 0; }
         .pin-inputs input {
-            width: 50px; height: 60px;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            background-color: var(--surface-color);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--primary-text);
-            caret-color: var(--accent-color);
+            width: 50px; height: 60px; text-align: center; font-size: 24px;
+            background-color: var(--surface-color); border: 1px solid var(--border-color);
+            border-radius: 8px; color: var(--primary-text);
         }
-        .pin-inputs input:focus {
-            outline: none;
-            border-color: var(--accent-color);
-        }
-
-        /* Pattern Setup */
-        #pattern-setup-canvas, #pattern-lock-canvas {
-            background-color: var(--surface-color);
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            touch-action: none;
-        }
+        #pattern-setup-canvas, #pattern-lock-canvas { background-color: var(--surface-color); border-radius: var(--border-radius); cursor: pointer; touch-action: none; }
+        .form-error { color: var(--error-color); height: 20px; text-align: center; margin-top: 5px; }
 
         /* --- LOCK SCREEN --- */
-        #lock-screen {
-            justify-content: space-around;
-        }
-        #lock-screen-header {
-            text-align: center;
-        }
+        #lock-screen { justify-content: space-around; }
         #lock-screen-header h2 { font-size: 24px; margin-bottom: 5px; }
         #lock-screen-header p { color: var(--secondary-text); }
-        #lock-error, #lock-timer {
-            color: var(--error-color);
-            height: 20px;
-            margin-top: 10px;
-            font-weight: 500;
-        }
-        
+        #lock-error, #lock-timer { color: var(--error-color); height: 20px; margin-top: 10px; font-weight: 500; }
         #unlock-options { display: flex; gap: 10px; margin-bottom: 20px; }
-        .unlock-option {
-            flex: 1;
-            padding: 10px;
-            background-color: var(--surface-color);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            text-align: center;
-            cursor: pointer;
-            transition: background-color var(--transition-speed);
-        }
-        .unlock-option.active {
-            background-color: var(--accent-color);
-            border-color: var(--accent-color);
-        }
-        
-        #pin-unlock, #pattern-unlock, #fingerprint-unlock {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        #fingerprint-box {
-            width: 100px; height: 100px;
-            border: 2px solid var(--border-color);
-            border-radius: var(--border-radius);
-            display: flex; justify-content: center; align-items: center;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            transition: border-color var(--transition-speed);
-        }
-        #fingerprint-box:active { border-color: var(--accent-color); }
+        .unlock-option { flex: 1; padding: 10px; background-color: var(--surface-color); border: 1px solid var(--border-color); border-radius: 8px; text-align: center; cursor: pointer; transition: background-color var(--transition-speed); }
+        .unlock-option.active { background-color: var(--accent-color); border-color: var(--accent-color); }
+        #pin-unlock, #pattern-unlock, #fingerprint-unlock { width: 100%; display: flex; flex-direction: column; align-items: center; }
+        #fingerprint-box { width: 100px; height: 100px; border: 2px solid var(--border-color); border-radius: var(--border-radius); display: flex; justify-content: center; align-items: center; cursor: pointer; position: relative; overflow: hidden; }
         #fingerprint-box svg { width: 60px; height: 60px; color: var(--secondary-text); }
         
-        /* Fake Calculator */
-        #calculator-disguise { flex-direction: column; background-color: #222; }
-        #calc-display {
-            width: 100%;
-            background-color: #333;
-            color: white;
-            text-align: right;
-            padding: 20px;
-            font-size: 48px;
-            border-radius: var(--border-radius);
-            margin-bottom: 20px;
-        }
-        #calc-keys {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            width: 100%;
-        }
-        .calc-key {
-            padding: 20px;
-            font-size: 24px;
-            border-radius: 50%;
-            border: none;
-            cursor: pointer;
-            background-color: #555;
-            color: white;
-            display: flex; justify-content: center; align-items: center;
-            aspect-ratio: 1/1;
-        }
-        .calc-key.op { background-color: var(--accent-color); }
+        /* --- FAKE CALCULATOR --- */
+        #calculator-disguise { background-color: #1c1c1c; }
+        #calc-display { width: 100%; background-color: transparent; color: white; text-align: right; padding: 20px; font-size: 68px; font-weight: 300; margin-bottom: 20px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        #calc-keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; width: 100%; }
+        .calc-key { padding: 20px; font-size: 28px; border-radius: 50%; border: none; cursor: pointer; background-color: #505050; color: white; display: flex; justify-content: center; align-items: center; aspect-ratio: 1/1; }
+        .calc-key.op { background-color: #ff9500; }
+        .calc-key.util { background-color: #d4d4d2; color: #1c1c1c; }
         .calc-key.zero { grid-column: 1 / 3; border-radius: 40px; }
 
-
         /* --- MAIN APP INTERFACE --- */
-        #main-app {
-            width: 100%; height: 100%;
-            display: flex; flex-direction: column;
-        }
-        
-        /* Header */
-        header {
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        #search-bar {
-            flex-grow: 1;
-            padding: 10px 15px;
-            background-color: var(--surface-color);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            color: var(--primary-text);
-            font-size: 16px;
-        }
-        #search-bar:focus { outline: none; border-color: var(--accent-color); }
-
-        /* Content Area */
-        #content-area {
-            flex-grow: 1;
-            overflow-y: auto;
-            position: relative;
-        }
-        .view {
-            position: absolute; top: 0; left: 0;
-            width: 100%; height: 100%;
-            padding: 15px;
-            opacity: 0;
-            transform: scale(0.98);
-            transition: opacity var(--transition-speed), transform var(--transition-speed);
-            pointer-events: none;
-        }
-        .view.active {
-            opacity: 1;
-            transform: scale(1);
-            pointer-events: auto;
-        }
-
-        /* Bottom Nav */
-        nav {
-            display: flex;
-            border-top: 1px solid var(--border-color);
-            background-color: var(--bg-color);
-            position: relative;
-        }
-        .nav-item {
-            flex: 1;
-            padding: 15px 0;
-            text-align: center;
-            color: var(--secondary-text);
-            cursor: pointer;
-            transition: color var(--transition-speed);
-            font-size: 14px;
-            font-weight: 500;
-        }
+        #main-app { width: 100%; height: 100%; display: flex; flex-direction: column; }
+        header { padding: 15px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border-color); }
+        #search-bar { flex-grow: 1; padding: 10px 15px; background-color: var(--surface-color); border: 1px solid var(--border-color); border-radius: 20px; color: var(--primary-text); font-size: 16px; }
+        #content-area { flex-grow: 1; overflow-y: auto; position: relative; }
+        .view { position: absolute; top: 0; left: 0; width: 100%; padding: 15px; opacity: 0; transform: scale(0.98); transition: opacity var(--transition-speed), transform var(--transition-speed); pointer-events: none; }
+        .view.active { opacity: 1; transform: scale(1); pointer-events: auto; }
+        .empty-state { text-align: center; color: var(--secondary-text); margin-top: 40px; }
+        nav { display: flex; border-top: 1px solid var(--border-color); background-color: var(--bg-color); position: relative; }
+        .nav-item { flex: 1; padding: 15px 0; text-align: center; color: var(--secondary-text); cursor: pointer; font-size: 14px; }
         .nav-item.active { color: var(--accent-color); }
-        #nav-indicator {
-            position: absolute;
-            bottom: 0;
-            height: 3px;
-            width: calc(100% / 3); /* Adjust based on number of items */
-            background: var(--accent-gradient);
-            border-radius: 3px 3px 0 0;
-            transition: left var(--transition-speed) cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
+        #nav-indicator { position: absolute; bottom: 0; height: 3px; width: calc(100% / 3); background: var(--accent-gradient); border-radius: 3px 3px 0 0; transition: left var(--transition-speed) cubic-bezier(0.25, 0.8, 0.25, 1); }
+        .fab { position: absolute; bottom: 80px; right: 20px; width: 56px; height: 56px; border-radius: 50%; background: var(--accent-gradient); color: white; font-size: 32px; line-height: 56px; text-align: center; cursor: pointer; box-shadow: 0 4px 20px rgba(0,0,0,0.4); border: none; }
 
-        /* Floating Action Button */
-        .fab {
-            position: absolute;
-            bottom: 80px;
-            right: 20px;
-            width: 56px; height: 56px;
-            border-radius: 50%;
-            background: var(--accent-gradient);
-            color: white;
-            font-size: 32px;
-            line-height: 56px;
-            text-align: center;
-            cursor: pointer;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-            transition: transform 0.2s;
-            border: none;
-        }
-        .fab:active { transform: scale(0.95); }
-
-        /* --- NOTES VIEW --- */
-        #notes-list {
-            display: flex; flex-direction: column; gap: 10px;
-        }
-        .note-card {
-            background: var(--surface-glass);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            padding: 15px;
-            border-radius: var(--border-radius);
-            border: 1px solid var(--border-color);
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .note-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-        .note-card h3 {
-            margin-bottom: 5px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .note-card p {
-            font-size: 12px;
-            color: var(--secondary-text);
-        }
-
-        /* --- IMAGES VIEW --- */
-        #image-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 10px;
-        }
-        .image-thumb {
-            aspect-ratio: 1 / 1;
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            cursor: pointer;
-            position: relative;
-        }
-        .image-thumb img {
-            width: 100%; height: 100%;
-            object-fit: cover;
-            filter: blur(8px);
-            transition: filter 0.3s;
-        }
+        /* --- NOTES & IMAGES --- */
+        #notes-list { display: flex; flex-direction: column; gap: 10px; }
+        .note-card { background: var(--surface-glass); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 15px; border-radius: var(--border-radius); border: 1px solid var(--border-color); cursor: pointer; transition: transform 0.2s; }
+        .note-card:hover { transform: translateY(-2px); }
+        .note-card h3 { margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .note-card p { font-size: 12px; color: var(--secondary-text); }
+        #image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
+        .image-thumb { aspect-ratio: 1 / 1; border-radius: var(--border-radius); overflow: hidden; cursor: pointer; position: relative; }
+        .image-thumb img { width: 100%; height: 100%; object-fit: cover; filter: blur(8px); transition: filter 0.3s; }
         .image-thumb:hover img { filter: blur(0); }
-
-        /* --- SETTINGS VIEW --- */
-        #settings-view ul {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        #settings-view li {
-            background-color: var(--surface-color);
-            padding: 15px;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background-color var(--transition-speed);
-        }
-        #settings-view li:hover { background-color: #2a2a2a; }
-        .switch {
-            position: relative; display: inline-block;
-            width: 50px; height: 26px;
-        }
+        
+        /* --- SETTINGS --- */
+        #settings-view ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        #settings-view li { background-color: var(--surface-color); padding: 15px; border-radius: var(--border-radius); cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
         .switch input { opacity: 0; width: 0; height: 0; }
-        .slider {
-            position: absolute; cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #444;
-            transition: .4s;
-            border-radius: 34px;
-        }
-        .slider:before {
-            position: absolute; content: "";
-            height: 20px; width: 20px;
-            left: 3px; bottom: 3px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #444; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--accent-color); }
         input:checked + .slider:before { transform: translateX(24px); }
 
         /* --- MODALS --- */
-        .modal {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-            z-index: 1000;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity var(--transition-speed);
-        }
-        .modal.active { opacity: 1; pointer-events: auto; }
-        .modal-content {
-            background-color: var(--surface-color);
-            width: 100%;
-            max-height: 90%;
-            border-radius: var(--border-radius) var(--border-radius) 0 0;
-            display: flex; flex-direction: column;
-            transform: translateY(100%);
-            transition: transform var(--transition-speed) cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: flex-end; z-index: 1000; transition: opacity var(--transition-speed); }
+        .modal-content { background-color: var(--surface-color); width: 100%; max-width: 420px; max-height: 90%; border-radius: var(--border-radius) var(--border-radius) 0 0; display: flex; flex-direction: column; transform: translateY(100%); transition: transform var(--transition-speed) cubic-bezier(0.25, 0.8, 0.25, 1); }
         .modal.active .modal-content { transform: translateY(0); }
-        .modal-header {
-            padding: 15px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .modal-header h2 { font-size: 20px; }
-        .modal-close-btn {
-            font-size: 24px;
-            cursor: pointer;
-            background: none; border: none;
-            color: var(--primary-text);
-        }
-        .modal-body {
-            padding: 15px;
-            overflow-y: auto;
-            flex-grow: 1;
-        }
-        .modal-footer {
-            padding: 15px;
-            border-top: 1px solid var(--border-color);
-            display: flex; gap: 10px;
-        }
-
-        /* Note Detail Modal */
+        .modal-header { padding: 15px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h2 { font-size: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80%; }
+        .modal-close-btn { font-size: 24px; cursor: pointer; background: none; border: none; color: var(--primary-text); }
+        .modal-body { padding: 15px; overflow-y: auto; flex-grow: 1; }
+        .modal-footer { padding: 15px; border-top: 1px solid var(--border-color); display: flex; flex-wrap: wrap; gap: 10px; }
         #note-modal-content { white-space: pre-wrap; word-wrap: break-word; }
-
-        /* Edit Note Modal */
         #edit-note-title { margin-bottom: 15px; }
-        #edit-note-description {
-            width: 100%;
-            min-height: 200px;
-            resize: vertical;
-        }
-
-        /* Image Viewer Modal */
-        #image-viewer-modal .modal-content {
-            background-color: transparent;
-            align-items: center;
-            justify-content: center;
-        }
-        #image-viewer-modal img {
-            max-width: 100%;
-            max-height: 90vh;
-            border-radius: var(--border-radius);
-            pointer-events: none;
-        }
-        #image-viewer-modal .modal-close-btn {
-            position: absolute;
-            top: 20px; right: 20px;
-            background-color: rgba(0,0,0,0.5);
-            border-radius: 50%;
-            width: 30px; height: 30px;
-            display: flex; justify-content: center; align-items: center;
-        }
+        #edit-note-description { width: 100%; min-height: 200px; resize: vertical; }
+        #image-viewer-modal .modal-content { background-color: transparent; align-items: center; justify-content: center; }
+        #image-viewer-modal img { max-width: 100%; max-height: 80vh; border-radius: var(--border-radius); pointer-events: none; }
+        #image-viewer-modal .modal-footer { position: absolute; bottom: 0; width: 100%; max-width: 420px; background-color: var(--surface-glass); border-top: none; backdrop-filter: blur(10px); border-radius: var(--border-radius); }
+        #image-viewer-modal .modal-close-btn { position: absolute; top: 20px; right: 20px; background-color: rgba(0,0,0,0.5); border-radius: 50%; width: 30px; height: 30px; display: flex; justify-content: center; align-items: center; z-index: 1; }
         
         /* --- TOAST NOTIFICATIONS --- */
-        #toast-container {
-            position: fixed;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 2000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
-        .toast {
-            padding: 10px 20px;
-            background-color: var(--surface-glass);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            color: var(--primary-text);
-            font-size: 14px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-            animation: toast-fade-in-out 3s ease-in-out;
-        }
+        #toast-container { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); z-index: 2000; }
+        .toast { padding: 10px 20px; background-color: var(--surface-glass); backdrop-filter: blur(10px); border-radius: 20px; color: var(--primary-text); font-size: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.3); animation: toast-fade-in-out 3s ease-in-out forwards; }
         @keyframes toast-fade-in-out {
             0%, 100% { opacity: 0; transform: translateY(20px); }
             10%, 90% { opacity: 1; transform: translateY(0); }
@@ -572,9 +236,14 @@
 <body>
 
     <div id="app">
+        <!-- ===== LOADING SCREEN (INITIAL STATE) ===== -->
+        <div id="loading-screen" class="screen">
+            <div class="spinner"></div>
+        </div>
+
         <!-- ===== LOGIN SCREEN ===== -->
-        <div id="login-screen" class="screen active">
-            <h1><span class="icon">🛡️</span> Hidden Vault</h1>
+        <div id="login-screen" class="screen visually-hidden">
+            <h1>🛡️ Hidden Vault</h1>
             <p>Your secure personal space.</p>
             <button id="google-signin-btn" class="btn">
                 <svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.42-4.55H24v8.51h12.8c-.57 5.4-4.3 9.42-9.6 9.42-5.78 0-10.47-4.69-10.47-10.47s4.69-10.47 10.47-10.47c3.3 0 6.03 1.18 7.96 2.92l6.5-6.5C38.07 4.86 31.78 2 24 2 11.98 2 2.19 8.89.24 18.57l8.01 6.2c2.08-6.14 7.64-10.77 14.18-10.77.29 0 .57.01.86.03z"></path><path fill="#FBBC05" d="M10.53 28.39c-.62-1.87-.95-3.87-.95-5.9s.33-4.03.95-5.9L2.56 13.22C.97 16.46 0 20.12 0 24s.97 7.54 2.56 10.78l7.97-6.39z"></path><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.98-6.19c-2.11 1.43-4.78 2.28-7.91 2.28-6.54 0-12.1-4.63-14.18-10.77l-8.01 6.2C2.19 39.11 11.98 48 24 48z"></path><path fill="none" d="M0 0h48v48H0z"></path></svg>
@@ -583,8 +252,7 @@
         </div>
 
         <!-- ===== LOCK SETUP SCREEN (FIRST TIME) ===== -->
-        <div id="lock-setup-screen" class="screen">
-            <!-- PIN Setup Stage -->
+        <div id="lock-setup-screen" class="screen visually-hidden">
             <div id="pin-setup-stage" class="setup-stage">
                 <h2>Set a 4-Digit PIN</h2>
                 <p>This will be your primary way to unlock the vault.</p>
@@ -594,137 +262,74 @@
                     <input type="password" maxlength="1" pattern="[0-9]*" inputmode="numeric">
                     <input type="password" maxlength="1" pattern="[0-9]*" inputmode="numeric">
                 </div>
-                <p id="pin-setup-confirm-text" class="hidden">Confirm your PIN:</p>
-                <div id="pin-confirm-inputs" class="pin-inputs hidden">
-                     <input type="password" maxlength="1" pattern="[0-9]*" inputmode="numeric">
-                     <input type="password" maxlength="1" pattern="[0-9]*" inputmode="numeric">
-                     <input type="password" maxlength="1" pattern="[0-9]*" inputmode="numeric">
-                     <input type="password" maxlength="1" pattern="[0-9]*" inputmode="numeric">
-                </div>
-                <p id="pin-error" style="color:var(--error-color); height: 20px;"></p>
+                <p id="pin-error" class="form-error"></p>
                 <button id="next-to-pattern-btn" class="btn" disabled>Next</button>
             </div>
-            <!-- Pattern Setup Stage -->
             <div id="pattern-setup-stage" class="setup-stage hidden">
                 <h2>Set a Pattern</h2>
                 <p>Draw an unlock pattern. Connect at least 4 dots.</p>
                 <canvas id="pattern-setup-canvas" width="300" height="300"></canvas>
-                <p id="pattern-error" style="color:var(--error-color); height: 20px; margin-top: 10px; text-align: center;"></p>
-                <button id="finish-setup-btn" class="btn" style="margin-top: 20px;">Finish Setup</button>
+                <p id="pattern-error" class="form-error"></p>
+                <button id="finish-setup-btn" class="btn" style="margin-top: 20px;" disabled>Finish Setup</button>
             </div>
         </div>
 
         <!-- ===== LOCK SCREEN ===== -->
-        <div id="lock-screen" class="screen">
-            <div id="lock-screen-content">
-                <div id="lock-screen-header">
-                    <h2>Vault Locked</h2>
-                    <p>Enter your credentials to unlock.</p>
-                    <div id="lock-error"></div>
-                    <div id="lock-timer"></div>
+        <div id="lock-screen" class="screen visually-hidden">
+            <div id="lock-screen-header">
+                <h2>Vault Locked</h2>
+                <p>Enter your credentials to unlock.</p>
+                <div id="lock-error"></div>
+                <div id="lock-timer"></div>
+            </div>
+            <div id="unlock-options">
+                <div class="unlock-option active" data-option="pin">PIN</div>
+                <div class="unlock-option" data-option="pattern">Pattern</div>
+                <div class="unlock-option" data-option="fingerprint">Fingerprint</div>
+            </div>
+            <div id="pin-unlock">
+                <div id="pin-lock-inputs" class="pin-inputs">
+                    <input type="password" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+                    <input type="password" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+                    <input type="password" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+                    <input type="password" maxlength="1" pattern="[0-9]*" inputmode="numeric">
                 </div>
-
-                <div id="unlock-options">
-                    <div class="unlock-option active" data-option="pin">PIN</div>
-                    <div class="unlock-option" data-option="pattern">Pattern</div>
-                    <div class="unlock-option" data-option="fingerprint">Fingerprint</div>
-                </div>
-
-                <div id="pin-unlock">
-                    <div id="pin-lock-inputs" class="pin-inputs">
-                        <input type="password" maxlength="1" pattern="[0-9]*" inputmode="numeric">
-                        <input type="password" maxlength="1" pattern="[0-9]*" inputmode="numeric">
-                        <input type="password" maxlength="1" pattern="[0-9]*" inputmode="numeric">
-                        <input type="password" maxlength="1" pattern="[0-9]*" inputmode="numeric">
-                    </div>
-                </div>
-                <div id="pattern-unlock" class="hidden">
-                    <canvas id="pattern-lock-canvas" width="300" height="300"></canvas>
-                </div>
-                <div id="fingerprint-unlock" class="hidden">
-                    <p style="color: var(--secondary-text); margin-bottom: 20px;">Press and hold to scan</p>
-                    <div id="fingerprint-box">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M8 10a2 2 0 1 1 0-4 2 2 0 0 1 0 4Z"/><path d="M4.604 1.766A5.503 5.503 0 0 1 8 1.5c.348 0 .689.035 1.024.103a.5.5 0 0 1 .453.533A4.505 4.505 0 0 0 8 7.5a.5.5 0 0 1-.5.5 5.503 5.503 0 0 1-2.44-1.033.5.5 0 0 1 .143-.865A4.5 4.5 0 0 0 7.5 5.5a.5.5 0 0 1 .5-.5c1.47 0 2.76.81 3.443 2.012a.5.5 0 0 1-.161.68.5.5 0 0 1-.68-.162A3.5 3.5 0 0 0 8 6.5a.5.5 0 0 1-.5-.5 4.5 4.5 0 0 0-3.13-4.234.5.5 0 0 1-.266-.5Z"/>
-                            <path d="M6.023 10.386c.036-.03.073-.058.112-.084a.5.5 0 0 1 .632.652A3.5 3.5 0 0 0 8 11.5a.5.5 0 0 1 .5.5 2.5 2.5 0 1 1-4.148-1.803.5.5 0 0 1 .636.662A1.5 1.5 0 0 0 8 12.5a.5.5 0 0 1 .5.5 1.5 1.5 0 1 1-2.48-1.129.5.5 0 0 1 .271-.465Z"/>
-                            <path d="M8.5 2.09A5.505 5.505 0 0 0 3.101 4.39a.5.5 0 0 1-.137.886A4.5 4.5 0 0 0 8 9.5a.5.5 0 0 1 .5.5 3.5 3.5 0 1 1-3.34-4.636.5.5 0 0 1 .52.795A2.5 2.5 0 0 0 8 8.5a.5.5 0 0 1 .5.5 1.5 1.5 0 1 1-1.33-2.203.5.5 0 1 1 .653.758A.5.5 0 0 0 8 7a.5.5 0 0 1 0-1 1.5 1.5 0 0 1 1.5 1.5.5.5 0 0 1-1 0 1.5 1.5 0 1 0-1.03 1.416.5.5 0 0 1-.945.328A2.5 2.5 0 0 1 5.5 8a.5.5 0 0 1-.5-.5 3.5 3.5 0 0 1 2.39-3.23.5.5 0 0 1 .61.479A4.5 4.5 0 0 0 8 5.5a.5.5 0 0 1 .5-.5 3.5 3.5 0 0 1 3.5 3.5.5.5 0 0 1-1 0 2.5 2.5 0 0 0-2.5-2.5.5.5 0 0 1-.5-.5Z"/>
-                        </svg>
-                    </div>
-                </div>
+            </div>
+            <div id="pattern-unlock" class="hidden"><canvas id="pattern-lock-canvas" width="300" height="300"></canvas></div>
+            <div id="fingerprint-unlock" class="hidden">
+                <p style="color: var(--secondary-text); margin-bottom: 20px;">Press and hold to scan</p>
+                <div id="fingerprint-box"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16"><path d="M8 10a2 2 0 1 1 0-4 2 2 0 0 1 0 4Z"/><path d="M4.604 1.766A5.503 5.503 0 0 1 8 1.5c.348 0 .689.035 1.024.103a.5.5 0 0 1 .453.533A4.505 4.505 0 0 0 8 7.5a.5.5 0 0 1-.5.5 5.503 5.503 0 0 1-2.44-1.033.5.5 0 0 1 .143-.865A4.5 4.5 0 0 0 7.5 5.5a.5.5 0 0 1 .5-.5c1.47 0 2.76.81 3.443 2.012a.5.5 0 0 1-.161.68.5.5 0 0 1-.68-.162A3.5 3.5 0 0 0 8 6.5a.5.5 0 0 1-.5-.5 4.5 4.5 0 0 0-3.13-4.234.5.5 0 0 1-.266-.5Z"/><path d="M6.023 10.386c.036-.03.073-.058.112-.084a.5.5 0 0 1 .632.652A3.5 3.5 0 0 0 8 11.5a.5.5 0 0 1 .5.5 2.5 2.5 0 1 1-4.148-1.803.5.5 0 0 1 .636.662A1.5 1.5 0 0 0 8 12.5a.5.5 0 0 1 .5.5 1.5 1.5 0 1 1-2.48-1.129.5.5 0 0 1 .271-.465Z"/><path d="M8.5 2.09A5.505 5.505 0 0 0 3.101 4.39a.5.5 0 0 1-.137.886A4.5 4.5 0 0 0 8 9.5a.5.5 0 0 1 .5.5 3.5 3.5 0 1 1-3.34-4.636.5.5 0 0 1 .52.795A2.5 2.5 0 0 0 8 8.5a.5.5 0 0 1 .5.5 1.5 1.5 0 1 1-1.33-2.203.5.5 0 1 1 .653.758A.5.5 0 0 0 8 7a.5.5 0 0 1 0-1 1.5 1.5 0 0 1 1.5 1.5.5.5 0 0 1-1 0 1.5 1.5 0 1 0-1.03 1.416.5.5 0 0 1-.945.328A2.5 2.5 0 0 1 5.5 8a.5.5 0 0 1-.5-.5 3.5 3.5 0 0 1 2.39-3.23.5.5 0 0 1 .61.479A4.5 4.5 0 0 0 8 5.5a.5.5 0 0 1 .5-.5 3.5 3.5 0 0 1 3.5 3.5.5.5 0 0 1-1 0 2.5 2.5 0 0 0-2.5-2.5.5.5 0 0 1-.5-.5Z"/></svg></div>
             </div>
         </div>
 
         <!-- ===== FAKE CALCULATOR SCREEN ===== -->
-        <div id="calculator-disguise" class="screen">
+        <div id="calculator-disguise" class="screen visually-hidden">
             <div id="calc-display">0</div>
             <div id="calc-keys">
-                <button class="calc-key" data-key="clear">AC</button>
-                <button class="calc-key" data-key="+/-">+/-</button>
-                <button class="calc-key" data-key="%">%</button>
-                <button class="calc-key op" data-key="/">÷</button>
-
-                <button class="calc-key" data-key="7">7</button>
-                <button class="calc-key" data-key="8">8</button>
-                <button class="calc-key" data-key="9">9</button>
-                <button class="calc-key op" data-key="*">×</button>
-
-                <button class="calc-key" data-key="4">4</button>
-                <button class="calc-key" data-key="5">5</button>
-                <button class="calc-key" data-key="6">6</button>
-                <button class="calc-key op" data-key="-">-</button>
-
-                <button class="calc-key" data-key="1">1</button>
-                <button class="calc-key" data-key="2">2</button>
-                <button class="calc-key" data-key="3">3</button>
-                <button class="calc-key op" data-key="+">+</button>
-
-                <button class="calc-key zero" data-key="0">0</button>
-                <button class="calc-key" data-key=".">.</button>
-                <button class="calc-key op" data-key="=">=</button>
+                <button class="calc-key util" data-key="clear">AC</button><button class="calc-key util" data-key="+/-">+/-</button><button class="calc-key util" data-key="%">%</button><button class="calc-key op" data-key="/">÷</button>
+                <button class="calc-key" data-key="7">7</button><button class="calc-key" data-key="8">8</button><button class="calc-key" data-key="9">9</button><button class="calc-key op" data-key="*">×</button>
+                <button class="calc-key" data-key="4">4</button><button class="calc-key" data-key="5">5</button><button class="calc-key" data-key="6">6</button><button class="calc-key op" data-key="-">-</button>
+                <button class="calc-key" data-key="1">1</button><button class="calc-key" data-key="2">2</button><button class="calc-key" data-key="3">3</button><button class="calc-key op" data-key="+">+</button>
+                <button class="calc-key zero" data-key="0">0</button><button class="calc-key" data-key=".">.</button><button class="calc-key op" data-key="=">=</button>
             </div>
         </div>
 
-
-        <!-- ===== MAIN APP ===== -->
-        <div id="main-app" class="hidden">
-            <header>
-                <input type="search" id="search-bar" placeholder="Search notes...">
-            </header>
-
+        <!-- ===== MAIN APP (hidden by default) ===== -->
+        <div id="main-app" class="visually-hidden">
+            <header><input type="search" id="search-bar" placeholder="Search notes..."></header>
             <main id="content-area">
-                <!-- Notes View -->
-                <div id="notes-view" class="view active">
-                    <div id="notes-list">
-                        <!-- Note cards will be injected here -->
-                    </div>
-                    <button class="fab" id="add-note-btn">+</button>
-                </div>
-
-                <!-- Images View -->
-                <div id="images-view" class="view">
-                    <div id="image-grid">
-                        <!-- Image thumbnails will be injected here -->
-                    </div>
-                    <button class="fab" id="add-image-btn">+</button>
-                </div>
-
-                <!-- Settings View -->
+                <div id="notes-view" class="view active"><div id="notes-list"></div></div>
+                <div id="images-view" class="view"><div id="image-grid"></div></div>
                 <div id="settings-view" class="view">
                     <ul>
                         <li id="change-pin-btn">Change PIN</li>
                         <li id="change-pattern-btn">Change Pattern</li>
-                        <li>
-                            <span>Disguise Mode</span>
-                            <label class="switch">
-                                <input type="checkbox" id="disguise-mode-toggle">
-                                <span class="slider"></span>
-                            </label>
-                        </li>
+                        <li><span>Disguise Mode</span><label class="switch"><input type="checkbox" id="disguise-mode-toggle"><span class="slider"></span></label></li>
                         <li id="logout-btn" style="color: var(--error-color);">Logout</li>
                     </ul>
                 </div>
             </main>
-
+            <button class="fab" id="fab-btn">+</button>
             <nav>
                 <div class="nav-item active" data-view="notes-view">Notes</div>
                 <div class="nav-item" data-view="images-view">Images</div>
@@ -735,63 +340,51 @@
     </div>
 
     <!-- ===== MODALS ===== -->
-    <!-- Note Detail Modal -->
-    <div id="note-modal" class="modal">
+    <div id="note-modal" class="modal visually-hidden">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="note-modal-title"></h2>
-                <button class="modal-close-btn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p id="note-modal-content"></p>
-            </div>
+            <div class="modal-header"><h2 id="note-modal-title"></h2><button class="modal-close-btn">&times;</button></div>
+            <div class="modal-body"><p id="note-modal-content"></p></div>
             <div class="modal-footer">
-                <button id="copy-note-btn" class="btn btn-secondary">Copy</button>
-                <button id="edit-note-btn" class="btn btn-secondary">Edit</button>
-                <button id="delete-note-btn" class="btn" style="background: var(--error-color);">Delete</button>
+                <button id="copy-note-btn" class="btn-icon">... Copy</button>
+                <button id="download-note-btn" class="btn-icon">... Download</button>
+                <button id="share-note-btn" class="btn-icon">... Share</button>
+                <button id="edit-note-btn" class="btn-icon">... Edit</button>
+                <button id="delete-note-btn" class="btn-icon" style="color: var(--error-color); border-color: var(--error-color);">... Delete</button>
             </div>
         </div>
     </div>
 
-    <!-- Add/Edit Note Modal -->
-    <div id="edit-note-modal" class="modal">
+    <div id="edit-note-modal" class="modal visually-hidden">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="edit-note-modal-title">New Note</h2>
-                <button class="modal-close-btn">&times;</button>
-            </div>
+            <div class="modal-header"><h2 id="edit-note-modal-title">New Note</h2><button class="modal-close-btn">&times;</button></div>
             <div class="modal-body">
                 <input type="text" id="edit-note-title" class="input-field" placeholder="Title" required>
                 <textarea id="edit-note-description" class="input-field" placeholder="Your secret note..."></textarea>
             </div>
-            <div class="modal-footer">
-                <button id="save-note-btn" class="btn">Save</button>
-            </div>
+            <div class="modal-footer"><button id="save-note-btn" class="btn">Save</button></div>
         </div>
     </div>
 
-    <!-- Add Image Modal -->
-    <div id="add-image-modal" class="modal">
+    <div id="add-image-modal" class="modal visually-hidden">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2>Add Image</h2>
-                <button class="modal-close-btn">&times;</button>
-            </div>
+            <div class="modal-header"><h2>Add Image</h2><button class="modal-close-btn">&times;</button></div>
             <div class="modal-body">
                 <p style="color: var(--secondary-text); margin-bottom: 15px;">Paste a direct image URL (.jpg, .png, .webp, .jpeg).</p>
                 <input type="url" id="image-url-input" class="input-field" placeholder="https://example.com/image.png">
             </div>
-            <div class="modal-footer">
-                <button id="save-image-btn" class="btn">Add Image</button>
-            </div>
+            <div class="modal-footer"><button id="save-image-btn" class="btn">Add Image</button></div>
         </div>
     </div>
 
-    <!-- Image Viewer Modal -->
-    <div id="image-viewer-modal" class="modal">
+    <div id="image-viewer-modal" class="modal visually-hidden">
         <div class="modal-content">
             <img id="fullscreen-image" src="" alt="Full-screen image" oncontextmenu="return false;" ondragstart="return false;">
             <button class="modal-close-btn">&times;</button>
+            <div class="modal-footer">
+                <button id="download-image-btn" class="btn-icon">... Download</button>
+                <button id="share-image-btn" class="btn-icon">... Share</button>
+                <button id="delete-image-btn" class="btn-icon" style="color: var(--error-color); border-color: var(--error-color);">... Delete</button>
+            </div>
         </div>
     </div>
 
@@ -801,21 +394,11 @@
 
     <script type="module">
         // --- FIREBASE SDK IMPORTS ---
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-        import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, collection, onSnapshot, addDoc, updateDoc, deleteDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, onSnapshot, addDoc, updateDoc, deleteDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js";
 
         // --- FIREBASE CONFIG (REPLACE WITH YOURS) ---
-        // IMPORTANT: For production, ensure your Firestore security rules are correctly set up.
-        // A basic rule would be:
-        // rules_version = '2';
-        // service cloud.firestore {
-        //   match /databases/{database}/documents {
-        //     match /users/{userId}/{document=**} {
-        //       allow read, write: if request.auth.uid == userId;
-        //     }
-        //   }
-        // }
         const firebaseConfig = {
   apiKey: "AIzaSyDzVS_oUSNueLOUj8CtQWCaNKjG_-YTCKk",
   authDomain: "fake-phone-pe-d0f28.firebaseapp.com",
@@ -825,6 +408,7 @@
   messagingSenderId: "860186859049",
   appId: "1:860186859049:web:4e19d670c2e24b91a5ae38"
 };
+
         // --- APP INITIALIZATION ---
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
@@ -837,6 +421,7 @@
             userSettings: null,
             isLocked: true,
             currentNoteId: null,
+            currentImage: null,
             currentView: 'notes-view',
             inactivityTimer: null,
             lockAttempts: 0,
@@ -848,112 +433,58 @@
         const LOCKOUT_DURATION_S = 30;
         const INACTIVITY_TIMEOUT_MS = 2 * 60 * 1000; // 2 minutes
 
-        // --- DOM ELEMENTS ---
-        const DOMElements = {
-            screens: document.querySelectorAll('.screen'),
-            mainApp: document.getElementById('main-app'),
-            // ... (Get all other relevant elements by ID)
-        };
-        
         // --- CORE APP LOGIC ---
         const App = {
             init() {
                 this.setupEventListeners();
-                Auth.handleAuthStateChange();
+                Auth.handleAuthStateChange(); // This is the single entry point
             },
 
             setupEventListeners() {
-                // Auth
                 document.getElementById('google-signin-btn').addEventListener('click', Auth.signInWithGoogle);
                 document.getElementById('logout-btn').addEventListener('click', Auth.signOutUser);
-
-                // Lock Screen
                 document.querySelectorAll('.unlock-option').forEach(el => el.addEventListener('click', Lock.switchUnlockMethod));
                 document.getElementById('fingerprint-box').addEventListener('mousedown', Lock.startFingerprintScan);
                 document.getElementById('fingerprint-box').addEventListener('mouseup', Lock.endFingerprintScan);
                 document.getElementById('fingerprint-box').addEventListener('touchstart', Lock.startFingerprintScan, { passive: true });
                 document.getElementById('fingerprint-box').addEventListener('touchend', Lock.endFingerprintScan);
-                
-                // Lock Setup
                 document.getElementById('next-to-pattern-btn').addEventListener('click', Lock.Setup.proceedToPattern);
                 document.getElementById('finish-setup-btn').addEventListener('click', Lock.Setup.finish);
                 this.setupPinInput('pin-setup-inputs', Lock.Setup.handlePinSetupInput);
-                this.setupPinInput('pin-confirm-inputs', Lock.Setup.handlePinConfirmInput);
                 this.setupPinInput('pin-lock-inputs', Lock.handlePinLockInput);
-
-                // Navigation
                 document.querySelector('nav').addEventListener('click', UI.handleNavClick);
-                
-                // FABs
-                document.getElementById('add-note-btn').addEventListener('click', () => Notes.openEditModal(null));
-                document.getElementById('add-image-btn').addEventListener('click', () => Images.openAddModal());
-                
-                // Modals
+                document.getElementById('fab-btn').addEventListener('click', UI.handleFabClick);
                 document.querySelectorAll('.modal-close-btn').forEach(btn => btn.addEventListener('click', UI.closeAllModals));
-                document.querySelector('#note-modal').addEventListener('click', (e) => e.target === e.currentTarget && UI.closeModal('note-modal'));
-                document.querySelector('#edit-note-modal').addEventListener('click', (e) => e.target === e.currentTarget && UI.closeModal('edit-note-modal'));
-                document.querySelector('#add-image-modal').addEventListener('click', (e) => e.target === e.currentTarget && UI.closeModal('add-image-modal'));
-                document.querySelector('#image-viewer-modal').addEventListener('click', (e) => e.target === e.currentTarget && UI.closeModal('image-viewer-modal'));
-
-                // Note Actions
+                document.querySelectorAll('.modal').forEach(modal => modal.addEventListener('click', (e) => e.target === e.currentTarget && UI.closeAllModals()));
                 document.getElementById('save-note-btn').addEventListener('click', Notes.save);
-                document.getElementById('copy-note-btn').addEventListener('click', Notes.copyContent);
+                document.getElementById('copy-note-btn').addEventListener('click', Notes.copyCurrent);
+                document.getElementById('download-note-btn').addEventListener('click', Notes.downloadCurrent);
+                document.getElementById('share-note-btn').addEventListener('click', Notes.shareCurrent);
                 document.getElementById('edit-note-btn').addEventListener('click', Notes.editCurrent);
                 document.getElementById('delete-note-btn').addEventListener('click', Notes.deleteCurrent);
                 document.getElementById('search-bar').addEventListener('input', UI.filterNotes);
-                document.getElementById('edit-note-description').addEventListener('input', Utils.debounce(Notes.autoSave, 1000));
-                document.getElementById('edit-note-title').addEventListener('input', Utils.debounce(Notes.autoSave, 1000));
-                
-                // Image Actions
                 document.getElementById('save-image-btn').addEventListener('click', Images.save);
                 document.getElementById('image-grid').addEventListener('click', Images.handleImageClick);
-                
-                // Settings
+                document.getElementById('download-image-btn').addEventListener('click', Images.downloadCurrent);
+                document.getElementById('share-image-btn').addEventListener('click', Images.shareCurrent);
+                document.getElementById('delete-image-btn').addEventListener('click', Images.deleteCurrent);
                 document.getElementById('disguise-mode-toggle').addEventListener('change', Settings.toggleDisguiseMode);
-                document.getElementById('change-pin-btn').addEventListener('click', () => {
-                    UI.showToast("Feature coming soon!");
-                });
-                document.getElementById('change-pattern-btn').addEventListener('click', () => {
-                    UI.showToast("Feature coming soon!");
-                });
-                
-                // Disguise Mode
-                document.getElementById('calc-keys').addEventListener('click', (e) => {
-                    if (e.target.matches('.calc-key')) {
-                        Settings.Disguise.handleCalcKey(e.target.dataset.key);
-                    }
-                });
-
-                // Inactivity Listener
-                ['mousemove', 'mousedown', 'keypress', 'touchmove'].forEach(event => {
-                    document.addEventListener(event, this.resetInactivityTimer);
-                });
+                document.getElementById('change-pin-btn').addEventListener('click', () => UI.showToast("Feature coming soon!"));
+                document.getElementById('change-pattern-btn').addEventListener('click', () => UI.showToast("Feature coming soon!"));
+                document.getElementById('calc-keys').addEventListener('click', (e) => e.target.matches('.calc-key') && Settings.Disguise.handleCalcKey(e.target.dataset.key));
+                ['mousemove', 'mousedown', 'keypress', 'touchmove', 'scroll'].forEach(event => document.addEventListener(event, this.resetInactivityTimer));
             },
             
             setupPinInput(containerId, onComplete) {
                 const inputs = document.getElementById(containerId).querySelectorAll('input');
                 inputs.forEach((input, index) => {
                     input.addEventListener('input', () => {
-                        if (input.value && index < inputs.length - 1) {
-                            inputs[index + 1].focus();
-                        }
+                        if (input.value && index < inputs.length - 1) inputs[index + 1].focus();
                     });
                     input.addEventListener('keydown', (e) => {
-                        if (e.key === 'Backspace' && !input.value && index > 0) {
-                            inputs[index - 1].focus();
-                        }
+                        if (e.key === 'Backspace' && !input.value && index > 0) inputs[index - 1].focus();
                     });
-                    input.addEventListener('paste', (e) => {
-                        e.preventDefault();
-                        const paste = (e.clipboardData || window.clipboardData).getData('text').slice(0, 4);
-                        if (/^\d{4}$/.test(paste)) {
-                            inputs.forEach((inp, i) => inp.value = paste[i]);
-                            onComplete();
-                        }
-                    });
-                    if (index === inputs.length - 1) {
-                        input.addEventListener('input', onComplete);
-                    }
+                    if (index === inputs.length - 1) input.addEventListener('input', onComplete);
                 });
             },
 
@@ -963,7 +494,6 @@
                 AppState.inactivityTimer = setTimeout(() => {
                     AppState.isLocked = true;
                     UI.showScreen('lock-screen');
-                    DOMElements.mainApp.classList.add('hidden');
                 }, INACTIVITY_TIMEOUT_MS);
             },
         };
@@ -979,18 +509,11 @@
                     document.title = "Hidden Vault";
                 }
 
-                DOMElements.screens.forEach(screen => {
-                    if (screen.id === screenId) {
-                        screen.classList.add('active');
-                    } else {
-                        screen.classList.remove('active');
-                    }
-                });
-                if (screenId === 'lock-screen' || screenId === 'login-screen' || screenId === 'lock-setup-screen' || screenId === 'calculator-disguise') {
-                    DOMElements.mainApp.classList.add('hidden');
-                } else {
-                    DOMElements.mainApp.classList.remove('hidden');
-                }
+                document.querySelectorAll('.screen').forEach(s => s.classList.add('visually-hidden'));
+                document.getElementById(screenId)?.classList.remove('visually-hidden');
+                
+                const isMainApp = !['loading-screen', 'login-screen', 'lock-setup-screen', 'lock-screen', 'calculator-disguise'].includes(screenId);
+                document.getElementById('main-app').classList.toggle('visually-hidden', !isMainApp);
             },
             
             showView(viewId) {
@@ -998,38 +521,29 @@
                 document.getElementById(viewId).classList.add('active');
                 AppState.currentView = viewId;
                 
-                // Hide search bar if not on notes view
                 document.getElementById('search-bar').style.display = (viewId === 'notes-view') ? 'block' : 'none';
+                document.getElementById('fab-btn').style.display = (viewId === 'settings-view') ? 'none' : 'block';
             },
 
             handleNavClick(e) {
                 const navItem = e.target.closest('.nav-item');
                 if (!navItem) return;
-
                 const viewId = navItem.dataset.view;
-                const activeItem = document.querySelector('.nav-item.active');
-                if (activeItem) activeItem.classList.remove('active');
+                document.querySelector('.nav-item.active')?.classList.remove('active');
                 navItem.classList.add('active');
-                
                 this.showView(viewId);
-                
-                // Move indicator
                 const indicator = document.getElementById('nav-indicator');
                 indicator.style.left = `${navItem.offsetLeft}px`;
                 indicator.style.width = `${navItem.offsetWidth}px`;
             },
             
-            openModal(modalId) {
-                document.getElementById(modalId).classList.add('active');
-            },
-            
-            closeModal(modalId) {
-                document.getElementById(modalId).classList.remove('active');
+            handleFabClick() {
+                if (AppState.currentView === 'notes-view') Notes.openEditModal(null);
+                else if (AppState.currentView === 'images-view') Images.openAddModal();
             },
 
-            closeAllModals() {
-                document.querySelectorAll('.modal').forEach(modal => modal.classList.remove('active'));
-            },
+            openModal(modalId) { document.getElementById(modalId).classList.remove('visually-hidden'); },
+            closeAllModals() { document.querySelectorAll('.modal').forEach(m => m.classList.add('visually-hidden')); },
 
             showToast(message) {
                 const toast = document.createElement('div');
@@ -1056,7 +570,6 @@
                         AppState.currentUser = user;
                         await this.loadUserSettings();
                         if (AppState.userSettings) {
-                            AppState.isLocked = true;
                             UI.showScreen('lock-screen');
                         } else {
                             UI.showScreen('lock-setup-screen');
@@ -1074,6 +587,7 @@
             async signInWithGoogle() {
                 try {
                     await signInWithPopup(auth, googleProvider);
+                    // onAuthStateChanged will handle the UI transition.
                 } catch (error) {
                     console.error("Google Sign-In Error:", error);
                     UI.showToast('Sign-in failed. Please try again.');
@@ -1083,19 +597,23 @@
             async signOutUser() {
                 try {
                     await signOut(auth);
-                } catch (error) {
-                    console.error("Sign-Out Error:", error);
-                }
+                } catch (error) { console.error("Sign-Out Error:", error); }
             },
             
             async loadUserSettings() {
+                if (!AppState.currentUser) return;
                 const docRef = doc(db, 'users', AppState.currentUser.uid);
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    AppState.userSettings = docSnap.data();
-                    document.getElementById('disguise-mode-toggle').checked = AppState.userSettings.disguiseMode || false;
-                } else {
-                    AppState.userSettings = null;
+                try {
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists()) {
+                        AppState.userSettings = docSnap.data();
+                        document.getElementById('disguise-mode-toggle').checked = AppState.userSettings.disguiseMode || false;
+                    } else {
+                        AppState.userSettings = null;
+                    }
+                } catch (error) {
+                    console.error("Error loading user settings:", error);
+                    UI.showToast("Could not load user profile.");
                 }
             }
         };
@@ -1103,12 +621,12 @@
         // --- LOCK SYSTEM MODULE ---
         const Lock = {
             fingerprintTimeout: null,
+            patternLockInstance: null,
             
             switchUnlockMethod(e) {
                 const option = e.currentTarget.dataset.option;
                 document.querySelectorAll('.unlock-option').forEach(el => el.classList.remove('active'));
                 e.currentTarget.classList.add('active');
-
                 document.getElementById('pin-unlock').classList.toggle('hidden', option !== 'pin');
                 document.getElementById('pattern-unlock').classList.toggle('hidden', option !== 'pattern');
                 document.getElementById('fingerprint-unlock').classList.toggle('hidden', option !== 'fingerprint');
@@ -1116,27 +634,23 @@
                 if (option === 'pattern' && !this.patternLockInstance) {
                     this.patternLockInstance = new PatternLock('#pattern-lock-canvas', {
                         onDraw: async (pattern) => {
+                            if (AppState.isTemporarilyLocked) return;
                             const hash = await Utils.hash(pattern);
-                            if (hash === AppState.userSettings.patternHash) {
-                                this.unlock();
-                            } else {
-                                this.handleWrongAttempt('pattern');
-                            }
+                            if (hash === AppState.userSettings.patternHash) this.unlock();
+                            else this.handleWrongAttempt('pattern');
                         }
                     });
                 }
             },
             
             async handlePinLockInput() {
+                if (AppState.isTemporarilyLocked) return;
                 const inputs = document.getElementById('pin-lock-inputs').querySelectorAll('input');
                 const pin = Array.from(inputs).map(i => i.value).join('');
                 if (pin.length === 4) {
                     const hash = await Utils.hash(pin);
-                    if (hash === AppState.userSettings.pinHash) {
-                        this.unlock();
-                    } else {
-                        this.handleWrongAttempt('pin');
-                    }
+                    if (hash === AppState.userSettings.pinHash) this.unlock();
+                    else this.handleWrongAttempt('pin');
                 }
             },
 
@@ -1153,9 +667,7 @@
                     inputs[0].focus();
                 }
 
-                if (AppState.lockAttempts >= LOCK_ATTEMPT_LIMIT) {
-                    this.triggerTemporaryLockout();
-                }
+                if (AppState.lockAttempts >= LOCK_ATTEMPT_LIMIT) this.triggerTemporaryLockout();
             },
             
             triggerTemporaryLockout() {
@@ -1166,7 +678,7 @@
                 
                 const interval = setInterval(() => {
                     countdown--;
-                    timerEl.textContent = `Too many attempts. Try again in ${countdown}s.`;
+                    timerEl.textContent = `Try again in ${countdown}s.`;
                     if (countdown <= 0) {
                         clearInterval(interval);
                         timerEl.textContent = '';
@@ -1180,8 +692,7 @@
             startFingerprintScan(e) {
                 e.preventDefault();
                 if (AppState.isTemporarilyLocked) return;
-                const box = document.getElementById('fingerprint-box');
-                box.classList.add('fingerprint-scanning');
+                document.getElementById('fingerprint-box').classList.add('fingerprint-scanning');
                 this.fingerprintTimeout = setTimeout(() => {
                     this.unlock();
                     this.endFingerprintScan();
@@ -1192,8 +703,7 @@
             endFingerprintScan() {
                 clearTimeout(this.fingerprintTimeout);
                 this.fingerprintTimeout = null;
-                const box = document.getElementById('fingerprint-box');
-                box.classList.remove('fingerprint-scanning');
+                document.getElementById('fingerprint-box').classList.remove('fingerprint-scanning');
             },
 
             unlock() {
@@ -1204,14 +714,10 @@
                 inputs.forEach(i => i.value = '');
                 
                 UI.showScreen('main-app');
-                DOMElements.mainApp.classList.remove('hidden');
                 
-                if (!AppState.unsubscribeNotes) {
-                    Notes.listen();
-                }
-                if (!AppState.unsubscribeImages) {
-                    Images.listen();
-                }
+                if (!AppState.unsubscribeNotes) Notes.listen();
+                if (!AppState.unsubscribeImages) Images.listen();
+                
                 App.resetInactivityTimer();
                 
                 // Set initial nav indicator position
@@ -1223,33 +729,20 @@
                 }
             },
             
-            // --- NESTED SETUP MODULE ---
             Setup: {
                 tempPin: null,
                 tempPattern: null,
+                patternSetupInstance: null,
 
-                async handlePinSetupInput() {
+                handlePinSetupInput() {
                     const inputs = document.getElementById('pin-setup-inputs').querySelectorAll('input');
                     const pin = Array.from(inputs).map(i => i.value).join('');
                     if (pin.length === 4) {
                         Lock.Setup.tempPin = pin;
-                        document.getElementById('pin-setup-confirm-text').classList.remove('hidden');
-                        document.getElementById('pin-confirm-inputs').classList.remove('hidden');
-                        document.getElementById('pin-confirm-inputs').querySelector('input').focus();
-                    }
-                },
-                
-                handlePinConfirmInput() {
-                    const confirmInputs = document.getElementById('pin-confirm-inputs').querySelectorAll('input');
-                    const confirmPin = Array.from(confirmInputs).map(i => i.value).join('');
-                    if (confirmPin.length === 4) {
-                        if (confirmPin === Lock.Setup.tempPin) {
-                            document.getElementById('pin-error').textContent = '';
-                            document.getElementById('next-to-pattern-btn').disabled = false;
-                        } else {
-                            document.getElementById('pin-error').textContent = "PINs do not match.";
-                            document.getElementById('next-to-pattern-btn').disabled = true;
-                        }
+                        document.getElementById('pin-error').textContent = "PIN set. Please continue.";
+                        document.getElementById('next-to-pattern-btn').disabled = false;
+                    } else {
+                        document.getElementById('next-to-pattern-btn').disabled = true;
                     }
                 },
                 
@@ -1260,13 +753,17 @@
                     if (!this.patternSetupInstance) {
                         this.patternSetupInstance = new PatternLock('#pattern-setup-canvas', {
                             onDraw: (pattern) => {
+                                const errorEl = document.getElementById('pattern-error');
+                                const finishBtn = document.getElementById('finish-setup-btn');
                                 if (pattern.length < 4) {
-                                    document.getElementById('pattern-error').textContent = "Pattern must connect at least 4 dots.";
+                                    errorEl.textContent = "Pattern must connect at least 4 dots.";
                                     setTimeout(() => this.patternSetupInstance.clear(), 500);
                                     Lock.Setup.tempPattern = null;
+                                    finishBtn.disabled = true;
                                 } else {
-                                    document.getElementById('pattern-error').textContent = "Pattern set!";
+                                    errorEl.textContent = "Pattern set!";
                                     Lock.Setup.tempPattern = pattern;
+                                    finishBtn.disabled = false;
                                 }
                             }
                         });
@@ -1274,14 +771,8 @@
                 },
                 
                 async finish() {
-                    if (!Lock.Setup.tempPin || !Lock.Setup.tempPattern) {
-                        UI.showToast("Please set both a PIN and a pattern.");
-                        return;
-                    }
-                    
-                    const pinHash = await Utils.hash(Lock.Setup.tempPin);
-                    const patternHash = await Utils.hash(Lock.Setup.tempPattern);
-                    
+                    const pinHash = await Utils.hash(this.tempPin);
+                    const patternHash = await Utils.hash(this.tempPattern);
                     const userSettings = { pinHash, patternHash, disguiseMode: false };
                     
                     try {
@@ -1305,6 +796,9 @@
                 AppState.unsubscribeNotes = onSnapshot(q, (snapshot) => {
                     const notes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     this.render(notes);
+                }, (error) => {
+                    console.error("Error listening to notes:", error);
+                    UI.showToast("Could not load notes.");
                 });
             },
             
@@ -1312,16 +806,17 @@
                 const listEl = document.getElementById('notes-list');
                 listEl.innerHTML = '';
                 if (notes.length === 0) {
-                    listEl.innerHTML = '<p style="text-align:center; color: var(--secondary-text);">No notes yet. Tap the + button to add one.</p>';
+                    listEl.innerHTML = '<p class="empty-state">No notes yet. Tap the + button to add one.</p>';
                     return;
                 }
                 notes.forEach(note => {
                     const card = document.createElement('div');
                     card.className = 'note-card';
                     card.dataset.id = note.id;
+                    const date = note.createdAt?.toDate ? new Date(note.createdAt.toDate()).toLocaleDateString() : 'Just now';
                     card.innerHTML = `
                         <h3>${Utils.escapeHTML(note.title)}</h3>
-                        <p>${new Date(note.createdAt?.toDate()).toLocaleString()}</p>
+                        <p>${date}</p>
                     `;
                     card.addEventListener('click', () => this.openDetailModal(note));
                     listEl.appendChild(card);
@@ -1335,7 +830,7 @@
                 UI.openModal('note-modal');
             },
             
-            async openEditModal(note) {
+            openEditModal(note) {
                 if (note) {
                     AppState.currentNoteId = note.id;
                     document.getElementById('edit-note-modal-title').textContent = "Edit Note";
@@ -1352,67 +847,57 @@
             
             async save() {
                 const title = document.getElementById('edit-note-title').value.trim();
-                const content = document.getElementById('edit-note-description').value.trim();
-                if (!title) {
-                    UI.showToast("Title is required.");
-                    return;
-                }
-                
+                const content = document.getElementById('edit-note-description').value;
+                if (!title) { UI.showToast("Title is required."); return; }
                 const noteData = { title, content, updatedAt: serverTimestamp() };
                 
                 try {
                     const notesCol = collection(db, 'users', AppState.currentUser.uid, 'notes');
                     if (AppState.currentNoteId) {
-                        // Update
-                        const noteRef = doc(notesCol, AppState.currentNoteId);
-                        await updateDoc(noteRef, noteData);
+                        await updateDoc(doc(notesCol, AppState.currentNoteId), noteData);
                         UI.showToast("Note updated!");
                     } else {
-                        // Create
                         await addDoc(notesCol, { ...noteData, createdAt: serverTimestamp() });
                         UI.showToast("Note created!");
                     }
-                    UI.closeModal('edit-note-modal');
-                } catch (error) {
-                    console.error("Error saving note: ", error);
-                    UI.showToast("Failed to save note.");
-                }
-            },
-            
-            async autoSave() {
-                const title = document.getElementById('edit-note-title').value.trim();
-                if (!title) return; // Don't auto-save without a title
-
-                const content = document.getElementById('edit-note-description').value;
-                const noteData = { title, content, updatedAt: serverTimestamp() };
-                const notesCol = collection(db, 'users', AppState.currentUser.uid, 'notes');
-
-                try {
-                    if (AppState.currentNoteId) {
-                        const noteRef = doc(notesCol, AppState.currentNoteId);
-                        await updateDoc(noteRef, noteData);
-                    } else {
-                        // Create a new document and store its ID for subsequent auto-saves
-                        const docRef = await addDoc(notesCol, { ...noteData, createdAt: serverTimestamp() });
-                        AppState.currentNoteId = docRef.id;
-                    }
-                } catch(e) { console.error("Auto-save failed:", e); }
+                    UI.closeAllModals();
+                } catch (error) { console.error("Error saving note: ", error); UI.showToast("Failed to save note."); }
             },
 
-            copyContent() {
+            copyCurrent() {
                 const content = document.getElementById('note-modal-content').textContent;
-                navigator.clipboard.writeText(content).then(() => {
-                    UI.showToast("Copied to clipboard");
-                }, () => {
-                    UI.showToast("Failed to copy");
-                });
+                navigator.clipboard.writeText(content).then(() => UI.showToast("Copied successfully"), () => UI.showToast("Failed to copy"));
+            },
+
+            downloadCurrent() {
+                const title = document.getElementById('note-modal-title').textContent;
+                const content = document.getElementById('note-modal-content').textContent;
+                const blob = new Blob([content], { type: 'text/plain' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `${title.replace(/\s+/g, '-')}.txt`;
+                a.click();
+                URL.revokeObjectURL(a.href);
+            },
+
+            async shareCurrent() {
+                const title = document.getElementById('note-modal-title').textContent;
+                const text = document.getElementById('note-modal-content').textContent;
+                if (navigator.share) {
+                    try {
+                        await navigator.share({ title, text });
+                    } catch (error) { console.error('Share failed:', error); }
+                } else {
+                    this.copyCurrent();
+                    UI.showToast("Share not supported. Copied to clipboard.");
+                }
             },
 
             async editCurrent() {
                 const noteRef = doc(db, 'users', AppState.currentUser.uid, 'notes', AppState.currentNoteId);
                 const docSnap = await getDoc(noteRef);
                 if (docSnap.exists()) {
-                    UI.closeModal('note-modal');
+                    UI.closeAllModals();
                     this.openEditModal({ id: AppState.currentNoteId, ...docSnap.data() });
                 }
             },
@@ -1420,45 +905,43 @@
             async deleteCurrent() {
                 if (confirm("Are you sure you want to delete this note?")) {
                     try {
-                        const noteRef = doc(db, 'users', AppState.currentUser.uid, 'notes', AppState.currentNoteId);
-                        await deleteDoc(noteRef);
-                        UI.closeModal('note-modal');
+                        await deleteDoc(doc(db, 'users', AppState.currentUser.uid, 'notes', AppState.currentNoteId));
+                        UI.closeAllModals();
                         UI.showToast("Note deleted");
-                    } catch (error) {
-                        console.error("Error deleting note:", error);
-                        UI.showToast("Failed to delete note.");
-                    }
+                    } catch (error) { console.error("Error deleting note:", error); UI.showToast("Failed to delete note."); }
                 }
             }
         };
 
         // --- IMAGES MODULE ---
         const Images = {
-            encryptionKey: 'secret', // Simple key for demonstration
+            encryptionKey: 'your-secret-key-for-url-obfuscation', // For demonstration only
             
             listen() {
                 const imagesCol = collection(db, 'users', AppState.currentUser.uid, 'images');
                 const q = query(imagesCol, orderBy('createdAt', 'desc'));
                 AppState.unsubscribeImages = onSnapshot(q, (snapshot) => {
-                    const images = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    this.render(images);
-                });
+                    this.render(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+                }, (error) => { console.error("Error listening to images:", error); UI.showToast("Could not load images."); });
             },
 
             render(images) {
                 const gridEl = document.getElementById('image-grid');
                 gridEl.innerHTML = '';
                  if (images.length === 0) {
-                    gridEl.innerHTML = '<p style="text-align:center; color: var(--secondary-text); grid-column: 1 / -1;">No images yet. Tap the + button to add one.</p>';
+                    gridEl.innerHTML = '<p class="empty-state">No images yet. Tap the + button to add one.</p>';
                     return;
                 }
                 images.forEach(image => {
-                    const thumb = document.createElement('div');
-                    thumb.className = 'image-thumb';
-                    thumb.dataset.id = image.id;
                     const decryptedUrl = this.decrypt(image.url);
-                    thumb.innerHTML = `<img src="${Utils.escapeHTML(decryptedUrl)}" alt="Encrypted Image" loading="lazy">`;
-                    gridEl.appendChild(thumb);
+                    if (decryptedUrl) {
+                        const thumb = document.createElement('div');
+                        thumb.className = 'image-thumb';
+                        thumb.dataset.id = image.id;
+                        thumb.dataset.url = image.url; // Store encrypted URL
+                        thumb.innerHTML = `<img src="${Utils.escapeHTML(decryptedUrl)}" alt="Encrypted Image" loading="lazy" oncontextmenu="return false;" ondragstart="return false;">`;
+                        gridEl.appendChild(thumb);
+                    }
                 });
             },
 
@@ -1468,63 +951,79 @@
             },
 
             async save() {
-                const urlInput = document.getElementById('image-url-input');
-                const url = urlInput.value.trim();
-                if (!url) {
-                    UI.showToast("URL cannot be empty.");
-                    return;
+                const url = document.getElementById('image-url-input').value.trim();
+                const validExt = ['.jpg', '.jpeg', '.png', '.webp'];
+                if (!validExt.some(ext => url.toLowerCase().endsWith(ext))) {
+                    UI.showToast("Invalid image URL."); return;
                 }
-                const validExtensions = ['.jpg', '.jpeg', '.png', '.webp'];
-                if (!validExtensions.some(ext => url.toLowerCase().endsWith(ext))) {
-                    UI.showToast("Invalid image URL. Must end with .jpg, .jpeg, .png, or .webp");
-                    return;
-                }
-
                 const encryptedUrl = this.encrypt(url);
-                const imageData = { url: encryptedUrl, createdAt: serverTimestamp() };
-
                 try {
-                    const imagesCol = collection(db, 'users', AppState.currentUser.uid, 'images');
-                    await addDoc(imagesCol, imageData);
+                    await addDoc(collection(db, 'users', AppState.currentUser.uid, 'images'), { url: encryptedUrl, createdAt: serverTimestamp() });
                     UI.showToast("Image added!");
-                    UI.closeModal('add-image-modal');
-                } catch (error) {
-                    console.error("Error adding image: ", error);
-                    UI.showToast("Failed to add image.");
-                }
+                    UI.closeAllModals();
+                } catch (error) { console.error("Error adding image:", error); UI.showToast("Failed to add image."); }
             },
             
-            async handleImageClick(e) {
+            handleImageClick(e) {
                 const thumb = e.target.closest('.image-thumb');
                 if (!thumb) return;
-                
-                const action = e.target.dataset.action;
-                const imageId = thumb.dataset.id;
-                
-                if (action === 'delete') {
-                    if (confirm("Delete this image?")) {
-                        await deleteDoc(doc(db, 'users', AppState.currentUser.uid, 'images', imageId));
-                        UI.showToast("Image deleted.");
-                    }
-                } else {
-                    const imgEl = thumb.querySelector('img');
-                    document.getElementById('fullscreen-image').src = imgEl.src;
-                    UI.openModal('image-viewer-modal');
+                AppState.currentImage = { id: thumb.dataset.id, url: thumb.dataset.url };
+                const decryptedUrl = this.decrypt(thumb.dataset.url);
+                document.getElementById('fullscreen-image').src = decryptedUrl;
+                UI.openModal('image-viewer-modal');
+            },
+
+            async downloadCurrent() {
+                if (!AppState.currentImage) return;
+                const decryptedUrl = this.decrypt(AppState.currentImage.url);
+                try {
+                    const response = await fetch(decryptedUrl);
+                    const blob = await response.blob();
+                    const a = document.createElement('a');
+                    a.href = URL.createObjectURL(blob);
+                    a.download = `vault-image-${Date.now()}.${decryptedUrl.split('.').pop()}`;
+                    a.click();
+                    URL.revokeObjectURL(a.href);
+                } catch (error) {
+                    console.error("Image download failed:", error);
+                    UI.showToast("Download failed.");
                 }
             },
 
-            // NOTE: This is simple obfuscation, not true encryption.
-            // A determined user can find the key in the source code.
-            encrypt(str) {
-                return btoa(str.split("").map((char, i) => String.fromCharCode(char.charCodeAt(0) ^ this.encryptionKey.charCodeAt(i % this.encryptionKey.length))).join(""));
-            },
-            decrypt(encoded) {
+            async shareCurrent() {
+                if (!AppState.currentImage) return;
+                const decryptedUrl = this.decrypt(AppState.currentImage.url);
+                const title = 'Image from Vault';
                 try {
-                    return atob(encoded).split("").map((char, i) => String.fromCharCode(char.charCodeAt(0) ^ this.encryptionKey.charCodeAt(i % this.encryptionKey.length))).join("");
-                } catch(e) {
-                    console.error("Decryption failed", e);
-                    return ""; // Return empty string if decryption fails
+                    const response = await fetch(decryptedUrl);
+                    const blob = await response.blob();
+                    const file = new File([blob], `vault-image.${blob.type.split('/')[1]}`, { type: blob.type });
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        await navigator.share({ files: [file], title });
+                    } else if (navigator.share) {
+                        await navigator.share({ url: decryptedUrl, title });
+                    } else {
+                        throw new Error('Web Share API not supported');
+                    }
+                } catch (error) {
+                    console.error("Image share failed:", error);
+                    UI.showToast("Share failed or not supported.");
                 }
+            },
+
+            async deleteCurrent() {
+                if (AppState.currentImage && confirm("Delete this image?")) {
+                    try {
+                        await deleteDoc(doc(db, 'users', AppState.currentUser.uid, 'images', AppState.currentImage.id));
+                        UI.closeAllModals();
+                        UI.showToast("Image deleted.");
+                    } catch (error) { console.error("Error deleting image:", error); UI.showToast("Failed to delete image."); }
+                }
+            },
+
+            encrypt(str) { return btoa(str); }, // Simple Base64 for obfuscation
+            decrypt(encoded) {
+                try { return atob(encoded); } catch(e) { console.error("Decryption failed", e); return ""; }
             }
         };
 
@@ -1533,50 +1032,38 @@
             async toggleDisguiseMode(e) {
                 const enabled = e.target.checked;
                 try {
-                    const userRef = doc(db, 'users', AppState.currentUser.uid);
-                    await updateDoc(userRef, { disguiseMode: enabled });
+                    await updateDoc(doc(db, 'users', AppState.currentUser.uid), { disguiseMode: enabled });
                     AppState.userSettings.disguiseMode = enabled;
                     UI.showToast(`Disguise mode ${enabled ? 'enabled' : 'disabled'}`);
                 } catch(error) {
                     console.error("Error updating disguise mode:", error);
                     UI.showToast("Failed to update setting.");
-                    e.target.checked = !enabled; // Revert checkbox on failure
+                    e.target.checked = !enabled; // Revert on failure
                 }
             },
             Disguise: {
                 displayValue: '0',
                 pinBuffer: '',
-
                 handleCalcKey(key) {
-                    if (!isNaN(parseInt(key)) || key === '.') {
-                        if (this.displayValue === '0' && key !== '.') this.displayValue = '';
-                        this.displayValue += key;
-                        this.pinBuffer += key;
+                    if (/\d/.test(key)) {
+                        if (this.pinBuffer.length < 4) this.pinBuffer += key;
+                        this.displayValue = this.pinBuffer;
                     } else if (key === 'clear') {
-                        this.displayValue = '0';
-                        this.pinBuffer = '';
+                        this.displayValue = '0'; this.pinBuffer = '';
                     }
-                    // For a real calculator, handle other operators.
-                    // For our disguise, we just care about the PIN entry.
-
-                    document.getElementById('calc-display').textContent = this.displayValue;
-                    this.checkPin();
+                    document.getElementById('calc-display').textContent = this.displayValue || '0';
+                    if (this.pinBuffer.length === 4) this.checkPin();
                 },
-
                 async checkPin() {
-                    if (this.pinBuffer.length === 4) {
-                        const hash = await Utils.hash(this.pinBuffer);
-                        if (hash === AppState.userSettings.pinHash) {
-                            Lock.unlock();
-                            document.title = "Hidden Vault";
-                        } else {
-                            const displayEl = document.getElementById('calc-display');
-                            displayEl.classList.add('shake');
-                            setTimeout(() => displayEl.classList.remove('shake'), 500);
-                        }
-                        this.pinBuffer = '';
-                        this.displayValue = '0';
+                    const hash = await Utils.hash(this.pinBuffer);
+                    if (hash === AppState.userSettings.pinHash) {
+                        Lock.unlock(); document.title = "Hidden Vault";
+                    } else {
+                        const displayEl = document.getElementById('calc-display');
+                        displayEl.classList.add('shake');
+                        setTimeout(() => displayEl.classList.remove('shake'), 500);
                     }
+                    this.pinBuffer = ''; this.displayValue = '0';
                 }
             }
         };
@@ -1584,167 +1071,55 @@
         // --- UTILITIES MODULE ---
         const Utils = {
             async hash(str) {
-                const encoder = new TextEncoder();
-                const data = encoder.encode(str);
-                const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-                const hashArray = Array.from(new Uint8Array(hashBuffer));
-                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-            },
-            debounce(func, delay) {
-                let timeout;
-                return function(...args) {
-                    const context = this;
-                    clearTimeout(timeout);
-                    timeout = setTimeout(() => func.apply(context, args), delay);
-                };
+                const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+                return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
             },
             escapeHTML(str) {
-                const p = document.createElement('p');
-                p.textContent = str;
-                return p.innerHTML;
+                const p = document.createElement('p'); p.textContent = str; return p.innerHTML;
             }
         };
         
         // --- PATTERN LOCK CLASS ---
         class PatternLock {
             constructor(selector, options = {}) {
-                this.canvas = document.querySelector(selector);
-                this.ctx = this.canvas.getContext('2d');
-                this.options = { ...{ radius: 25, margin: 20, line_width: 2, dot_color: '#a0a0a0', line_color: '#8A2BE2'}, ...options };
-                this.dots = [];
-                this.path = [];
-                this.isDrawing = false;
-                this.init();
-                this.attachEventListeners();
+                this.canvas = document.querySelector(selector); this.ctx = this.canvas.getContext('2d');
+                this.options = { radius: 25, margin: 20, line_width: 2, dot_color: '#a0a0a0', line_color: '#8A2BE2', ...options };
+                this.dots = []; this.path = []; this.isDrawing = false;
+                this.init(); this.attachEventListeners();
             }
-
             init() {
-                this.canvas.width = this.canvas.clientWidth;
-                this.canvas.height = this.canvas.clientHeight;
-                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                this.canvas.width = this.canvas.clientWidth; this.canvas.height = this.canvas.clientHeight;
                 this.dots = [];
-                const { width, height } = this.canvas;
-                const { margin, radius } = this.options;
-                const effectiveWidth = width - 2 * margin;
-                const effectiveHeight = height - 2 * margin;
-                const stepX = effectiveWidth / 2;
-                const stepY = effectiveHeight / 2;
-
-                for (let i = 0; i < 3; i++) {
-                    for (let j = 0; j < 3; j++) {
-                        this.dots.push({
-                            x: margin + j * stepX,
-                            y: margin + i * stepY,
-                            id: i * 3 + j
-                        });
-                    }
-                }
+                const step = (this.canvas.width - 2 * this.options.margin) / 2;
+                for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) this.dots.push({ x: this.options.margin + j * step, y: this.options.margin + i * step, id: i * 3 + j });
                 this.draw();
             }
-
             draw() {
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-                // Draw dots
                 this.dots.forEach(dot => {
-                    this.ctx.beginPath();
-                    this.ctx.arc(dot.x, dot.y, this.options.radius, 0, 2 * Math.PI);
-                    this.ctx.fillStyle = this.options.dot_color;
+                    this.ctx.beginPath(); this.ctx.arc(dot.x, dot.y, this.options.radius, 0, 2 * Math.PI);
+                    this.ctx.fillStyle = this.path.includes(dot.id) ? this.options.line_color : this.options.dot_color;
                     this.ctx.fill();
                 });
             }
-
             drawPath(toX, toY) {
-                this.draw(); // Redraw dots
-                if (this.path.length === 0) return;
-                
-                this.ctx.beginPath();
-                this.ctx.lineWidth = this.options.line_width;
-                this.ctx.strokeStyle = this.options.line_color;
-                
-                const firstDot = this.dots[this.path[0]];
-                this.ctx.moveTo(firstDot.x, firstDot.y);
-
-                for (let i = 1; i < this.path.length; i++) {
-                    const dot = this.dots[this.path[i]];
-                    this.ctx.lineTo(dot.x, dot.y);
-                }
-                
-                if (this.isDrawing) {
-                    this.ctx.lineTo(toX, toY);
-                }
-
-                this.ctx.stroke();
-
-                // Highlight selected dots
-                this.path.forEach(dotId => {
-                    const dot = this.dots[dotId];
-                    this.ctx.beginPath();
-                    this.ctx.arc(dot.x, dot.y, this.options.radius, 0, 2 * Math.PI);
-                    this.ctx.fillStyle = this.options.line_color;
-                    this.ctx.fill();
-                });
-            }
-            
-            getMousePos(e) {
-                const rect = this.canvas.getBoundingClientRect();
-                const touch = e.touches ? e.touches[0] : e;
-                return {
-                    x: touch.clientX - rect.left,
-                    y: touch.clientY - rect.top
-                };
-            }
-
-            attachEventListeners() {
-                this.canvas.addEventListener('mousedown', this.startDrawing.bind(this));
-                this.canvas.addEventListener('mousemove', this.move.bind(this));
-                this.canvas.addEventListener('mouseup', this.endDrawing.bind(this));
-                this.canvas.addEventListener('mouseleave', this.endDrawing.bind(this));
-                
-                this.canvas.addEventListener('touchstart', this.startDrawing.bind(this), { passive: false });
-                this.canvas.addEventListener('touchmove', this.move.bind(this), { passive: false });
-                this.canvas.addEventListener('touchend', this.endDrawing.bind(this));
-            }
-
-            startDrawing(e) {
-                e.preventDefault();
-                if(AppState.isTemporarilyLocked) return;
-                this.isDrawing = true;
-                this.path = [];
-                const pos = this.getMousePos(e);
-                this.updatePath(pos);
-            }
-
-            move(e) {
-                e.preventDefault();
-                if (!this.isDrawing) return;
-                const pos = this.getMousePos(e);
-                this.updatePath(pos);
-                this.drawPath(pos.x, pos.y);
-            }
-            
-            endDrawing(e) {
-                e.preventDefault();
-                if (!this.isDrawing) return;
-                this.isDrawing = false;
-                if (this.options.onDraw) {
-                    this.options.onDraw(this.path.join(''));
-                }
-                setTimeout(() => this.clear(), 200);
-            }
-
-            updatePath(pos) {
-                this.dots.forEach(dot => {
-                    const distance = Math.sqrt(Math.pow(pos.x - dot.x, 2) + Math.pow(pos.y - dot.y, 2));
-                    if (distance < this.options.radius && !this.path.includes(dot.id)) {
-                        this.path.push(dot.id);
-                    }
-                });
-            }
-
-            clear() {
-                this.path = [];
                 this.draw();
+                if (this.path.length === 0) return;
+                this.ctx.beginPath(); this.ctx.lineWidth = this.options.line_width; this.ctx.strokeStyle = this.options.line_color;
+                this.ctx.moveTo(this.dots[this.path[0]].x, this.dots[this.path[0]].y);
+                for (let i = 1; i < this.path.length; i++) this.ctx.lineTo(this.dots[this.path[i]].x, this.dots[this.path[i]].y);
+                if (this.isDrawing) this.ctx.lineTo(toX, toY);
+                this.ctx.stroke();
             }
+            getPos(e) { const r = this.canvas.getBoundingClientRect(); const t = e.touches ? e.touches[0] : e; return { x: t.clientX - r.left, y: t.clientY - r.top }; }
+            attachEventListeners() {
+                const events = { start: ['mousedown', 'touchstart'], move: ['mousemove', 'touchmove'], end: ['mouseup', 'mouseleave', 'touchend'] };
+                events.start.forEach(ev => this.canvas.addEventListener(ev, (e) => { e.preventDefault(); this.isDrawing = true; this.path = []; this.updatePath(this.getPos(e)); }, { passive: false }));
+                events.move.forEach(ev => this.canvas.addEventListener(ev, (e) => { e.preventDefault(); if(this.isDrawing) { const p = this.getPos(e); this.updatePath(p); this.drawPath(p.x, p.y); } }, { passive: false }));
+                events.end.forEach(ev => this.canvas.addEventListener(ev, (e) => { e.preventDefault(); if(this.isDrawing) { this.isDrawing = false; this.options.onDraw?.(this.path.join('')); setTimeout(() => this.clear(), 200); } }));
+            }
+            updatePath(pos) { this.dots.forEach(dot => { if (Math.hypot(pos.x - dot.x, pos.y - dot.y) < this.options.radius && !this.path.includes(dot.id)) this.path.push(dot.id); }); }
+            clear() { this.path = []; this.draw(); }
         }
         
         // --- START THE APP ---
@@ -1752,4 +1127,4 @@
 
     </script>
 </body>
-    </html>
+                                                                                                                                                                   </html>
