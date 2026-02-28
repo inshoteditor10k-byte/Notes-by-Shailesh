@@ -209,20 +209,20 @@ body {
     <h1>Welcome To Dashboard</h1>
 </div>
 
-<script>
-document.addEventListener("DOMContentLoaded", function() {
+<!-- Firebase SDKs (Modular v9) -->
+<script type="module">
 
-    const googleBtn = document.getElementById("googleLoginBtn");
-    const loader = document.getElementById("loader");
-    const btnText = document.getElementById("btnText");
-    const errorMessage = document.getElementById("errorMessage");
-    const loginCard = document.getElementById("loginCard");
-    const dashboard = document.getElementById("dashboard");
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { 
+    getAuth, 
+    GoogleAuthProvider, 
+    signInWithPopup 
+} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
-    /* ===============================
-       Google OAuth Configuration
-    =============================== */
-    const firebaseConfig = {
+/* ===============================
+   Firebase Configuration
+=============================== */
+const firebaseConfig = {
   apiKey: "AIzaSyDzVS_oUSNueLOUj8CtQWCaNKjG_-YTCKk",
   authDomain: "fake-phone-pe-d0f28.firebaseapp.com",
   databaseURL: "https://fake-phone-pe-d0f28-default-rtdb.firebaseio.com",
@@ -232,74 +232,73 @@ document.addEventListener("DOMContentLoaded", function() {
   appId: "1:860186859049:web:4e19d670c2e24b91a5ae38"
 };
 
+let app;
+let auth;
+let provider;
 
-    function initGoogleAuth() {
-        const authUrl =
-            googleAuthConfig.AUTH_ENDPOINT +
-            "?client_id=" + encodeURIComponent(googleAuthConfig.CLIENT_ID) +
-            "&redirect_uri=" + encodeURIComponent(googleAuthConfig.REDIRECT_URI) +
-            "&response_type=" + encodeURIComponent(googleAuthConfig.RESPONSE_TYPE) +
-            "&scope=" + encodeURIComponent(googleAuthConfig.SCOPES) +
-            "&nonce=" + Date.now();
+/* ===============================
+   Initialize Firebase
+=============================== */
+function initFirebase() {
+    app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    provider = new GoogleAuthProvider();
+}
 
-        window.location.href = authUrl;
+/* ===============================
+   Google Sign-In Logic
+=============================== */
+async function signInWithGoogle() {
+    const googleBtn = document.getElementById("googleLoginBtn");
+    const loader = document.getElementById("loader");
+    const btnText = document.getElementById("btnText");
+    const errorMessage = document.getElementById("errorMessage");
+
+    googleBtn.disabled = true;
+    errorMessage.style.display = "none";
+    loader.style.display = "inline-block";
+    btnText.style.display = "none";
+
+    try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+
+        showDashboard(user);
+
+    } catch (error) {
+        loader.style.display = "none";
+        btnText.style.display = "inline";
+        googleBtn.disabled = false;
+        errorMessage.style.display = "block";
+        console.error("Authentication Error:", error);
     }
+}
 
-    function parseJwt(token) {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(
-            atob(base64).split('').map(function(c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join('')
-        );
-        return JSON.parse(jsonPayload);
-    }
+/* ===============================
+   Show Dashboard
+=============================== */
+function showDashboard(user) {
+    document.getElementById("userName").textContent = user.displayName || "";
+    document.getElementById("userEmail").textContent = user.email || "";
+    document.getElementById("userImage").src = user.photoURL || "";
 
-    function handleCredentialResponse() {
-        const hash = window.location.hash;
-        if (hash.includes("id_token")) {
-            const params = new URLSearchParams(hash.replace("#", ""));
-            const idToken = params.get("id_token");
+    const loginCard = document.getElementById("loginCard");
+    const dashboard = document.getElementById("dashboard");
 
-            if (idToken) {
-                const userData = parseJwt(idToken);
-                showDashboard(userData);
-            }
-        }
-    }
+    loginCard.classList.add("hidden");
+    setTimeout(() => {
+        dashboard.classList.add("active");
+    }, 300);
+}
 
-    function showDashboard(user) {
-        document.getElementById("userName").textContent = user.name || "";
-        document.getElementById("userEmail").textContent = user.email || "";
-        document.getElementById("userImage").src = user.picture || "";
+/* ===============================
+   App Start
+=============================== */
+initFirebase();
 
-        loginCard.classList.add("hidden");
-        setTimeout(() => {
-            dashboard.classList.add("active");
-        }, 300);
-    }
+document.getElementById("googleLoginBtn")
+    .addEventListener("click", signInWithGoogle);
 
-    googleBtn.addEventListener("click", function() {
-        googleBtn.disabled = true;
-        errorMessage.style.display = "none";
-        loader.style.display = "inline-block";
-        btnText.style.display = "none";
-
-        setTimeout(function() {
-            try {
-                initGoogleAuth();
-            } catch (error) {
-                loader.style.display = "none";
-                btnText.style.display = "inline";
-                googleBtn.disabled = false;
-                errorMessage.style.display = "block";
-            }
-        }, 600);
-    });
-
-    handleCredentialResponse();
-});
 </script>
 
 </body>
