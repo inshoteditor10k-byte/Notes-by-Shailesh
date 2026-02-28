@@ -1,228 +1,308 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Web App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- SECTION: CSS Reset & Variables --- */
+        :root {
+            --primary-color: #4285F4; /* Google Blue */
+            --primary-color-dark: #357ae8;
+            --secondary-color: #34A853; /* Google Green */
+            --background-color: #f5f5f5;
+            --surface-color: #ffffff;
+            --text-color: #333333;
+            --text-color-light: #757575;
+            --error-color: #db4437;
+            --border-color: #e0e0e0;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --font-family: 'Roboto', sans-serif;
+        }
 
-<style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Roboto", "Segoe UI", sans-serif;
-}
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-body {
-    height: 100vh;
-    background: linear-gradient(145deg, #f5f7fa, #e4e7ec);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding-top: env(safe-area-inset-top);
-    overflow: hidden;
-}
+        /* --- SECTION: Body & Global Styles --- */
+        html, body {
+            height: 100%;
+        }
 
-/* ===== Login Card ===== */
-.login-card {
-    width: 90%;
-    max-width: 380px;
-    background: #ffffff;
-    padding: 40px 24px;
-    border-radius: 24px;
-    box-shadow: 
-        0 8px 24px rgba(0, 0, 0, 0.08),
-        0 4px 8px rgba(0, 0, 0, 0.05);
-    text-align: center;
-    animation: fadeIn 0.6s ease-in-out;
-    transition: opacity 0.4s ease, transform 0.4s ease;
-}
+        body {
+            font-family: var(--font-family);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            line-height: 1.6;
+        }
+        
+        #app {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
 
-.login-card.hidden {
-    opacity: 0;
-    transform: translateY(20px);
-    pointer-events: none;
-}
+        h1 {
+            font-size: 2rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
 
-/* ===== Dashboard ===== */
-.dashboard {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: #ffffff;
-    padding: 40px 24px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    transform: translateY(100%);
-    transition: transform 0.5s ease;
-}
+        p {
+            color: var(--text-color-light);
+            margin-bottom: 1.5rem;
+        }
 
-.dashboard.active {
-    transform: translateY(0);
-}
+        /* --- SECTION: Helper Classes --- */
+        .hidden {
+            display: none !important;
+        }
 
-.profile-section {
-    position: absolute;
-    top: 50px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-}
+        /* --- SECTION: Page Containers/Views --- */
+        .view-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--surface-color);
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+        }
 
-.profile-section img {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-}
+        /* --- SECTION: Component Styles (Buttons, Inputs, Cards) --- */
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease, box-shadow 0.2s ease;
+            -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+        }
 
-.profile-info {
-    text-align: left;
-}
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
 
-.profile-info h4 {
-    font-size: 16px;
-    color: #202124;
-}
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
 
-.profile-info p {
-    font-size: 13px;
-    color: #5f6368;
-}
+        .btn-guest {
+            background-color: var(--surface-color);
+            color: var(--primary-color);
+            border: 1px solid var(--border-color);
+            margin-top: 1rem;
+        }
 
-.dashboard h1 {
-    font-size: 22px;
-    font-weight: 600;
-    color: #202124;
-    text-align: center;
-}
+        .btn-guest:hover {
+            background-color: #f8f9fa;
+        }
 
-/* ===== Title ===== */
-.app-title {
-    font-size: 22px;
-    font-weight: 600;
-    margin-bottom: 32px;
-    color: #202124;
-}
+        .btn-google {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .btn-google:hover {
+            background-color: var(--primary-color-dark);
+        }
 
-/* ===== Google Button ===== */
-.google-btn {
-    width: 100%;
-    height: 50px;
-    background: #ffffff;
-    border: 1px solid #dadce0;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    position: relative;
-    font-size: 15px;
-    font-weight: 500;
-    color: #3c4043;
-}
+        .btn-google svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            background-color: white;
+            padding: 2px;
+            border-radius: 50%;
+        }
 
-.google-btn:hover {
-    box-shadow: 0 2px 8px rgba(60,64,67,0.15);
-    transform: translateY(-1px);
-}
+        .btn-logout {
+            background-color: #f1f3f4;
+            color: #5f6368;
+            margin-top: 1.5rem;
+        }
+        .btn-logout:hover {
+            background-color: #e8eaed;
+        }
+        
+        .input-group {
+            width: 100%;
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
 
-.google-btn:active {
-    transform: scale(0.98);
-}
+        .input-field {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
 
-.google-btn:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-}
+        .input-field:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+        }
 
-.google-icon {
-    width: 20px;
-    height: 20px;
-}
+        .error-message {
+            color: var(--error-color);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            text-align: left;
+            display: block;
+        }
 
-.loader {
-    width: 18px;
-    height: 18px;
-    border: 2px solid #ccc;
-    border-top: 2px solid #4285F4;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    display: none;
-}
+        /* --- SECTION: Dashboard Styles --- */
+        #dashboardView .profile-card {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .profile-pic {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 6px var(--shadow-color);
+        }
 
-.error-message {
-    margin-top: 18px;
-    font-size: 14px;
-    color: #d93025;
-    display: none;
-}
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: var(--text-color);
+        }
 
-@keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
+        .profile-email {
+            font-size: 1rem;
+            color: var(--text-color-light);
+        }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-</style>
+        .login-type-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-top: 0.75rem;
+        }
+
+        .login-type-badge.google {
+            background-color: #e8f0fe;
+            color: #1967d2;
+        }
+
+        .login-type-badge.guest {
+            background-color: #e6f4ea;
+            color: #1e8e3e;
+        }
+        
+        /* --- SECTION: Media Queries for Responsiveness --- */
+        @media (max-width: 480px) {
+            .view-container {
+                padding: 1.5rem;
+                box-shadow: none;
+                border-radius: 0;
+            }
+            body {
+                align-items: flex-start;
+            }
+            #app {
+                padding: 0;
+            }
+        }
+    </style>
 </head>
-
 <body>
 
-<!-- LOGIN SCREEN -->
-<div class="login-card" id="loginCard">
-    <div class="app-title">Welcome</div>
+    <!-- Main App Container -->
+    <main id="app">
 
-    <button id="googleLoginBtn" class="google-btn">
-        <svg class="google-icon" viewBox="0 0 48 48">
-            <path fill="#EA4335" d="M24 9.5c3.3 0 6.3 1.1 8.7 3.2l6.5-6.5C35.2 2.4 30 0 24 0 14.6 0 6.5 5.4 2.7 13.3l7.8 6.1C12.3 13.3 17.7 9.5 24 9.5z"/>
-            <path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.2-.4-4.7H24v9h12.7c-.5 2.8-2.1 5.1-4.4 6.6l6.9 5.4c4-3.7 6.3-9.2 6.3-16.3z"/>
-            <path fill="#FBBC05" d="M10.5 28.4c-.5-1.5-.8-3-.8-4.4s.3-3 .8-4.4l-7.8-6.1C1 16.7 0 20.2 0 24s1 7.3 2.7 10.5l7.8-6.1z"/>
-            <path fill="#34A853" d="M24 48c6 0 11.2-2 15-5.4l-6.9-5.4c-2 1.3-4.5 2.1-8.1 2.1-6.3 0-11.7-3.8-13.6-9.9l-7.8 6.1C6.5 42.6 14.6 48 24 48z"/>
-        </svg>
-
-        <span id="btnText">Continue with Google</span>
-        <div id="loader" class="loader"></div>
-    </button>
-
-    <div id="errorMessage" class="error-message">
-        Something went wrong. Please try again.
-    </div>
-</div>
-
-<!-- DASHBOARD SCREEN -->
-<div class="dashboard" id="dashboard">
-    <div class="profile-section">
-        <img id="userImage" src="" alt="Profile">
-        <div class="profile-info">
-            <h4 id="userName"></h4>
-            <p id="userEmail"></p>
+        <!-- 1. Login View -->
+        <div id="loginView" class="view-container">
+            <h1>Welcome</h1>
+            <p>Sign in to continue to your dashboard.</p>
+            <button id="googleLoginBtn" class="btn btn-google">
+                <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12s5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.222,0-9.618-3.317-11.28-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.574l6.19,5.238C42.022,35.138,44,30.025,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path></svg>
+                Continue with Google
+            </button>
+            <button id="guestLoginBtn" class="btn btn-guest">Continue with Guest</button>
         </div>
-    </div>
 
-    <h1>Welcome To Dashboard</h1>
-</div>
+        <!-- 2. Guest Form View -->
+        <div id="guestFormView" class="view-container hidden">
+            <h1>Guest Details</h1>
+            <p>Please provide your name and a unique ID.</p>
+            <form id="guestForm" style="width: 100%;">
+                <div class="input-group">
+                    <input type="text" id="fullNameInput" class="input-field" placeholder="Full Name" required>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="usernameInput" class="input-field" placeholder="Guest ID (e.g., user123)" required>
+                </div>
+                <span id="guestError" class="error-message"></span>
+                <button type="submit" class="btn btn-google">Start as Guest</button>
+            </form>
+        </div>
 
-<!-- Firebase SDKs (Modular v9) -->
-<script type="module">
+        <!-- 3. Dashboard View -->
+        <div id="dashboardView" class="view-container hidden">
+            <div class="profile-card">
+                <img id="profilePic" class="profile-pic" src="" alt="Profile Picture">
+                <h1 id="profileName" class="profile-name"></h1>
+                <p id="profileEmail" class="profile-email"></p>
+                <span id="loginTypeBadge" class="login-type-badge"></span>
+                <button id="logoutBtn" class="btn btn-logout">Logout</button>
+            </div>
+        </div>
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { 
-    getAuth, 
-    GoogleAuthProvider, 
-    signInWithPopup 
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+    </main>
 
-/* ===============================
-   Firebase Configuration
-=============================== */
-const firebaseConfig = {
+    <script type="module">
+        // --- SECTION: Firebase SDK Imports ---
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+        import {
+            getAuth,
+            onAuthStateChanged,
+            GoogleAuthProvider,
+            signInWithPopup,
+            signOut,
+        } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+        import {
+            getDatabase,
+            ref,
+            set,
+            get,
+            serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+
+        // --- SECTION: Firebase Configuration ---
+        // 🚨 IMPORTANT: Replace with your own Firebase project configuration.
+        // This is a real configuration structure. Create a Firebase project
+        // on https://console.firebase.google.com/ and get your config.
+        const firebaseConfig = {
   apiKey: "AIzaSyDzVS_oUSNueLOUj8CtQWCaNKjG_-YTCKk",
   authDomain: "fake-phone-pe-d0f28.firebaseapp.com",
   databaseURL: "https://fake-phone-pe-d0f28-default-rtdb.firebaseio.com",
@@ -232,74 +312,259 @@ const firebaseConfig = {
   appId: "1:860186859049:web:4e19d670c2e24b91a5ae38"
 };
 
-let app;
-let auth;
-let provider;
+        // --- SECTION: Firebase Initialization ---
+        let app, auth, db;
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getDatabase(app);
+        } catch (error) {
+            console.error("Firebase initialization error:", error);
+            // Alert the user if Firebase config is not set up
+            if (error.code === 'invalid-api-key') {
+                alert("Firebase configuration is invalid. Please replace placeholder values in the script.");
+            }
+        }
+        const googleProvider = new GoogleAuthProvider();
 
-/* ===============================
-   Initialize Firebase
-=============================== */
-function initFirebase() {
-    app = initializeApp(firebaseConfig);
-    auth = getAuth(app);
-    provider = new GoogleAuthProvider();
-}
+        // --- SECTION: DOM Element References ---
+        const loginView = document.getElementById('loginView');
+        const guestFormView = document.getElementById('guestFormView');
+        const dashboardView = document.getElementById('dashboardView');
+        
+        const googleLoginBtn = document.getElementById('googleLoginBtn');
+        const guestLoginBtn = document.getElementById('guestLoginBtn');
+        const guestForm = document.getElementById('guestForm');
+        const fullNameInput = document.getElementById('fullNameInput');
+        const usernameInput = document.getElementById('usernameInput');
+        const guestError = document.getElementById('guestError');
+        
+        const profilePic = document.getElementById('profilePic');
+        const profileName = document.getElementById('profileName');
+        const profileEmail = document.getElementById('profileEmail');
+        const loginTypeBadge = document.getElementById('loginTypeBadge');
+        const logoutBtn = document.getElementById('logoutBtn');
 
-/* ===============================
-   Google Sign-In Logic
-=============================== */
-async function signInWithGoogle() {
-    const googleBtn = document.getElementById("googleLoginBtn");
-    const loader = document.getElementById("loader");
-    const btnText = document.getElementById("btnText");
-    const errorMessage = document.getElementById("errorMessage");
+        // --- SECTION: State Management ---
+        let currentUserLoginType = null; // Can be 'GUEST' or 'GOOGLE'
 
-    googleBtn.disabled = true;
-    errorMessage.style.display = "none";
-    loader.style.display = "inline-block";
-    btnText.style.display = "none";
+        // --- SECTION: UI/View Management ---
+        /**
+         * Hides all views and shows the specified view.
+         * @param {string} viewId - The ID of the view to show ('loginView', 'guestFormView', 'dashboardView').
+         */
+        function switchView(viewId) {
+            loginView.classList.add('hidden');
+            guestFormView.classList.add('hidden');
+            dashboardView.classList.add('hidden');
+            
+            const viewToShow = document.getElementById(viewId);
+            if (viewToShow) {
+                viewToShow.classList.remove('hidden');
+            }
+        }
 
-    try {
-        const result = await signInWithPopup(auth, provider);
-        const user = result.user;
+        // --- SECTION: Guest Login Logic ---
+        /**
+         * Handles the click on the "Continue with Guest" button.
+         */
+        function handleGuestLoginClick() {
+            switchView('guestFormView');
+        }
 
-        showDashboard(user);
+        /**
+         * Handles the submission of the guest login form.
+         * @param {Event} event - The form submission event.
+         */
+        function handleGuestFormSubmit(event) {
+            event.preventDefault();
+            guestError.textContent = '';
+            
+            const fullName = fullNameInput.value.trim();
+            const username = usernameInput.value.trim();
 
-    } catch (error) {
-        loader.style.display = "none";
-        btnText.style.display = "inline";
-        googleBtn.disabled = false;
-        errorMessage.style.display = "block";
-        console.error("Authentication Error:", error);
-    }
-}
+            if (!fullName || !username) {
+                guestError.textContent = 'Both fields are required.';
+                return;
+            }
 
-/* ===============================
-   Show Dashboard
-=============================== */
-function showDashboard(user) {
-    document.getElementById("userName").textContent = user.displayName || "";
-    document.getElementById("userEmail").textContent = user.email || "";
-    document.getElementById("userImage").src = user.photoURL || "";
+            // Get used usernames from localStorage
+            const usedUsernames = JSON.parse(localStorage.getItem('usedGuestUsernames')) || [];
+            
+            // Validate if username is already used
+            if (usedUsernames.includes(username)) {
+                guestError.textContent = 'This Guest ID is already used. Guest login is allowed only once.';
+                return;
+            }
 
-    const loginCard = document.getElementById("loginCard");
-    const dashboard = document.getElementById("dashboard");
+            // If valid, add to localStorage and proceed
+            usedUsernames.push(username);
+            localStorage.setItem('usedGuestUsernames', JSON.stringify(usedUsernames));
 
-    loginCard.classList.add("hidden");
-    setTimeout(() => {
-        dashboard.classList.add("active");
-    }, 300);
-}
+            currentUserLoginType = 'GUEST';
+            const guestUserData = {
+                name: fullName,
+                email: null,
+                photoURL: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23757575"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>', // Generic avatar
+                loginType: 'Guest'
+            };
+            updateDashboardUI(guestUserData);
+            switchView('dashboardView');
+        }
 
-/* ===============================
-   App Start
-=============================== */
-initFirebase();
+        // --- SECTION: Google Authentication Logic ---
+        /**
+         * Handles the click on the "Continue with Google" button.
+         */
+        async function handleGoogleLoginClick() {
+            if (!auth) {
+                console.error("Firebase Auth is not initialized.");
+                return;
+            }
+            try {
+                const result = await signInWithPopup(auth, googleProvider);
+                const user = result.user;
+                await saveUserDataToDB(user);
+                // The onAuthStateChanged observer will handle the UI update
+            } catch (error) {
+                console.error("Google Sign-In Error:", error);
+                alert(`Error during sign-in: ${error.message}`);
+            }
+        }
 
-document.getElementById("googleLoginBtn")
-    .addEventListener("click", signInWithGoogle);
+        /**
+         * Saves or updates user data in the Firebase Realtime Database.
+         * @param {object} user - The Firebase user object.
+         */
+        async function saveUserDataToDB(user) {
+            if (!db || !user) return;
+            const userRef = ref(db, 'users/' + user.uid);
+            try {
+                await set(userRef, {
+                    uid: user.uid,
+                    name: user.displayName,
+                    email: user.email,
+                    photoURL: user.photoURL,
+                    lastLogin: serverTimestamp()
+                });
+            } catch (error) {
+                console.error("Error saving user data to DB:", error);
+            }
+        }
+        
+        /**
+         * Fetches user data from Firebase Realtime Database.
+         * @param {string} uid - The user's unique ID.
+         * @returns {Promise<object|null>} The user data object or null if not found.
+         */
+        async function fetchUserDataFromDB(uid) {
+            if (!db || !uid) return null;
+            const userRef = ref(db, 'users/' + uid);
+            try {
+                const snapshot = await get(userRef);
+                return snapshot.exists() ? snapshot.val() : null;
+            } catch (error) {
+                console.error("Error fetching user data from DB:", error);
+                return null;
+            }
+        }
 
-</script>
+        // --- SECTION: Dashboard & Logout Logic ---
+        /**
+         * Populates the dashboard with user data.
+         * @param {object} userData - Object containing user details.
+         */
+        function updateDashboardUI(userData) {
+            profilePic.src = userData.photoURL || '';
+            profileName.textContent = userData.name || 'N/A';
+            
+            if (userData.email) {
+                profileEmail.textContent = userData.email;
+                profileEmail.classList.remove('hidden');
+            } else {
+                profileEmail.classList.add('hidden');
+            }
 
+            loginTypeBadge.textContent = userData.loginType;
+            if (userData.loginType === 'Google') {
+                loginTypeBadge.className = 'login-type-badge google';
+            } else {
+                loginTypeBadge.className = 'login-type-badge guest';
+            }
+        }
+
+        /**
+         * Handles the logout process.
+         */
+        async function handleLogoutClick() {
+            if (currentUserLoginType === 'GOOGLE' && auth) {
+                try {
+                    await signOut(auth);
+                    // onAuthStateChanged will handle switching view
+                } catch (error) {
+                    console.error("Logout Error:", error);
+                }
+            } else { // Guest logout
+                currentUserLoginType = null;
+                // No session to clear, just go back to login screen
+                switchView('loginView');
+            }
+        }
+
+        // --- SECTION: Main App Initialization ---
+        /**
+         * Central authentication state observer.
+         */
+        function initializeAuthObserver() {
+            if (!auth) {
+                 // If Firebase is not initialized, show login screen and do nothing else.
+                switchView('loginView');
+                return;
+            }
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    // User is signed in with Google
+                    currentUserLoginType = 'GOOGLE';
+                    const dbUserData = await fetchUserDataFromDB(user.uid);
+                    if (dbUserData) {
+                         const userData = {
+                            ...dbUserData,
+                            loginType: 'Google'
+                        };
+                        updateDashboardUI(userData);
+                        switchView('dashboardView');
+                    } else {
+                        // This case might happen if DB data saving failed but auth succeeded
+                        console.log("User authenticated, but no data in DB. Saving now.");
+                        await saveUserDataToDB(user);
+                        const freshUserData = {
+                            name: user.displayName,
+                            email: user.email,
+                            photoURL: user.photoURL,
+                            loginType: 'Google'
+                        };
+                        updateDashboardUI(freshUserData);
+                        switchView('dashboardView');
+                    }
+                } else {
+                    // User is signed out or not logged in
+                    currentUserLoginType = null;
+                    switchView('loginView');
+                }
+            });
+        }
+
+        // Add all event listeners when the DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            guestLoginBtn.addEventListener('click', handleGuestLoginClick);
+            googleLoginBtn.addEventListener('click', handleGoogleLoginClick);
+            guestForm.addEventListener('submit', handleGuestFormSubmit);
+            logoutBtn.addEventListener('click', handleLogoutClick);
+
+            // Start the authentication state listener
+            initializeAuthObserver();
+        });
+
+    </script>
 </body>
 </html>
