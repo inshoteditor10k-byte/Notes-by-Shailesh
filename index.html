@@ -47,14 +47,24 @@
         
         #app {
             width: 100%;
-            max-width: 400px;
-            padding: 20px;
+            height: 100%;
+            max-width: 420px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         h1 {
             font-size: 2rem;
             font-weight: 500;
             margin-bottom: 0.5rem;
+        }
+
+        h2 {
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            text-align: left;
         }
 
         p {
@@ -70,6 +80,7 @@
         /* --- SECTION: Page Containers/Views --- */
         .view-container {
             width: 100%;
+            height: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -78,6 +89,13 @@
             padding: 2.5rem;
             border-radius: 16px;
             box-shadow: 0 4px 12px var(--shadow-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #dashboardView {
+            justify-content: flex-start;
+            padding-top: 1.5rem;
         }
 
         /* --- SECTION: Component Styles (Buttons, Inputs, Cards) --- */
@@ -104,6 +122,13 @@
         .btn:active {
             transform: translateY(0);
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.875rem;
+            width: auto;
+            margin: 0 0.5rem;
         }
 
         .btn-guest {
@@ -137,16 +162,22 @@
         .btn-logout {
             background-color: #f1f3f4;
             color: #5f6368;
-            margin-top: 1.5rem;
-        }
-        .btn-logout:hover {
-            background-color: #e8eaed;
+            margin-top: 1rem; /* Adjust margin */
+            position: absolute;
+            bottom: 80px; /* Position above FAB */
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 5rem);
         }
         
         .input-group {
             width: 100%;
             position: relative;
             margin-bottom: 1.5rem;
+        }
+        
+        .input-group:last-of-type {
+            margin-bottom: 1rem;
         }
 
         .input-field {
@@ -157,6 +188,11 @@
             border-radius: 8px;
             outline: none;
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        textarea.input-field {
+            min-height: 120px;
+            resize: vertical;
         }
 
         .input-field:focus {
@@ -172,17 +208,20 @@
             display: block;
         }
 
-        /* --- SECTION: Dashboard Styles --- */
+        /* --- SECTION: Dashboard & Profile Styles --- */
         #dashboardView .profile-card {
             width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
         }
         
         .profile-pic {
-            width: 90px;
-            height: 90px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
             object-fit: cover;
             margin-bottom: 1rem;
@@ -219,8 +258,157 @@
             color: #1e8e3e;
         }
         
+        /* --- SECTION: Notes Feature Styles --- */
+        #notesSection {
+            width: 100%;
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-bottom: 150px; /* Space for FAB and logout button */
+        }
+
+        #notesListContainer {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .note-item {
+            background-color: #f8f9fa;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 16px;
+            text-align: left;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+        
+        .note-item:hover {
+            background-color: #f1f3f4;
+            transform: scale(1.02);
+        }
+
+        #noNotesMessage {
+            color: var(--text-color-light);
+            margin-top: 2rem;
+        }
+        
+        #addNoteBtn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            font-size: 24px;
+            color: white;
+            background-color: var(--secondary-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            padding: 0;
+            z-index: 100;
+        }
+        
+        #addNoteBtn:hover {
+            background-color: #2e8c45;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        .modal-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background-color: var(--surface-color);
+            padding: 1.5rem;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal-overlay.visible .modal-content {
+            transform: scale(1);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-header h2 {
+            margin-bottom: 0;
+        }
+
+        .close-modal-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-color-light);
+        }
+        
+        #noteDetailView p {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            text-align: left;
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            min-height: 100px;
+        }
+        
+        #noteDetailButtons {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 1rem;
+        }
+        
+        /* Toast Notification */
+        #toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, bottom 0.3s ease;
+        }
+        
+        #toast.show {
+            opacity: 1;
+            visibility: visible;
+            bottom: 30px;
+        }
+        
         /* --- SECTION: Media Queries for Responsiveness --- */
         @media (max-width: 480px) {
+            #app {
+                 max-width: 100%;
+            }
             .view-container {
                 padding: 1.5rem;
                 box-shadow: none;
@@ -274,11 +462,55 @@
                 <h1 id="profileName" class="profile-name"></h1>
                 <p id="profileEmail" class="profile-email"></p>
                 <span id="loginTypeBadge" class="login-type-badge"></span>
-                <button id="logoutBtn" class="btn btn-logout">Logout</button>
             </div>
+            
+            <section id="notesSection">
+                <h2>My Notes</h2>
+                <div id="notesListContainer"></div>
+                <p id="noNotesMessage" class="hidden">You have no notes yet. Tap the '+' button to add one!</p>
+            </section>
+            
+            <button id="logoutBtn" class="btn btn-logout">Logout</button>
+            <button id="addNoteBtn" class="btn" title="Add Note">➕</button>
         </div>
 
     </main>
+    
+    <!-- 4. Note Modal -->
+    <div id="noteModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle"></h2>
+                <button class="close-modal-btn" title="Close">&times;</button>
+            </div>
+            
+            <!-- Note Form (for add/edit) -->
+            <form id="noteForm">
+                <input type="hidden" id="noteIdInput">
+                <div class="input-group">
+                    <input type="text" id="noteTitleInput" class="input-field" placeholder="Note Title" required>
+                </div>
+                <div class="input-group">
+                    <textarea id="noteDescriptionInput" class="input-field" placeholder="Note content..." required></textarea>
+                </div>
+                <span id="noteError" class="error-message"></span>
+                <button type="submit" id="saveNoteBtn" class="btn btn-google">Save Note</button>
+            </form>
+            
+            <!-- Note Detail View (for viewing) -->
+            <div id="noteDetailView" class="hidden">
+                <h3 id="noteDetailTitle" style="text-align: left; margin-bottom: 0.5rem;"></h3>
+                <p id="noteDetailDescription"></p>
+                <div id="noteDetailButtons">
+                    <button id="copyNoteBtn" class="btn btn-sm btn-guest">Copy</button>
+                    <button id="updateNoteBtn" class="btn btn-sm btn-google">Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div id="toast"></div>
 
     <script type="module">
         // --- SECTION: Firebase SDK Imports ---
@@ -295,13 +527,12 @@
             ref,
             set,
             get,
+            push,
+            update,
             serverTimestamp
         } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
 
         // --- SECTION: Firebase Configuration ---
-        // 🚨 IMPORTANT: Replace with your own Firebase project configuration.
-        // This is a real configuration structure. Create a Firebase project
-        // on https://console.firebase.google.com/ and get your config.
         const firebaseConfig = {
   apiKey: "AIzaSyDzVS_oUSNueLOUj8CtQWCaNKjG_-YTCKk",
   authDomain: "fake-phone-pe-d0f28.firebaseapp.com",
@@ -320,7 +551,6 @@
             db = getDatabase(app);
         } catch (error) {
             console.error("Firebase initialization error:", error);
-            // Alert the user if Firebase config is not set up
             if (error.code === 'invalid-api-key') {
                 alert("Firebase configuration is invalid. Please replace placeholder values in the script.");
             }
@@ -328,10 +558,12 @@
         const googleProvider = new GoogleAuthProvider();
 
         // --- SECTION: DOM Element References ---
+        // Views
         const loginView = document.getElementById('loginView');
         const guestFormView = document.getElementById('guestFormView');
         const dashboardView = document.getElementById('dashboardView');
         
+        // Login & Guest Form
         const googleLoginBtn = document.getElementById('googleLoginBtn');
         const guestLoginBtn = document.getElementById('guestLoginBtn');
         const guestForm = document.getElementById('guestForm');
@@ -339,19 +571,42 @@
         const usernameInput = document.getElementById('usernameInput');
         const guestError = document.getElementById('guestError');
         
+        // Dashboard
         const profilePic = document.getElementById('profilePic');
         const profileName = document.getElementById('profileName');
         const profileEmail = document.getElementById('profileEmail');
         const loginTypeBadge = document.getElementById('loginTypeBadge');
         const logoutBtn = document.getElementById('logoutBtn');
+        
+        // Notes Feature
+        const notesListContainer = document.getElementById('notesListContainer');
+        const noNotesMessage = document.getElementById('noNotesMessage');
+        const addNoteBtn = document.getElementById('addNoteBtn');
+        const noteModal = document.getElementById('noteModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const closeModalBtn = noteModal.querySelector('.close-modal-btn');
+        const noteForm = document.getElementById('noteForm');
+        const noteIdInput = document.getElementById('noteIdInput');
+        const noteTitleInput = document.getElementById('noteTitleInput');
+        const noteDescriptionInput = document.getElementById('noteDescriptionInput');
+        const noteError = document.getElementById('noteError');
+        const saveNoteBtn = document.getElementById('saveNoteBtn');
+        const noteDetailView = document.getElementById('noteDetailView');
+        const noteDetailTitle = document.getElementById('noteDetailTitle');
+        const noteDetailDescription = document.getElementById('noteDetailDescription');
+        const copyNoteBtn = document.getElementById('copyNoteBtn');
+        const updateNoteBtn = document.getElementById('updateNoteBtn');
+        const toast = document.getElementById('toast');
 
         // --- SECTION: State Management ---
-        let currentUserLoginType = null; // Can be 'GUEST' or 'GOOGLE'
+        let currentUserLoginType = null; // 'GUEST' or 'GOOGLE'
+        let currentUserId = null; // Guest username or Google UID
+        let currentNotes = []; // Array of note objects
 
         // --- SECTION: UI/View Management ---
         /**
          * Hides all views and shows the specified view.
-         * @param {string} viewId - The ID of the view to show ('loginView', 'guestFormView', 'dashboardView').
+         * @param {string} viewId - The ID of the view to show.
          */
         function switchView(viewId) {
             loginView.classList.add('hidden');
@@ -364,18 +619,23 @@
             }
         }
 
-        // --- SECTION: Guest Login Logic ---
         /**
-         * Handles the click on the "Continue with Guest" button.
+         * Displays a short-lived toast message.
+         * @param {string} message - The message to display.
          */
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // --- SECTION: Guest Login Logic ---
         function handleGuestLoginClick() {
             switchView('guestFormView');
         }
 
-        /**
-         * Handles the submission of the guest login form.
-         * @param {Event} event - The form submission event.
-         */
         function handleGuestFormSubmit(event) {
             event.preventDefault();
             guestError.textContent = '';
@@ -388,34 +648,29 @@
                 return;
             }
 
-            // Get used usernames from localStorage
             const usedUsernames = JSON.parse(localStorage.getItem('usedGuestUsernames')) || [];
-            
-            // Validate if username is already used
             if (usedUsernames.includes(username)) {
                 guestError.textContent = 'This Guest ID is already used. Guest login is allowed only once.';
                 return;
             }
 
-            // If valid, add to localStorage and proceed
             usedUsernames.push(username);
             localStorage.setItem('usedGuestUsernames', JSON.stringify(usedUsernames));
 
             currentUserLoginType = 'GUEST';
+            currentUserId = username;
             const guestUserData = {
                 name: fullName,
                 email: null,
-                photoURL: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23757575"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>', // Generic avatar
+                photoURL: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23757575"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>',
                 loginType: 'Guest'
             };
             updateDashboardUI(guestUserData);
+            loadNotes(); // Load notes for the guest user
             switchView('dashboardView');
         }
 
         // --- SECTION: Google Authentication Logic ---
-        /**
-         * Handles the click on the "Continue with Google" button.
-         */
         async function handleGoogleLoginClick() {
             if (!auth) {
                 console.error("Firebase Auth is not initialized.");
@@ -425,143 +680,307 @@
                 const result = await signInWithPopup(auth, googleProvider);
                 const user = result.user;
                 await saveUserDataToDB(user);
-                // The onAuthStateChanged observer will handle the UI update
             } catch (error) {
                 console.error("Google Sign-In Error:", error);
                 alert(`Error during sign-in: ${error.message}`);
             }
         }
 
-        /**
-         * Saves or updates user data in the Firebase Realtime Database.
-         * @param {object} user - The Firebase user object.
-         */
         async function saveUserDataToDB(user) {
             if (!db || !user) return;
             const userRef = ref(db, 'users/' + user.uid);
             try {
-                await set(userRef, {
-                    uid: user.uid,
-                    name: user.displayName,
-                    email: user.email,
-                    photoURL: user.photoURL,
-                    lastLogin: serverTimestamp()
-                });
+                const snapshot = await get(userRef);
+                if (!snapshot.exists()) {
+                    await set(userRef, {
+                        uid: user.uid,
+                        name: user.displayName,
+                        email: user.email,
+                        photoURL: user.photoURL,
+                        lastLogin: serverTimestamp()
+                    });
+                } else {
+                     await update(userRef, {
+                        lastLogin: serverTimestamp()
+                    });
+                }
             } catch (error) {
                 console.error("Error saving user data to DB:", error);
             }
         }
-        
-        /**
-         * Fetches user data from Firebase Realtime Database.
-         * @param {string} uid - The user's unique ID.
-         * @returns {Promise<object|null>} The user data object or null if not found.
-         */
-        async function fetchUserDataFromDB(uid) {
-            if (!db || !uid) return null;
-            const userRef = ref(db, 'users/' + uid);
-            try {
-                const snapshot = await get(userRef);
-                return snapshot.exists() ? snapshot.val() : null;
-            } catch (error) {
-                console.error("Error fetching user data from DB:", error);
-                return null;
-            }
-        }
 
         // --- SECTION: Dashboard & Logout Logic ---
-        /**
-         * Populates the dashboard with user data.
-         * @param {object} userData - Object containing user details.
-         */
         function updateDashboardUI(userData) {
             profilePic.src = userData.photoURL || '';
             profileName.textContent = userData.name || 'N/A';
-            
-            if (userData.email) {
-                profileEmail.textContent = userData.email;
-                profileEmail.classList.remove('hidden');
-            } else {
-                profileEmail.classList.add('hidden');
-            }
+            profileEmail.textContent = userData.email || '';
+            profileEmail.classList.toggle('hidden', !userData.email);
 
             loginTypeBadge.textContent = userData.loginType;
-            if (userData.loginType === 'Google') {
-                loginTypeBadge.className = 'login-type-badge google';
-            } else {
-                loginTypeBadge.className = 'login-type-badge guest';
+            loginTypeBadge.className = `login-type-badge ${userData.loginType.toLowerCase()}`;
+        }
+
+        async function handleLogoutClick() {
+            if (currentUserLoginType === 'GOOGLE' && auth) {
+                await signOut(auth);
+            }
+            // For both Google and Guest, reset the state
+            currentUserLoginType = null;
+            currentUserId = null;
+            currentNotes = [];
+            renderNotesList(); // Clears the list
+            switchView('loginView');
+        }
+
+        // --- SECTION: Notes UI Rendering ---
+        function renderNotesList() {
+            notesListContainer.innerHTML = '';
+            if (currentNotes.length === 0) {
+                noNotesMessage.classList.remove('hidden');
+                return;
+            }
+            noNotesMessage.classList.add('hidden');
+            
+            // Sort notes by createdAt timestamp, newest first
+            const sortedNotes = [...currentNotes].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+            sortedNotes.forEach(note => {
+                const noteEl = document.createElement('div');
+                noteEl.className = 'note-item';
+                noteEl.textContent = note.title;
+                noteEl.dataset.id = note.id;
+                noteEl.addEventListener('click', () => handleNoteItemClick(note.id));
+                notesListContainer.appendChild(noteEl);
+            });
+        }
+        
+        function openNoteModal(mode, note = null) {
+            noteError.textContent = '';
+            if (mode === 'add' || mode === 'edit') {
+                noteForm.classList.remove('hidden');
+                noteDetailView.classList.add('hidden');
+                noteIdInput.value = note ? note.id : '';
+                noteTitleInput.value = note ? note.title : '';
+                noteDescriptionInput.value = note ? note.description : '';
+                modalTitle.textContent = mode === 'add' ? 'Add New Note' : 'Update Note';
+                saveNoteBtn.textContent = mode === 'add' ? 'Save Note' : 'Update Note';
+            } else if (mode === 'view' && note) {
+                noteForm.classList.add('hidden');
+                noteDetailView.classList.remove('hidden');
+                modalTitle.textContent = 'Note Details';
+                noteDetailTitle.textContent = note.title;
+                noteDetailDescription.textContent = note.description;
+                // Store note data on buttons for handlers to access
+                copyNoteBtn.dataset.description = note.description;
+                updateNoteBtn.dataset.id = note.id;
+            }
+            noteModal.classList.add('visible');
+        }
+
+        function closeNoteModal() {
+            noteModal.classList.remove('visible');
+        }
+
+        // --- SECTION: Notes Logic (Event Handlers) ---
+        function handleAddNoteClick() {
+            openNoteModal('add');
+        }
+
+        function handleNoteItemClick(noteId) {
+            const note = currentNotes.find(n => n.id === noteId);
+            if (note) {
+                openNoteModal('view', note);
+            }
+        }
+        
+        async function handleSaveNoteForm(event) {
+            event.preventDefault();
+            const id = noteIdInput.value;
+            const title = noteTitleInput.value.trim();
+            const description = noteDescriptionInput.value.trim();
+
+            if (!title || !description) {
+                noteError.textContent = 'Title and description are required.';
+                return;
+            }
+
+            const noteData = { title, description };
+            
+            if (id) { // Update existing note
+                await updateNote(id, noteData);
+            } else { // Create new note
+                await saveNote(noteData);
+            }
+            closeNoteModal();
+        }
+        
+        function handleCopyNote() {
+            const description = copyNoteBtn.dataset.description;
+            navigator.clipboard.writeText(description).then(() => {
+                showToast('Note copied successfully');
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+                showToast('Failed to copy note');
+            });
+        }
+        
+        function handleUpdateNote() {
+            const noteId = updateNoteBtn.dataset.id;
+            const note = currentNotes.find(n => n.id === noteId);
+            if (note) {
+                openNoteModal('edit', note);
             }
         }
 
-        /**
-         * Handles the logout process.
-         */
-        async function handleLogoutClick() {
-            if (currentUserLoginType === 'GOOGLE' && auth) {
-                try {
-                    await signOut(auth);
-                    // onAuthStateChanged will handle switching view
-                } catch (error) {
-                    console.error("Logout Error:", error);
-                }
-            } else { // Guest logout
-                currentUserLoginType = null;
-                // No session to clear, just go back to login screen
-                switchView('loginView');
+        // --- SECTION: Notes Storage Functions (Abstraction Layer) ---
+        async function loadNotes() {
+            if (!currentUserId) return;
+            if (currentUserLoginType === 'GOOGLE') {
+                currentNotes = await loadNotesFromFirebase(currentUserId);
+            } else if (currentUserLoginType === 'GUEST') {
+                currentNotes = await loadNotesFromLocalStorage(currentUserId);
             }
+            renderNotesList();
+        }
+
+        async function saveNote(noteData) {
+            if (!currentUserId) return;
+            const noteWithTimestamp = {
+                ...noteData,
+                createdAt: Date.now(),
+                updatedAt: Date.now()
+            };
+
+            if (currentUserLoginType === 'GOOGLE') {
+                await saveNoteToFirebase(currentUserId, noteWithTimestamp);
+            } else if (currentUserLoginType === 'GUEST') {
+                await saveNoteToLocalStorage(currentUserId, noteWithTimestamp);
+            }
+            await loadNotes(); // Reload to get updated list with new ID
+        }
+        
+        async function updateNote(noteId, noteData) {
+             if (!currentUserId) return;
+             const noteWithTimestamp = {
+                ...noteData,
+                updatedAt: Date.now()
+            };
+            if (currentUserLoginType === 'GOOGLE') {
+                await updateNoteInFirebase(currentUserId, noteId, noteWithTimestamp);
+            } else if (currentUserLoginType === 'GUEST') {
+                await updateNoteInLocalStorage(currentUserId, noteId, noteWithTimestamp);
+            }
+            await loadNotes();
+        }
+        
+        // LocalStorage Implementation
+        async function loadNotesFromLocalStorage(username) {
+            const allNotes = JSON.parse(localStorage.getItem('guestNotes')) || {};
+            return allNotes[username] || [];
+        }
+
+        async function saveNoteToLocalStorage(username, noteData) {
+            const allNotes = JSON.parse(localStorage.getItem('guestNotes')) || {};
+            if (!allNotes[username]) {
+                allNotes[username] = [];
+            }
+            const newNote = { ...noteData, id: `guest_${Date.now()}` };
+            allNotes[username].push(newNote);
+            localStorage.setItem('guestNotes', JSON.stringify(allNotes));
+        }
+        
+        async function updateNoteInLocalStorage(username, noteId, noteData) {
+            const allNotes = JSON.parse(localStorage.getItem('guestNotes')) || {};
+            if (!allNotes[username]) return;
+
+            const noteIndex = allNotes[username].findIndex(note => note.id === noteId);
+            if (noteIndex > -1) {
+                const originalNote = allNotes[username][noteIndex];
+                allNotes[username][noteIndex] = { ...originalNote, ...noteData };
+                localStorage.setItem('guestNotes', JSON.stringify(allNotes));
+            }
+        }
+
+        // Firebase Realtime DB Implementation
+        async function loadNotesFromFirebase(uid) {
+            const notesRef = ref(db, `users/${uid}/notes`);
+            const snapshot = await get(notesRef);
+            if (!snapshot.exists()) return [];
+            
+            const notesData = snapshot.val();
+            return Object.keys(notesData).map(key => ({
+                id: key,
+                ...notesData[key]
+            }));
+        }
+
+        async function saveNoteToFirebase(uid, noteData) {
+            const notesRef = ref(db, `users/${uid}/notes`);
+            const newNoteRef = push(notesRef);
+            await set(newNoteRef, {
+                ...noteData,
+                createdAt: serverTimestamp(),
+                updatedAt: serverTimestamp()
+            });
+        }
+        
+        async function updateNoteInFirebase(uid, noteId, noteData) {
+             const noteRef = ref(db, `users/${uid}/notes/${noteId}`);
+             await update(noteRef, {
+                ...noteData,
+                updatedAt: serverTimestamp()
+             });
         }
 
         // --- SECTION: Main App Initialization ---
-        /**
-         * Central authentication state observer.
-         */
         function initializeAuthObserver() {
             if (!auth) {
-                 // If Firebase is not initialized, show login screen and do nothing else.
                 switchView('loginView');
                 return;
             }
             onAuthStateChanged(auth, async (user) => {
                 if (user) {
-                    // User is signed in with Google
                     currentUserLoginType = 'GOOGLE';
-                    const dbUserData = await fetchUserDataFromDB(user.uid);
-                    if (dbUserData) {
-                         const userData = {
-                            ...dbUserData,
-                            loginType: 'Google'
-                        };
-                        updateDashboardUI(userData);
-                        switchView('dashboardView');
-                    } else {
-                        // This case might happen if DB data saving failed but auth succeeded
-                        console.log("User authenticated, but no data in DB. Saving now.");
-                        await saveUserDataToDB(user);
-                        const freshUserData = {
-                            name: user.displayName,
-                            email: user.email,
-                            photoURL: user.photoURL,
-                            loginType: 'Google'
-                        };
-                        updateDashboardUI(freshUserData);
-                        switchView('dashboardView');
-                    }
+                    currentUserId = user.uid;
+                    const userRef = ref(db, 'users/' + user.uid);
+                    const snapshot = await get(userRef);
+                    const dbUserData = snapshot.val();
+
+                    const userData = {
+                        name: user.displayName,
+                        email: user.email,
+                        photoURL: user.photoURL,
+                        loginType: 'Google',
+                        ...dbUserData
+                    };
+                    updateDashboardUI(userData);
+                    await loadNotes(); // Load notes for the Google user
+                    switchView('dashboardView');
                 } else {
-                    // User is signed out or not logged in
-                    currentUserLoginType = null;
-                    switchView('loginView');
+                    if (currentUserLoginType !== 'GUEST') { // Avoid resetting view if a guest is active
+                         switchView('loginView');
+                    }
                 }
             });
         }
 
-        // Add all event listeners when the DOM is ready
         document.addEventListener('DOMContentLoaded', () => {
+            // Login/Logout listeners
             guestLoginBtn.addEventListener('click', handleGuestLoginClick);
             googleLoginBtn.addEventListener('click', handleGoogleLoginClick);
             guestForm.addEventListener('submit', handleGuestFormSubmit);
             logoutBtn.addEventListener('click', handleLogoutClick);
+            
+            // Notes listeners
+            addNoteBtn.addEventListener('click', handleAddNoteClick);
+            closeModalBtn.addEventListener('click', closeNoteModal);
+            noteModal.addEventListener('click', (e) => {
+                if (e.target === noteModal) closeNoteModal();
+            });
+            noteForm.addEventListener('submit', handleSaveNoteForm);
+            copyNoteBtn.addEventListener('click', handleCopyNote);
+            updateNoteBtn.addEventListener('click', handleUpdateNote);
 
-            // Start the authentication state listener
             initializeAuthObserver();
         });
 
