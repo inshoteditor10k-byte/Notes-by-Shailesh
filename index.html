@@ -196,6 +196,7 @@
         .top-ad-wrapper, .bottom-ad-wrapper {
             display: flex;
             justify-content: center;
+            align-items: center;
             margin: 15px 0;
         }
         
@@ -722,18 +723,7 @@
     // --- SECTION: HTML View Templates ---
     const getLoginViewHTML = () => `
         <div id="loginView" class="view-container">
-            <div class="top-ad-wrapper">
-                <script>
-                  atOptions = {
-                    'key' : 'ce0891d27d7dad00e3aecf15a7eee194',
-                    'format' : 'iframe',
-                    'height' : 250,
-                    'width' : 300,
-                    'params' : {}
-                  };
-                <\/script>
-                <script src="https://www.highperformanceformat.com/ce0891d27d7dad00e3aecf15a7eee194/invoke.js"><\/script>
-            </div>
+            <div class="top-ad-wrapper"></div>
             <h1>Welcome</h1>
             <p>Sign in to continue to your dashboard.</p>
             <button type="button" id="googleLoginBtn" class="btn btn-google" ${!firebaseReady ? 'disabled' : ''}>
@@ -846,7 +836,20 @@
         document.getElementById('googleLoginBtn')?.addEventListener('click', handleGoogleLoginClick);
         document.getElementById('guestLoginBtn')?.addEventListener('click', handleGuestLoginClick);
 
-        // BOTTOM AD INJECTION (existing implementation)
+        // TOP AD (300x250)
+        const topAd = document.querySelector(".top-ad-wrapper");
+        if (topAd && !topAd.dataset.loaded) {
+            topAd.dataset.loaded = "true";
+            const script1 = document.createElement("script");
+            script1.textContent = "atOptions = { 'key' : 'ce0891d27d7dad00e3aecf15a7eee194', 'format' : 'iframe', 'height' : 250, 'width' : 300, 'params' : {} };";
+            const script2 = document.createElement("script");
+            script2.src = "https://www.highperformanceformat.com/ce0891d27d7dad00e3aecf15a7eee194/invoke.js";
+            script2.async = true;
+            topAd.appendChild(script1);
+            topAd.appendChild(script2);
+        }
+
+        // BOTTOM AD (320x50)
         const bottomAdContainer = document.querySelector(".bottom-ad-wrapper");
         if (bottomAdContainer && !bottomAdContainer.dataset.loaded) {
             bottomAdContainer.dataset.loaded = "true";
@@ -1270,4 +1273,4 @@
 
 </script>
 </body>
-    </html>
+</html>
