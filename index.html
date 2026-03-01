@@ -48,7 +48,8 @@ expand_less
         align-items: center;
         text-align: center;
         line-height: 1.6;
-        overflow: hidden; /* Prevent body scroll, delegate to inner containers */
+        margin: 0;
+        min-height: 100vh;
     }
     
     #app {
@@ -496,7 +497,7 @@ expand_less
 
 <!-- Main App Container - Content will be rendered here by JavaScript -->
 
-<main id="app"></main>
+<div id="app"></div>
 
 <!-- Modals -->
 
@@ -563,19 +564,15 @@ appId: "1:860186859049:web:4e19d670c2e24b91a5ae38"
 
 // --- SECTION: Firebase Initialization ---
 let app, auth;
+let firebaseReady = false;
 try {
 app = initializeApp(firebaseConfig);
 auth = getAuth(app);
+firebaseReady = true;
 } catch (error) {
 console.error("Firebase initialization error:", error);
-alert("Firebase initialization failed. The app cannot work correctly.");
 }
 const googleProvider = new GoogleAuthProvider();
-
-// --- SECTION: DOM Element References (for Modals/Toast only) ---
-const noteModal = document.getElementById('noteModal');
-const securityModal = document.getElementById('securityModal');
-const toast = document.getElementById('toast');
 
 // --- SECTION: State Management ---
 let appState = {
@@ -695,9 +692,9 @@ const getLoginViewHTML = () => `
 <div id="loginView" class="view-container">
 <h1>Welcome</h1>
 <p>Sign in to continue to your dashboard.</p>
-<button id="googleLoginBtn" class="btn btn-google">
+<button id="googleLoginBtn" class="btn btn-google" ${!firebaseReady ? 'disabled' : ''}>
 <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12s5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.222,0-9.618-3.317-11.28-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.574l6.19,5.238C42.022,35.138,44,30.025,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path></svg>
-Continue with Google
+${firebaseReady ? 'Continue with Google' : 'Google Login Unavailable'}
 </button>
 <button id="guestLoginBtn" class="btn btn-guest">Continue with Guest</button>
 </div>`;
@@ -757,6 +754,10 @@ const getSecureDashboardViewHTML = () => `
 // --- SECTION: Central Rendering Engine ---
 async function renderApp() {
 const appContainer = document.getElementById('app');
+if (!appContainer) {
+console.error("#app container not found!");
+return;
+}
 
 switch (appState.currentView) {
 case 'guestForm':
@@ -788,7 +789,8 @@ break;
 
 // --- SECTION: Event Listener Attachment ---
 function attachLoginEventListeners() {
-document.getElementById('googleLoginBtn')?.addEventListener('click', handleGoogleLoginClick);
+const googleBtn = document.getElementById('googleLoginBtn');
+if (googleBtn) googleBtn.addEventListener('click', handleGoogleLoginClick);
 document.getElementById('guestLoginBtn')?.addEventListener('click', handleGuestLoginClick);
 }
 
@@ -806,7 +808,6 @@ if (panel) panel.style.display = panel.style.display === 'block' ? 'none' : 'blo
 document.getElementById('changeLockBtn')?.addEventListener('click', handleChangeLock);
 document.getElementById('viewHiddenNotesBtn')?.addEventListener('click', handleViewHiddenContent);
 
-// Event delegation for notes list
 const notesListContainer = document.getElementById('notesListContainer');
 if (notesListContainer) {
 notesListContainer.addEventListener('click', (e) => {
@@ -829,13 +830,15 @@ renderApp();
 });
 document.getElementById('addImageBtn')?.addEventListener('click', handleAddImage);
 
-// Event delegation for hidden images
 const hiddenImagesContainer = document.getElementById('hiddenImagesContainer');
 if (hiddenImagesContainer) {
 hiddenImagesContainer.addEventListener('click', e => {
 const target = e.target;
 const imageCard = target.closest('.image-card');
-const image = storageManager.getHiddenImages(appState.currentUserId).find(img => imageCard?.querySelector('img')?.src === img.url);
+if (!imageCard) return;
+const imageSrc = imageCard.querySelector('img')?.src;
+if (!imageSrc) return;
+const image = storageManager.getHiddenImages(appState.currentUserId).find(img => imageSrc === img.url);
 if (!image) return;
 
 if (target.closest('.download-img-btn')) downloadImage(image.url);
@@ -848,7 +851,7 @@ const hiddenNotesContainer = document.getElementById('hiddenNotesListContainer')
 if (hiddenNotesContainer) {
 hiddenNotesContainer.addEventListener('click', e => {
 const noteItem = e.target.closest('.note-item');
-if(noteItem) {
+if(noteItem && noteItem.dataset.id) {
 const note = storageManager.getHiddenNotes(appState.currentUserId).find(n => n.id === noteItem.dataset.id);
 if(note) openNoteModal('view', note, true);
 }
@@ -878,7 +881,7 @@ guestError.textContent = 'Both fields are required.';
 return;
 }
 if (storageManager.isGuestUsernameTaken(username)) {
-guestError.textContent = 'This Guest ID is already used. Guest login is allowed only once.';
+guestError.textContent = 'This Guest ID is already used. Please choose another.';
 return;
 }
 
@@ -897,7 +900,10 @@ renderApp();
 
 // --- SECTION: Google Authentication Logic ---
 async function handleGoogleLoginClick() {
-if (!auth) return;
+if (!firebaseReady || !auth) {
+showToast("Google Authentication is not available.");
+return;
+}
 try {
 const result = await signInWithPopup(auth, googleProvider);
 const user = result.user;
@@ -918,7 +924,9 @@ function saveGoogleUserDataToLocalStorage(user) { /* Unchanged */ }
 
 // --- SECTION: Dashboard & Logout Logic ---
 async function handleLogoutClick() {
-if (auth.currentUser) await signOut(auth);
+if (firebaseReady && auth.currentUser) {
+await signOut(auth);
+}
 sessionManager.clearUserId();
 appState.currentUserId = null;
 appState.currentNotes = [];
@@ -1015,7 +1023,6 @@ const hiddenNotesListContainer = document.getElementById('hiddenNotesListContain
 const hiddenImagesContainer = document.getElementById('hiddenImagesContainer');
 if(!hiddenNotesListContainer || !hiddenImagesContainer) return;
 
-// Render hidden notes
 const hiddenNotes = storageManager.getHiddenNotes(appState.currentUserId);
 hiddenNotesListContainer.innerHTML = '';
 if (hiddenNotes.length > 0) {
@@ -1031,7 +1038,6 @@ hiddenNotesListContainer.appendChild(noteEl);
 hiddenNotesListContainer.innerHTML = '<p>No hidden notes.</p>';
 }
 
-// Render hidden images
 const hiddenImages = storageManager.getHiddenImages(appState.currentUserId);
 hiddenImagesContainer.innerHTML = '';
 if (hiddenImages.length > 0) {
@@ -1063,11 +1069,12 @@ showToast("Image deleted.");
 
 // --- SECTION: Main App Initialization ---
 function initializeAuthObserver() {
+if (!firebaseReady) return;
 onAuthStateChanged(auth, async (user) => {
 const storedUserId = sessionManager.getUserId();
 const storedUser = storedUserId ? storageManager.getUser(storedUserId) : null;
 
-if (user) { // Firebase user is logged in
+if (user) {
 if (appState.currentUserId !== user.uid) {
 saveGoogleUserDataToLocalStorage(user);
 appState.currentUserId = user.uid;
@@ -1075,9 +1082,7 @@ sessionManager.setUserId(user.uid);
 appState.currentView = 'dashboard';
 await renderApp();
 }
-} else { // Firebase user is logged out
-// If the currently logged-in user was a Google user, log them out of the app state too.
-// Don't log out if it's a guest user.
+} else {
 if (storedUser && storedUser.type === 'google') {
 await handleLogoutClick();
 }
@@ -1085,33 +1090,58 @@ await handleLogoutClick();
 });
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-// Attach modal listeners globally since they are outside the #app container
+function initializeAppLogic() {
+const noteModal = document.getElementById('noteModal');
+const securityModal = document.getElementById('securityModal');
+
 noteModal.querySelector('.close-modal-btn').addEventListener('click', () => closeModal(noteModal));
 noteModal.addEventListener('click', (e) => e.target === noteModal && closeModal(noteModal));
 noteModal.querySelector('#noteForm').addEventListener('submit', handleSaveNoteForm);
 noteModal.querySelector('#copyNoteBtn').addEventListener('click', () => navigator.clipboard.writeText(noteModal.querySelector('#copyNoteBtn').dataset.description).then(() => showToast('Note copied')));
 noteModal.querySelector('#unhideNoteBtn').addEventListener('click', handleUnhideNote);
 noteModal.querySelector('#updateNoteBtn').addEventListener('click', () => {
-const note = appState.currentNotes.find(n => n.id === noteModal.querySelector('#updateNoteBtn').dataset.id);
+const updateBtn = noteModal.querySelector('#updateNoteBtn');
+const noteId = updateBtn.dataset.id;
+const note = storageManager.getNotes(appState.currentUserId).find(n => n.id === noteId);
 if(note) openNoteModal('edit', note);
 });
+
 securityModal.querySelector('.close-modal-btn').addEventListener('click', () => closeModal(securityModal));
 securityModal.addEventListener('click', (e) => e.target === securityModal && closeModal(securityModal));
 
-// Restore session on page load
 const storedUserId = sessionManager.getUserId();
-if (storedUserId) {
+if (storedUserId && storageManager.getUser(storedUserId)) {
 appState.currentUserId = storedUserId;
 appState.currentView = 'dashboard';
 } else {
+sessionManager.clearUserId();
+appState.currentUserId = null;
 appState.currentView = 'login';
 }
 
 initializeAuthObserver();
-await renderApp(); // Initial render based on stored session
+renderApp();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+try {
+initializeAppLogic();
+} catch (error) {
+console.error("A fatal error occurred during app initialization:", error);
+const appContainer = document.getElementById('app') || document.body;
+appContainer.innerHTML = `<div style="padding:20px;color:red;background:white;border:1px solid red;text-align:left;border-radius:8px;margin:1rem;">
+<h2>Application has crashed</h2>
+<p>A critical error prevented the app from starting. Please check the browser console for details.</p>
+<pre style="white-space:pre-wrap; word-wrap:break-word;background:#f0f0f0;padding:10px;margin-top:10px;border-radius:4px;font-family:monospace;">${error.stack}</pre>
+
+code
+Code
+download
+content_copy
+expand_less
+</div>`;
+    }
 });
 </script>
-
 </body>
 </html>
