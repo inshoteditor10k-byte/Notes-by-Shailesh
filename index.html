@@ -651,28 +651,22 @@
     const googleProvider = new GoogleAuthProvider();
 
     // --- SECTION: DOM Element References ---
-    // Views
+    // ... all DOM references remain unchanged ...
     const loginView = document.getElementById('loginView');
     const guestFormView = document.getElementById('guestFormView');
     const dashboardView = document.getElementById('dashboardView');
-    
-    // Login & Guest Form
     const googleLoginBtn = document.getElementById('googleLoginBtn');
     const guestLoginBtn = document.getElementById('guestLoginBtn');
     const guestForm = document.getElementById('guestForm');
     const fullNameInput = document.getElementById('fullNameInput');
     const usernameInput = document.getElementById('usernameInput');
     const guestError = document.getElementById('guestError');
-    
-    // Dashboard
     const profileCard = document.getElementById('profileCard');
     const profilePic = document.getElementById('profilePic');
     const profileName = document.getElementById('profileName');
     const profileEmail = document.getElementById('profileEmail');
     const loginTypeBadge = document.getElementById('loginTypeBadge');
     const logoutBtn = document.getElementById('logoutBtn');
-    
-    // Notes Feature
     const notesSection = document.getElementById('notesSection');
     const notesListContainer = document.getElementById('notesListContainer');
     const noNotesMessage = document.getElementById('noNotesMessage');
@@ -691,8 +685,6 @@
     const copyNoteBtn = document.getElementById('copyNoteBtn');
     const updateNoteBtn = document.getElementById('updateNoteBtn');
     const toast = document.getElementById('toast');
-    
-    // Security Features
     const securityPanel = document.getElementById('securityPanel');
     const createLockBtn = document.getElementById('createLockBtn');
     const changeLockBtn = document.getElementById('changeLockBtn');
@@ -704,13 +696,21 @@
     const securityModalBody = document.getElementById('securityModalBody');
     
     // --- SECTION: State Management ---
-    let currentUserLoginType = null; // 'GUEST' or 'GOOGLE'
-    let currentUserId = null; // Guest username or Google UID
-    let currentNotes = []; // Array of note objects
+    let currentUserLoginType = null;
+    let currentUserId = null;
+    let currentNotes = [];
+    
+    // --- SECTION: Crypto Helper ---
+    async function sha256(message) {
+        const msgBuffer = new TextEncoder().encode(message);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
 
     // --- SECTION: localStorage Data Manager ---
+    // ... all storageManager functions remain unchanged ...
     const storageKey = 'webAppData';
-
     const storageManager = {
         getData: () => {
             try {
@@ -838,7 +838,6 @@
         if (!auth) return;
         try {
             const result = await signInWithPopup(auth, googleProvider);
-            // onAuthStateChanged will handle the rest
         } catch (error) {
             console.error("Google Sign-In Error:", error);
             alert(`Error during sign-in: ${error.message}`);
@@ -849,16 +848,10 @@
         if (!user) return;
         const existingUser = storageManager.getUser(user.uid);
         const userData = {
-            type: 'google',
-            name: user.displayName,
-            email: user.email,
-            photoURL: user.photoURL
+            type: 'google', name: user.displayName, email: user.email, photoURL: user.photoURL
         };
         if (!existingUser) {
-            userData.notes = [];
-            userData.hiddenNotes = [];
-            userData.hiddenContent = {images: [], videos: []};
-            userData.locks = {};
+            Object.assign(userData, { notes: [], hiddenNotes: [], hiddenContent: {images: [], videos: []}, locks: {} });
         }
         storageManager.saveUser(user.uid, userData);
     }
@@ -883,6 +876,7 @@
     }
 
     // --- SECTION: Notes UI & Logic ---
+    // ... all notes functions remain unchanged ...
     function renderNotesList() {
         notesListContainer.innerHTML = '';
         noNotesMessage.classList.toggle('hidden', currentNotes.length === 0);
@@ -903,7 +897,6 @@
             notesListContainer.appendChild(noteEl);
         });
     }
-
     function openNoteModal(mode, note = null) {
         noteError.textContent = '';
         if (mode === 'add' || mode === 'edit') {
@@ -924,13 +917,11 @@
         }
         openModal(noteModal);
     }
-
     function handleAddNoteClick() { openNoteModal('add'); }
     function handleNoteItemClick(noteId) {
         const note = currentNotes.find(n => n.id === noteId);
         if (note) openNoteModal('view', note);
     }
-
     async function handleSaveNoteForm(event) {
         event.preventDefault();
         const id = noteIdInput.value;
@@ -947,13 +938,11 @@
         }
         closeModal(noteModal);
     }
-    
     function handleHideNote(noteId) {
         storageManager.hideNote(currentUserId, noteId);
         loadNotes();
         showToast('Note hidden successfully');
     }
-    
     function handleDeleteNote(noteId) {
         if(confirm('Are you sure you want to delete this note?')) {
             storageManager.deleteNote(currentUserId, noteId);
@@ -961,7 +950,6 @@
             showToast('Note deleted');
         }
     }
-    
     function loadNotes() {
         if (!currentUserId) return;
         currentNotes = storageManager.getNotes(currentUserId);
@@ -980,7 +968,7 @@
     
     // --- SECTION: Security & Locks UI ---
     let lockVerificationResolve = null;
-    let fpLockoutInterval = null;
+    let lockoutInterval = null;
     
     function openSecurityModal(title, bodyHTML, onOpen) {
         securityModalTitle.textContent = title;
@@ -990,8 +978,7 @@
     }
 
     function handleCreateLock() {
-        const body = `
-            <p>Choose a lock type to create.</p>
+        const body = `<p>Choose a lock type to create.</p>
             <button id="createFingerprintBtn" class="btn btn-secondary">Fingerprint</button>
             <button id="createPatternBtn" class="btn btn-secondary">Pattern</button>
             <button id="createPinBtn" class="btn btn-secondary">PIN</button>`;
@@ -1015,20 +1002,18 @@
                 scanner.classList.add('scanning');
                 status.textContent = "Scanning...";
                 pressTimer = setTimeout(() => {
-                    const fpHash = `fp_hash_${Date.now()}_${Math.random()}`; // Generate unique hash
-                    storageManager.saveLock(currentUserId, 'fingerprint', { hash: fpHash, attempts: 0, lockedUntil: null });
+                    const secret = crypto.randomUUID(); // Generate persistent secret
+                    storageManager.saveLock(currentUserId, 'fingerprint', { secret, attempts: 0, lockedUntil: null });
                     status.textContent = "Fingerprint saved!";
                     showToast('Fingerprint lock created!');
                     setTimeout(() => closeModal(securityModal), 1000);
                 }, 2000);
             };
-
             const cancelScan = () => {
                 scanner.classList.remove('scanning');
-                status.textContent = "Hold properly to scan.";
+                if (pressTimer) status.textContent = "Hold properly to scan.";
                 clearTimeout(pressTimer);
             };
-
             scanner.addEventListener('mousedown', startScan);
             scanner.addEventListener('mouseup', cancelScan);
             scanner.addEventListener('mouseleave', cancelScan);
@@ -1037,29 +1022,134 @@
         });
     }
 
-    function createPatternLock() { /* Unchanged */ }
+    function createPatternLock() {
+        let currentPattern = [];
+        let isDrawing = false;
+        const body = `<p>Connect at least 4 dots to create a pattern.</p>
+            <div id="patternLockGrid">
+                ${Array.from({length: 9}, (_, i) => `<div class="pattern-dot" data-id="${i}"></div>`).join('')}
+                <canvas id="patternLockCanvas" width="240" height="240"></canvas>
+            </div>
+            <button id="savePatternBtn" class="btn btn-google">Save Pattern</button>`;
     
-    function createPinLock() { /* Unchanged */ }
+        openSecurityModal('Create Pattern Lock', body, (el) => {
+            const grid = el.querySelector('#patternLockGrid');
+            const dots = el.querySelectorAll('.pattern-dot');
+            const canvas = el.querySelector('#patternLockCanvas');
+            const ctx = canvas.getContext('2d');
+            function getDotCenter(dot) {
+                const rect = dot.getBoundingClientRect(), gridRect = grid.getBoundingClientRect();
+                return { x: rect.left - gridRect.left + rect.width / 2, y: rect.top - gridRect.top + rect.height / 2 };
+            }
+            function drawLine() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                if (currentPattern.length < 2) return;
+                ctx.beginPath();
+                ctx.moveTo(getDotCenter(dots[currentPattern[0]]).x, getDotCenter(dots[currentPattern[0]]).y);
+                for (let i = 1; i < currentPattern.length; i++) {
+                    ctx.lineTo(getDotCenter(dots[currentPattern[i]]).x, getDotCenter(dots[currentPattern[i]]).y);
+                }
+                ctx.strokeStyle = 'var(--primary-color)'; ctx.lineWidth = 4; ctx.stroke();
+            }
+            const startDraw = () => { isDrawing = true; };
+            const draw = (e) => {
+                if (!isDrawing) return; e.preventDefault();
+                const touch = e.touches ? e.touches[0] : e;
+                const target = document.elementFromPoint(touch.clientX, touch.clientY);
+                if (target?.classList.contains('pattern-dot')) {
+                    const dotId = parseInt(target.dataset.id);
+                    if (!currentPattern.includes(dotId)) { currentPattern.push(dotId); target.classList.add('active'); drawLine(); }
+                }
+            };
+            const endDraw = () => { isDrawing = false; };
+            grid.addEventListener('mousedown', startDraw); grid.addEventListener('mousemove', draw);
+            document.body.addEventListener('mouseup', endDraw); grid.addEventListener('touchstart', startDraw, { passive: false });
+            grid.addEventListener('touchmove', draw, { passive: false }); grid.addEventListener('touchend', endDraw);
+            el.querySelector('#savePatternBtn').addEventListener('click', () => {
+                document.body.removeEventListener('mouseup', endDraw);
+                if (currentPattern.length < 4) { showToast('Pattern must have at least 4 dots.'); return; }
+                const secret = currentPattern.join('-'); // Save as string sequence
+                storageManager.saveLock(currentUserId, 'pattern', { secret, attempts: 0, lockedUntil: null });
+                showToast('Pattern lock saved!'); closeModal(securityModal);
+            });
+        });
+    }
+    
+    async function createPinLock() {
+        let pin = "";
+        const body = `<div id="pinDisplay"></div>
+        <div id="pinKeypad">
+            ${[1,2,3,4,5,6,7,8,9,'C',0,'OK'].map(k => `<button data-key="${k}" type="button">${k}</button>`).join('')}
+        </div>`;
+        openSecurityModal('Create PIN Lock (min 4 digits)', body, (el) => {
+            const display = el.querySelector('#pinDisplay');
+            el.querySelector('#pinKeypad').addEventListener('click', async (e) => {
+                if(e.target.tagName !== 'BUTTON') return;
+                const key = e.target.dataset.key;
+                if(key === 'C') pin = "";
+                else if(key === 'OK'){
+                    if (pin.length < 4) { showToast('PIN must be at least 4 digits'); return; }
+                    const secret = await sha256(pin); // Hash the PIN
+                    storageManager.saveLock(currentUserId, 'pin', { secret, attempts: 0, lockedUntil: null });
+                    showToast('PIN saved!'); closeModal(securityModal);
+                } else if (pin.length < 8) pin += key;
+                display.textContent = '•'.repeat(pin.length);
+            });
+        });
+    }
     
     function handleChangeLock() {
         verifyLock().then(success => {
-            if(success) {
-                closeModal(securityModal);
-                setTimeout(handleCreateLock, 300);
-            } else {
-                showToast('Verification Failed');
-            }
+            if(success) { closeModal(securityModal); setTimeout(handleCreateLock, 300); } 
+            else { showToast('Verification Failed'); }
         });
+    }
+
+    function checkLockout(lockType, lockData) {
+        if (lockData.lockedUntil && Date.now() < lockData.lockedUntil) {
+            const timeLeft = Math.ceil((lockData.lockedUntil - Date.now()) / 1000);
+            openSecurityModal(`${lockType} Locked`, `<p id="lockStatus">Locked. Try again in ${timeLeft} seconds.</p>`);
+            const statusEl = document.getElementById('lockStatus');
+            clearInterval(lockoutInterval);
+            lockoutInterval = setInterval(() => {
+                const newTimeLeft = Math.ceil((lockData.lockedUntil - Date.now()) / 1000);
+                if (newTimeLeft > 0) { statusEl.textContent = `Locked. Try again in ${newTimeLeft} seconds.`; }
+                else { clearInterval(lockoutInterval); statusEl.textContent = "You can try again now."; }
+            }, 1000);
+            return true;
+        }
+        return false;
+    }
+
+    function handleLockFailure(lockType, lockData) {
+        let attempts = (lockData.attempts || 0) + 1;
+        let newLockData = { ...lockData };
+        if (attempts >= 5) {
+            newLockData.lockedUntil = Date.now() + 30000;
+            newLockData.attempts = 0;
+            showToast("Too many failed attempts. Locked for 30 seconds.");
+        } else {
+            newLockData.attempts = attempts;
+            showToast(`Incorrect. ${5 - attempts} attempts left.`);
+        }
+        storageManager.saveLock(currentUserId, lockType, newLockData);
+        lockVerificationResolve(false);
+    }
+    
+    function handleLockSuccess(lockType, lockData) {
+        storageManager.saveLock(currentUserId, lockType, { ...lockData, attempts: 0, lockedUntil: null });
+        showToast('Verified!');
+        lockVerificationResolve(true);
+        closeModal(securityModal);
     }
 
     async function verifyLock() {
         return new Promise(resolve => {
             lockVerificationResolve = resolve;
             const locks = storageManager.getLocks(currentUserId);
-            if(Object.keys(locks).length === 0) {
-                showToast('No locks set up. You can proceed.');
-                return resolve(true);
-            }
+            if(Object.keys(locks).length === 0) { return resolve(true); }
+            
+            // For simplicity, verify the first available lock type
             if(locks.fingerprint) verifyFingerprintLock();
             else if(locks.pin) verifyPinLock();
             else if(locks.pattern) verifyPatternLock();
@@ -1067,54 +1157,13 @@
         });
     }
 
-    function verifyPinLock() { /* Unchanged */ }
-    
     function verifyFingerprintLock(){
         const lockData = storageManager.getLocks(currentUserId)?.fingerprint;
-        if (!lockData || !lockData.hash) {
-            showToast("Fingerprint lock not set up.");
-            lockVerificationResolve(false);
-            return;
-        }
-
-        const handleFailure = () => {
-            let attempts = (lockData.attempts || 0) + 1;
-            let newLockData = { ...lockData };
-            
-            if (attempts >= 5) {
-                newLockData.lockedUntil = Date.now() + 30000;
-                newLockData.attempts = 0;
-                showToast("Too many failed attempts. Locked for 30 seconds.");
-            } else {
-                newLockData.attempts = attempts;
-                showToast(`Fingerprint not matched. ${5 - attempts} attempts left.`);
-            }
-            storageManager.saveLock(currentUserId, 'fingerprint', newLockData);
-            lockVerificationResolve(false);
-            closeModal(securityModal);
-        };
-
-        if (lockData.lockedUntil && Date.now() < lockData.lockedUntil) {
-            const timeLeft = Math.ceil((lockData.lockedUntil - Date.now()) / 1000);
-            openSecurityModal('Fingerprint Locked', `<p id="fpStatus">Locked. Try again in ${timeLeft} seconds.</p>`);
-            const statusEl = document.getElementById('fpStatus');
-            clearInterval(fpLockoutInterval);
-            fpLockoutInterval = setInterval(() => {
-                const newTimeLeft = Math.ceil((lockData.lockedUntil - Date.now()) / 1000);
-                if (newTimeLeft > 0) {
-                    statusEl.textContent = `Locked. Try again in ${newTimeLeft} seconds.`;
-                } else {
-                    clearInterval(fpLockoutInterval);
-                    statusEl.textContent = "You can try again now.";
-                }
-            }, 1000);
-            lockVerificationResolve(false);
-            return;
-        }
+        if (!lockData || !lockData.secret) return lockVerificationResolve(false);
+        if (checkLockout('Fingerprint', lockData)) return lockVerificationResolve(false);
         
         const body = `<p>Press and hold the scanner for 2 seconds to verify.</p>
             <div id="fingerprintScanner"></div><p id="fpStatus"></p>`;
-            
         openSecurityModal('Verify Fingerprint', body, (el) => {
             const scanner = el.querySelector('#fingerprintScanner');
             const status = el.querySelector('#fpStatus');
@@ -1125,28 +1174,19 @@
                 scanner.classList.add('scanning');
                 status.textContent = "Verifying...";
                 pressTimer = setTimeout(() => {
-                    // This is the simulated successful match.
-                    status.textContent = "Fingerprint Matched!";
-                    // On success, reset attempts and lockedUntil time.
-                    storageManager.saveLock(currentUserId, 'fingerprint', { ...lockData, attempts: 0, lockedUntil: null });
-                    showToast('Verified!');
-                    lockVerificationResolve(true);
-                    closeModal(securityModal);
+                    handleLockSuccess('fingerprint', lockData);
                 }, 2000);
             };
-
             const cancelVerification = () => {
+                const wasScanning = scanner.classList.contains('scanning');
+                scanner.classList.remove('scanning');
                 clearTimeout(pressTimer);
-                // Check if the timer was actually running. If it was, it means it was a failed attempt.
-                if (scanner.classList.contains('scanning')) {
-                    scanner.classList.remove('scanning');
+                if (wasScanning) { // If hold was released early, it's a fail
                     scanner.classList.add('error');
                     setTimeout(() => scanner.classList.remove('error'), 500);
-                    status.textContent = "Hold longer to verify.";
-                    handleFailure();
+                    handleLockFailure('fingerprint', lockData);
                 }
             };
-            
             scanner.addEventListener('mousedown', startVerification);
             scanner.addEventListener('mouseup', cancelVerification);
             scanner.addEventListener('mouseleave', cancelVerification);
@@ -1155,7 +1195,62 @@
         });
     }
 
-    function verifyPatternLock() { /* Logic similar to createPatternLock but compares with saved sequence */ }
+    function verifyPinLock() {
+        const lockData = storageManager.getLocks(currentUserId)?.pin;
+        if (!lockData || !lockData.secret) return lockVerificationResolve(false);
+        if (checkLockout('PIN', lockData)) return lockVerificationResolve(false);
+        
+        let pin = "";
+        const body = `<div id="pinDisplay"></div>
+        <div id="pinKeypad">
+            ${[1,2,3,4,5,6,7,8,9,'C',0,'OK'].map(k => `<button data-key="${k}" type="button">${k}</button>`).join('')}
+        </div>`;
+        openSecurityModal('Enter Your PIN', body, (el) => {
+            const display = el.querySelector('#pinDisplay');
+            el.querySelector('#pinKeypad').addEventListener('click', async (e) => {
+                if(e.target.tagName !== 'BUTTON') return;
+                const key = e.target.dataset.key;
+                if(key === 'C') pin = "";
+                else if(key === 'OK') {
+                    const inputHash = await sha256(pin);
+                    if (inputHash === lockData.secret) handleLockSuccess('pin', lockData);
+                    else { pin = ""; display.textContent = ""; handleLockFailure('pin', lockData); }
+                } else if (pin.length < 8) pin += key;
+                display.textContent = '•'.repeat(pin.length);
+            });
+        });
+    }
+    
+    function verifyPatternLock() {
+        const lockData = storageManager.getLocks(currentUserId)?.pattern;
+        if (!lockData || !lockData.secret) return lockVerificationResolve(false);
+        if (checkLockout('Pattern', lockData)) return lockVerificationResolve(false);
+        
+        let currentPattern = [];
+        let isDrawing = false;
+        const body = `<p>Draw your unlock pattern.</p>
+            <div id="patternLockGrid">
+                ${Array.from({length: 9}, (_, i) => `<div class="pattern-dot" data-id="${i}"></div>`).join('')}
+                <canvas id="patternLockCanvas" width="240" height="240"></canvas>
+            </div>`;
+        openSecurityModal('Enter Pattern', body, (el) => {
+            const grid = el.querySelector('#patternLockGrid'); const dots = el.querySelectorAll('.pattern-dot');
+            const canvas = el.querySelector('#patternLockCanvas'); const ctx = canvas.getContext('2d');
+            function getDotCenter(dot) { const rect = dot.getBoundingClientRect(), gridRect = grid.getBoundingClientRect(); return { x: rect.left - gridRect.left + rect.width / 2, y: rect.top - gridRect.top + rect.height / 2 }; }
+            function drawLine() { ctx.clearRect(0, 0, canvas.width, canvas.height); if (currentPattern.length < 2) return; ctx.beginPath(); ctx.moveTo(getDotCenter(dots[currentPattern[0]]).x, getDotCenter(dots[currentPattern[0]]).y); for (let i = 1; i < currentPattern.length; i++) { ctx.lineTo(getDotCenter(dots[currentPattern[i]]).x, getDotCenter(dots[currentPattern[i]]).y); } ctx.strokeStyle = 'var(--primary-color)'; ctx.lineWidth = 4; ctx.stroke(); }
+            const startDraw = () => { isDrawing = true; };
+            const draw = (e) => { if (!isDrawing) return; e.preventDefault(); const touch = e.touches ? e.touches[0] : e; const target = document.elementFromPoint(touch.clientX, touch.clientY); if (target?.classList.contains('pattern-dot')) { const dotId = parseInt(target.dataset.id); if (!currentPattern.includes(dotId)) { currentPattern.push(dotId); target.classList.add('active'); drawLine(); } } };
+            const endDraw = () => {
+                isDrawing = false; document.body.removeEventListener('mouseup', endDraw);
+                const inputSequence = currentPattern.join('-');
+                if (inputSequence === lockData.secret) handleLockSuccess('pattern', lockData);
+                else { handleLockFailure('pattern', lockData); closeModal(securityModal); }
+            };
+            grid.addEventListener('mousedown', startDraw); grid.addEventListener('mousemove', draw);
+            document.body.addEventListener('mouseup', endDraw); grid.addEventListener('touchstart', startDraw, { passive: false });
+            grid.addEventListener('touchmove', draw, { passive: false }); grid.addEventListener('touchend', endDraw);
+        });
+    }
 
     function handleSeeLocks() {
         const locks = storageManager.getLocks(currentUserId);
@@ -1169,85 +1264,62 @@
     
     function handleHideContent() {
         const body = `<p>Enter the URL of the image or video to hide.</p>
-        <div class="input-group">
-            <input type="url" id="contentUrlInput" class="input-field" placeholder="https://example.com/image.png" required>
-        </div>
-        <button id="hideImageBtn" class="btn btn-secondary">Hide Image</button>
-        <button id="hideVideoBtn" class="btn btn-secondary">Hide Video</button>`;
+            <div class="input-group">
+                <input type="url" id="contentUrlInput" class="input-field" placeholder="https://example.com/image.png" required>
+            </div>
+            <button id="hideImageBtn" class="btn btn-secondary">Hide Image</button>
+            <button id="hideVideoBtn" class="btn btn-secondary">Hide Video</button>`;
         openSecurityModal('Hide Content', body, (el) => {
             const urlInput = el.querySelector('#contentUrlInput');
-            el.querySelector('#hideImageBtn').addEventListener('click', () => {
-                if(urlInput.value) { storageManager.addHiddenContent(currentUserId, 'images', urlInput.value); showToast('Image hidden'); closeModal(securityModal); }
-            });
-            el.querySelector('#hideVideoBtn').addEventListener('click', () => {
-                if(urlInput.value) { storageManager.addHiddenContent(currentUserId, 'videos', urlInput.value); showToast('Video hidden'); closeModal(securityModal); }
-            });
+            el.querySelector('#hideImageBtn').addEventListener('click', () => { if(urlInput.value) { storageManager.addHiddenContent(currentUserId, 'images', urlInput.value); showToast('Image hidden'); closeModal(securityModal); } });
+            el.querySelector('#hideVideoBtn').addEventListener('click', () => { if(urlInput.value) { storageManager.addHiddenContent(currentUserId, 'videos', urlInput.value); showToast('Video hidden'); closeModal(securityModal); } });
         });
     }
     
     function handleSeeHiddenContent() {
         verifyLock().then(success => {
             if(success) {
-                closeModal(securityModal);
                 const content = storageManager.getHiddenContent(currentUserId);
                 const hiddenNotes = storageManager.getHiddenNotes(currentUserId);
                 let galleryHTML = '<h3>Hidden Notes</h3>';
-                if(hiddenNotes.length > 0) {
-                    hiddenNotes.forEach(note => { galleryHTML += `<div class="note-item">${note.title}</div>`; });
-                } else { galleryHTML += `<p>No hidden notes.</p>`; }
-
+                if(hiddenNotes.length > 0) { hiddenNotes.forEach(note => { galleryHTML += `<div class="note-item">${note.title}</div>`; }); }
+                else { galleryHTML += `<p>No hidden notes.</p>`; }
                 galleryHTML += '<h3>Hidden Media</h3><div class="gallery-grid">';
                 content.images.forEach(url => { galleryHTML += `<img src="${url}" alt="Hidden Image">`; });
                 content.videos.forEach(url => { galleryHTML += `<video src="${url}" controls></video>`; });
                 galleryHTML += '</div>';
                 if(content.images.length === 0 && content.videos.length === 0) galleryHTML += '<p>No hidden images or videos.</p>';
-                
                 openSecurityModal('Your Hidden Gallery', `<div id="hiddenGallery">${galleryHTML}</div>`);
-            } else { showToast('Verification Failed!'); }
+            }
         });
     }
-
 
     // --- SECTION: Main App Initialization ---
     function initializeAuthObserver() {
         if (!auth) { switchView('loginView'); return; }
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                currentUserLoginType = 'GOOGLE';
-                currentUserId = user.uid;
-                saveGoogleUserDataToLocalStorage(user);
+                currentUserLoginType = 'GOOGLE'; currentUserId = user.uid; saveGoogleUserDataToLocalStorage(user);
                 const localUserData = storageManager.getUser(user.uid);
                 const displayData = { ...localUserData, loginType: 'Google' };
-                updateDashboardUI(displayData);
-                loadNotes();
-                switchView('dashboardView');
-            } else {
-                if (currentUserLoginType !== 'GUEST') {
-                     switchView('loginView');
-                }
-            }
+                updateDashboardUI(displayData); loadNotes(); switchView('dashboardView');
+            } else { if (currentUserLoginType !== 'GUEST') { switchView('loginView'); } }
         });
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        // Login/Logout listeners
         guestLoginBtn.addEventListener('click', handleGuestLoginClick);
         googleLoginBtn.addEventListener('click', handleGoogleLoginClick);
         guestForm.addEventListener('submit', handleGuestFormSubmit);
         logoutBtn.addEventListener('click', handleLogoutClick);
-        
-        // Note Modal listeners
         addNoteBtn.addEventListener('click', handleAddNoteClick);
         noteModal.querySelector('.close-modal-btn').addEventListener('click', () => closeModal(noteModal));
         noteModal.addEventListener('click', (e) => e.target === noteModal && closeModal(noteModal));
         noteForm.addEventListener('submit', handleSaveNoteForm);
         copyNoteBtn.addEventListener('click', () => navigator.clipboard.writeText(copyNoteBtn.dataset.description).then(() => showToast('Note copied')));
         updateNoteBtn.addEventListener('click', () => {
-            const note = currentNotes.find(n => n.id === updateNoteBtn.dataset.id);
-            if(note) openNoteModal('edit', note);
+            const note = currentNotes.find(n => n.id === updateNoteBtn.dataset.id); if(note) openNoteModal('edit', note);
         });
-
-        // Dashboard & Security listeners
         profileCard.addEventListener('click', () => securityPanel.style.display = securityPanel.style.display === 'block' ? 'none' : 'block');
         createLockBtn.addEventListener('click', handleCreateLock);
         changeLockBtn.addEventListener('click', handleChangeLock);
@@ -1256,7 +1328,6 @@
         seeHiddenContentBtn.addEventListener('click', handleSeeHiddenContent);
         securityModal.querySelector('.close-modal-btn').addEventListener('click', () => closeModal(securityModal));
         securityModal.addEventListener('click', (e) => e.target === securityModal && closeModal(securityModal));
-        
         initializeAuthObserver();
     });
 
