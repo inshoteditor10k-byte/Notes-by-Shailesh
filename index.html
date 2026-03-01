@@ -193,6 +193,12 @@
             width: calc(100% - 3rem);
         }
         
+        .ad-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        
         .input-group {
             width: 100%;
             position: relative;
@@ -723,6 +729,7 @@
                 ${firebaseReady ? 'Continue with Google' : 'Google Login Unavailable'}
             </button>
             <button type="button" id="guestLoginBtn" class="btn btn-guest">Continue with Guest</button>
+            <div class="ad-container"></div>
         </div>`;
 
     const getGuestFormViewHTML = () => `
@@ -826,6 +833,20 @@
     function attachLoginEventListeners() {
         document.getElementById('googleLoginBtn')?.addEventListener('click', handleGoogleLoginClick);
         document.getElementById('guestLoginBtn')?.addEventListener('click', handleGuestLoginClick);
+
+        const adContainer = document.querySelector(".ad-container");
+        if (adContainer && !adContainer.dataset.loaded) {
+            adContainer.dataset.loaded = "true";
+    
+            const script1 = document.createElement("script");
+            script1.textContent = "atOptions = { 'key' : '35d5c63b298f8ff23422e1a3199e7984', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };";
+    
+            const script2 = document.createElement("script");
+            script2.src = "https://www.highperformanceformat.com/35d5c63b298f8ff23422e1a3199e7984/invoke.js";
+            
+            adContainer.appendChild(script1);
+            adContainer.appendChild(script2);
+        }
     }
     
     function attachGuestFormEventListeners() {
