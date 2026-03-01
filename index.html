@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -135,6 +136,13 @@ expand_less
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     
+    .btn:disabled {
+        background-color: #e0e0e0;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
     .btn-sm {
         padding: 8px 16px;
         font-size: 0.875rem;
@@ -570,7 +578,7 @@ app = initializeApp(firebaseConfig);
 auth = getAuth(app);
 firebaseReady = true;
 } catch (error) {
-console.error("Firebase initialization error:", error);
+console.error("Firebase initialization failed. Google Login will be disabled.", error);
 }
 const googleProvider = new GoogleAuthProvider();
 
@@ -752,7 +760,7 @@ const getSecureDashboardViewHTML = () => `
 </div>`;
 
 // --- SECTION: Central Rendering Engine ---
-async function renderApp() {
+function renderApp() {
 const appContainer = document.getElementById('app');
 if (!appContainer) {
 console.error("#app container not found!");
@@ -771,7 +779,7 @@ appContainer.innerHTML = getDashboardViewHTML(userData);
 attachDashboardEventListeners();
 loadNotes();
 } else {
-await handleLogoutClick(); // User data not found, force logout
+handleLogoutClick(); // User data not found, force logout
 }
 break;
 case 'secureDashboard':
@@ -784,6 +792,19 @@ default:
 appContainer.innerHTML = getLoginViewHTML();
 attachLoginEventListeners();
 break;
+}
+}
+
+function renderAppSafe() {
+try {
+renderApp();
+} catch (error) {
+console.error("A critical error occurred during rendering:", error);
+// Fallback to a safe state
+appState.currentUserId = null;
+appState.currentView = 'login';
+sessionManager.clearUserId();
+renderApp();
 }
 }
 
@@ -826,7 +847,7 @@ if (target.closest('.delete-note-btn')) handleDeleteNote(noteId);
 function attachSecureDashboardEventListeners() {
 document.getElementById('backToMainDashboardBtn')?.addEventListener('click', () => {
 appState.currentView = 'dashboard';
-renderApp();
+renderAppSafe();
 });
 document.getElementById('addImageBtn')?.addEventListener('click', handleAddImage);
 
@@ -867,7 +888,7 @@ function closeModal(modalEl) { modalEl.classList.remove('visible'); }
 // --- SECTION: Guest Login Logic ---
 function handleGuestLoginClick() {
 appState.currentView = 'guestForm';
-renderApp();
+renderAppSafe();
 }
 
 function handleGuestFormSubmit(event) {
@@ -895,7 +916,7 @@ storageManager.saveUser(username, { type: 'guest', ...guestUserData, notes:[], h
 appState.currentUserId = username;
 sessionManager.setUserId(username);
 appState.currentView = 'dashboard';
-renderApp();
+renderAppSafe();
 }
 
 // --- SECTION: Google Authentication Logic ---
@@ -912,7 +933,7 @@ saveGoogleUserDataToLocalStorage(user);
 appState.currentUserId = user.uid;
 sessionManager.setUserId(user.uid);
 appState.currentView = 'dashboard';
-await renderApp();
+await renderAppSafe();
 }
 } catch (error) {
 console.error("Google Sign-In Error:", error);
@@ -925,13 +946,13 @@ function saveGoogleUserDataToLocalStorage(user) { /* Unchanged */ }
 // --- SECTION: Dashboard & Logout Logic ---
 async function handleLogoutClick() {
 if (firebaseReady && auth.currentUser) {
-await signOut(auth);
+await signOut(auth).catch(err => console.error("Sign out error:", err));
 }
 sessionManager.clearUserId();
 appState.currentUserId = null;
 appState.currentNotes = [];
 appState.currentView = 'login';
-await renderApp();
+await renderAppSafe();
 }
 
 // --- SECTION: Notes UI & Logic ---
@@ -1014,7 +1035,7 @@ async function handleViewHiddenContent() {
 const verified = await new Promise(resolve => verifyLock(resolve));
 if (verified) {
 appState.currentView = 'secureDashboard';
-renderApp();
+renderAppSafe();
 }
 }
 
@@ -1080,7 +1101,7 @@ saveGoogleUserDataToLocalStorage(user);
 appState.currentUserId = user.uid;
 sessionManager.setUserId(user.uid);
 appState.currentView = 'dashboard';
-await renderApp();
+await renderAppSafe();
 }
 } else {
 if (storedUser && storedUser.type === 'google') {
@@ -1090,6 +1111,25 @@ await handleLogoutClick();
 });
 }
 
+function restoreSessionSafe() {
+try {
+const storedUserId = sessionManager.getUserId();
+if (storedUserId && storageManager.getUser(storedUserId)) {
+appState.currentUserId = storedUserId;
+appState.currentView = 'dashboard';
+} else {
+sessionManager.clearUserId();
+appState.currentUserId = null;
+appState.currentView = 'login';
+}
+} catch(error) {
+console.error("Session restore failed:", error);
+sessionManager.clearUserId();
+appState.currentUserId = null;
+appState.currentView = 'login';
+}
+}
+
 function initializeAppLogic() {
 const noteModal = document.getElementById('noteModal');
 const securityModal = document.getElementById('securityModal');
@@ -1097,7 +1137,10 @@ const securityModal = document.getElementById('securityModal');
 noteModal.querySelector('.close-modal-btn').addEventListener('click', () => closeModal(noteModal));
 noteModal.addEventListener('click', (e) => e.target === noteModal && closeModal(noteModal));
 noteModal.querySelector('#noteForm').addEventListener('submit', handleSaveNoteForm);
-noteModal.querySelector('#copyNoteBtn').addEventListener('click', () => navigator.clipboard.writeText(noteModal.querySelector('#copyNoteBtn').dataset.description).then(() => showToast('Note copied')));
+noteModal.querySelector('#copyNoteBtn').addEventListener('click', () => {
+const desc = noteModal.querySelector('#copyNoteBtn').dataset.description;
+if (desc) navigator.clipboard.writeText(desc).then(() => showToast('Note copied'));
+});
 noteModal.querySelector('#unhideNoteBtn').addEventListener('click', handleUnhideNote);
 noteModal.querySelector('#updateNoteBtn').addEventListener('click', () => {
 const updateBtn = noteModal.querySelector('#updateNoteBtn');
@@ -1109,39 +1152,31 @@ if(note) openNoteModal('edit', note);
 securityModal.querySelector('.close-modal-btn').addEventListener('click', () => closeModal(securityModal));
 securityModal.addEventListener('click', (e) => e.target === securityModal && closeModal(securityModal));
 
-const storedUserId = sessionManager.getUserId();
-if (storedUserId && storageManager.getUser(storedUserId)) {
-appState.currentUserId = storedUserId;
-appState.currentView = 'dashboard';
-} else {
-sessionManager.clearUserId();
-appState.currentUserId = null;
-appState.currentView = 'login';
+restoreSessionSafe();
+initializeAuthObserver();
+renderAppSafe();
 }
 
-initializeAuthObserver();
-renderApp();
-}
+// --- SECTION: SAFE BOOTSTRAP ---
+window.addEventListener("unhandledrejection", function(event) {
+console.error("Unhandled promise rejection:", event.reason);
+});
 
 document.addEventListener('DOMContentLoaded', () => {
 try {
 initializeAppLogic();
 } catch (error) {
-console.error("A fatal error occurred during app initialization:", error);
-const appContainer = document.getElementById('app') || document.body;
-appContainer.innerHTML = `<div style="padding:20px;color:red;background:white;border:1px solid red;text-align:left;border-radius:8px;margin:1rem;">
-<h2>Application has crashed</h2>
-<p>A critical error prevented the app from starting. Please check the browser console for details.</p>
-<pre style="white-space:pre-wrap; word-wrap:break-word;background:#f0f0f0;padding:10px;margin-top:10px;border-radius:4px;font-family:monospace;">${error.stack}</pre>
-
-code
-Code
-download
-content_copy
-expand_less
-</div>`;
-    }
+console.error("App Crash: A fatal error occurred during initialization.", error);
+document.body.innerHTML = `
+<div style="padding:20px;font-family:sans-serif;margin:auto;max-width:600px;background:white;border-radius:8px;">
+<h2 style="color:red;">Application has crashed.</h2>
+<p>An unexpected error prevented the app from starting. Please open the browser's developer console to see the error details.</p>
+</div>
+`;
+}
 });
+
 </script>
+
 </body>
 </html>
