@@ -611,6 +611,7 @@
     }
 
     // --- SECTION: localStorage Data Manager ---
+    const storageKey = 'modernWebAppState';
     const storageManager = { /* Unchanged - All methods preserved */ 
         getData: () => {
             try {
@@ -772,34 +773,54 @@
     function renderApp() {
         const appContainer = document.getElementById('app');
         if (!appContainer) { console.error("#app container not found!"); return; }
-        
-        if (appState.currentUserId) {
-            const userData = storageManager.getUser(appState.currentUserId);
-            if (userData) {
-                if (appState.currentView === 'dashboard') {
-                    appContainer.innerHTML = getDashboardViewHTML(userData);
-                } else if (appState.currentView === 'secureDashboard') {
-                    appContainer.innerHTML = getSecureDashboardViewHTML();
-                } else {
-                    appState.currentView = 'dashboard';
-                    renderApp(); // re-route to dashboard
-                    return;
-                }
-                // Attach events AFTER content is in DOM
-                attachAllEventListeners();
-                if(appState.currentView === 'dashboard') loadNotes();
-                if(appState.currentView === 'secureDashboard') renderSecureDashboard();
 
-            } else {
-                console.warn(`User ID ${appState.currentUserId} found, but no data. Logging out.`);
-                handleLogoutClick();
+        const userId = appState.currentUserId;
+
+        if (userId) {
+            // User is logged in
+            const userData = storageManager.getUser(userId);
+            if (!userData) {
+                console.error(`User data not found for logged-in user ${userId}. Logging out.`);
+                handleLogoutClick(); // This is a safe fallback
+                return;
             }
+
+            console.log("Dashboard rendered for user:", userId);
+
+            // Determine which logged-in view to show
+            switch (appState.currentView) {
+                case 'secureDashboard':
+                    appContainer.innerHTML = getSecureDashboardViewHTML();
+                    break;
+                case 'dashboard':
+                default:
+                    appState.currentView = 'dashboard'; // Ensure a valid view is set
+                    appContainer.innerHTML = getDashboardViewHTML(userData);
+                    break;
+            }
+
+            // Attach events and load data for the current view
+            attachAllEventListeners();
+            if (appState.currentView === 'dashboard') {
+                loadNotes();
+            } else if (appState.currentView === 'secureDashboard') {
+                renderSecureDashboard();
+            }
+
         } else {
-            if (appState.currentView === 'guestForm') {
-                appContainer.innerHTML = getGuestFormViewHTML();
-            } else {
-                appState.currentView = 'login';
-                appContainer.innerHTML = getLoginViewHTML();
+            // User is not logged in
+            console.log("Rendering logged-out view:", appState.currentView);
+
+            // Determine which logged-out view to show
+            switch (appState.currentView) {
+                case 'guestForm':
+                    appContainer.innerHTML = getGuestFormViewHTML();
+                    break;
+                case 'login':
+                default:
+                    appState.currentView = 'login'; // Ensure a valid view is set
+                    appContainer.innerHTML = getLoginViewHTML();
+                    break;
             }
             attachAllEventListeners();
         }
@@ -1028,7 +1049,12 @@
             const storedUserId = sessionManager.getUserId(); const storedUser = storedUserId ? storageManager.getUser(storedUserId) : null;
             if (user) {
                 saveGoogleUserDataToLocalStorage(user);
-                if (appState.currentUserId !== user.uid) { appState.currentUserId = user.uid; sessionManager.setUserId(user.uid); appState.currentView = 'dashboard'; await renderAppSafe(); }
+                if (appState.currentUserId !== user.uid) { 
+                    appState.currentUserId = user.uid; 
+                    sessionManager.setUserId(user.uid); 
+                    appState.currentView = 'dashboard'; 
+                    await renderAppSafe(); 
+                }
             } else { if (storedUser && storedUser.type === 'google') { await handleLogoutClick(); } }
         });
     }
@@ -1053,4 +1079,4 @@
 
 </script>
 </body>
-</html>
+    </html>
