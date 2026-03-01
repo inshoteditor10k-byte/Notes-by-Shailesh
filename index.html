@@ -425,565 +425,523 @@
 </head>
 <body>
 
-    <!-- Main App Container -->
-    <main id="app">
+<!-- Main App Container -->
+<main id="app">
 
-        <!-- 1. Login View -->
-        <div id="loginView" class="view-container">
-            <h1>Welcome</h1>
-            <p>Sign in to continue to your dashboard.</p>
-            <button id="googleLoginBtn" class="btn btn-google">
-                <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12s5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.222,0-9.618-3.317-11.28-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.574l6.19,5.238C42.022,35.138,44,30.025,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path></svg>
-                Continue with Google
-            </button>
-            <button id="guestLoginBtn" class="btn btn-guest">Continue with Guest</button>
-        </div>
+    <!-- 1. Login View -->
+    <div id="loginView" class="view-container">
+        <h1>Welcome</h1>
+        <p>Sign in to continue to your dashboard.</p>
+        <button id="googleLoginBtn" class="btn btn-google">
+            <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12s5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.222,0-9.618-3.317-11.28-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.574l6.19,5.238C42.022,35.138,44,30.025,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path></svg>
+            Continue with Google
+        </button>
+        <button id="guestLoginBtn" class="btn btn-guest">Continue with Guest</button>
+    </div>
 
-        <!-- 2. Guest Form View -->
-        <div id="guestFormView" class="view-container hidden">
-            <h1>Guest Details</h1>
-            <p>Please provide your name and a unique ID.</p>
-            <form id="guestForm" style="width: 100%;">
-                <div class="input-group">
-                    <input type="text" id="fullNameInput" class="input-field" placeholder="Full Name" required>
-                </div>
-                <div class="input-group">
-                    <input type="text" id="usernameInput" class="input-field" placeholder="Guest ID (e.g., user123)" required>
-                </div>
-                <span id="guestError" class="error-message"></span>
-                <button type="submit" class="btn btn-google">Start as Guest</button>
-            </form>
-        </div>
-
-        <!-- 3. Dashboard View -->
-        <div id="dashboardView" class="view-container hidden">
-            <div class="profile-card">
-                <img id="profilePic" class="profile-pic" src="" alt="Profile Picture">
-                <h1 id="profileName" class="profile-name"></h1>
-                <p id="profileEmail" class="profile-email"></p>
-                <span id="loginTypeBadge" class="login-type-badge"></span>
+    <!-- 2. Guest Form View -->
+    <div id="guestFormView" class="view-container hidden">
+        <h1>Guest Details</h1>
+        <p>Please provide your name and a unique ID.</p>
+        <form id="guestForm" style="width: 100%;">
+            <div class="input-group">
+                <input type="text" id="fullNameInput" class="input-field" placeholder="Full Name" required>
             </div>
-            
-            <section id="notesSection">
-                <h2>My Notes</h2>
-                <div id="notesListContainer"></div>
-                <p id="noNotesMessage" class="hidden">You have no notes yet. Tap the '+' button to add one!</p>
-            </section>
-            
-            <button id="logoutBtn" class="btn btn-logout">Logout</button>
-            <button id="addNoteBtn" class="btn" title="Add Note">➕</button>
-        </div>
-
-    </main>
-    
-    <!-- 4. Note Modal -->
-    <div id="noteModal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modalTitle"></h2>
-                <button class="close-modal-btn" title="Close">&times;</button>
+            <div class="input-group">
+                <input type="text" id="usernameInput" class="input-field" placeholder="Guest ID (e.g., user123)" required>
             </div>
-            
-            <!-- Note Form (for add/edit) -->
-            <form id="noteForm">
-                <input type="hidden" id="noteIdInput">
-                <div class="input-group">
-                    <input type="text" id="noteTitleInput" class="input-field" placeholder="Note Title" required>
-                </div>
-                <div class="input-group">
-                    <textarea id="noteDescriptionInput" class="input-field" placeholder="Note content..." required></textarea>
-                </div>
-                <span id="noteError" class="error-message"></span>
-                <button type="submit" id="saveNoteBtn" class="btn btn-google">Save Note</button>
-            </form>
-            
-            <!-- Note Detail View (for viewing) -->
-            <div id="noteDetailView" class="hidden">
-                <h3 id="noteDetailTitle" style="text-align: left; margin-bottom: 0.5rem;"></h3>
-                <p id="noteDetailDescription"></p>
-                <div id="noteDetailButtons">
-                    <button id="copyNoteBtn" class="btn btn-sm btn-guest">Copy</button>
-                    <button id="updateNoteBtn" class="btn btn-sm btn-google">Update</button>
-                </div>
+            <span id="guestError" class="error-message"></span>
+            <button type="submit" class="btn btn-google">Start as Guest</button>
+        </form>
+    </div>
+
+    <!-- 3. Dashboard View -->
+    <div id="dashboardView" class="view-container hidden">
+        <div class="profile-card">
+            <img id="profilePic" class="profile-pic" src="" alt="Profile Picture">
+            <h1 id="profileName" class="profile-name"></h1>
+            <p id="profileEmail" class="profile-email"></p>
+            <span id="loginTypeBadge" class="login-type-badge"></span>
+        </div>
+        
+        <section id="notesSection">
+            <h2>My Notes</h2>
+            <div id="notesListContainer"></div>
+            <p id="noNotesMessage" class="hidden">You have no notes yet. Tap the '+' button to add one!</p>
+        </section>
+        
+        <button id="logoutBtn" class="btn btn-logout">Logout</button>
+        <button id="addNoteBtn" class="btn" title="Add Note">➕</button>
+    </div>
+
+</main>
+
+<!-- 4. Note Modal -->
+<div id="noteModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle"></h2>
+            <button class="close-modal-btn" title="Close">&times;</button>
+        </div>
+        
+        <!-- Note Form (for add/edit) -->
+        <form id="noteForm">
+            <input type="hidden" id="noteIdInput">
+            <div class="input-group">
+                <input type="text" id="noteTitleInput" class="input-field" placeholder="Note Title" required>
+            </div>
+            <div class="input-group">
+                <textarea id="noteDescriptionInput" class="input-field" placeholder="Note content..." required></textarea>
+            </div>
+            <span id="noteError" class="error-message"></span>
+            <button type="submit" id="saveNoteBtn" class="btn btn-google">Save Note</button>
+        </form>
+        
+        <!-- Note Detail View (for viewing) -->
+        <div id="noteDetailView" class="hidden">
+            <h3 id="noteDetailTitle" style="text-align: left; margin-bottom: 0.5rem;"></h3>
+            <p id="noteDetailDescription"></p>
+            <div id="noteDetailButtons">
+                <button id="copyNoteBtn" class="btn btn-sm btn-guest">Copy</button>
+                <button id="updateNoteBtn" class="btn btn-sm btn-google">Update</button>
             </div>
         </div>
     </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast"></div>
+
+<script type="module">
+    // --- SECTION: Firebase SDK Imports ---
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+    import {
+        getAuth,
+        onAuthStateChanged,
+        GoogleAuthProvider,
+        signInWithPopup,
+        signOut,
+    } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+   
+    // --- SECTION: Firebase Configuration ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyDzVS_oUSNueLOUj8CtQWCaNKjG_-YTCKk",
+        authDomain: "fake-phone-pe-d0f28.firebaseapp.com",
+        databaseURL: "https://fake-phone-pe-d0f28-default-rtdb.firebaseio.com",
+        projectId: "fake-phone-pe-d0f28",
+        storageBucket: "fake-phone-pe-d0f28.appspot.com",
+        messagingSenderId: "860186859049",
+        appId: "1:860186859049:web:4e19d670c2e24b91a5ae38"
+    };
+
+    // --- SECTION: Firebase Initialization ---
+    let app, auth;
+    try {
+        app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+    } catch (error) {
+        console.error("Firebase initialization error:", error);
+        alert("Firebase initialization failed. The app cannot work correctly.");
+    }
+    const googleProvider = new GoogleAuthProvider();
+
+    // --- SECTION: DOM Element References ---
+    // Views
+    const loginView = document.getElementById('loginView');
+    const guestFormView = document.getElementById('guestFormView');
+    const dashboardView = document.getElementById('dashboardView');
     
-    <!-- Toast Notification -->
-    <div id="toast"></div>
+    // Login & Guest Form
+    const googleLoginBtn = document.getElementById('googleLoginBtn');
+    const guestLoginBtn = document.getElementById('guestLoginBtn');
+    const guestForm = document.getElementById('guestForm');
+    const fullNameInput = document.getElementById('fullNameInput');
+    const usernameInput = document.getElementById('usernameInput');
+    const guestError = document.getElementById('guestError');
+    
+    // Dashboard
+    const profilePic = document.getElementById('profilePic');
+    const profileName = document.getElementById('profileName');
+    const profileEmail = document.getElementById('profileEmail');
+    const loginTypeBadge = document.getElementById('loginTypeBadge');
+    const logoutBtn = document.getElementById('logoutBtn');
+    
+    // Notes Feature
+    const notesListContainer = document.getElementById('notesListContainer');
+    const noNotesMessage = document.getElementById('noNotesMessage');
+    const addNoteBtn = document.getElementById('addNoteBtn');
+    const noteModal = document.getElementById('noteModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const closeModalBtn = noteModal.querySelector('.close-modal-btn');
+    const noteForm = document.getElementById('noteForm');
+    const noteIdInput = document.getElementById('noteIdInput');
+    const noteTitleInput = document.getElementById('noteTitleInput');
+    const noteDescriptionInput = document.getElementById('noteDescriptionInput');
+    const noteError = document.getElementById('noteError');
+    const saveNoteBtn = document.getElementById('saveNoteBtn');
+    const noteDetailView = document.getElementById('noteDetailView');
+    const noteDetailTitle = document.getElementById('noteDetailTitle');
+    const noteDetailDescription = document.getElementById('noteDetailDescription');
+    const copyNoteBtn = document.getElementById('copyNoteBtn');
+    const updateNoteBtn = document.getElementById('updateNoteBtn');
+    const toast = document.getElementById('toast');
 
-    <script type="module">
-        // --- SECTION: Firebase SDK Imports ---
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-        import {
-            getAuth,
-            onAuthStateChanged,
-            GoogleAuthProvider,
-            signInWithPopup,
-            signOut,
-        } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
-        import {
-            getDatabase,
-            ref,
-            set,
-            get,
-            push,
-            update,
-            serverTimestamp
-        } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+    // --- SECTION: State Management ---
+    let currentUserLoginType = null; // 'GUEST' or 'GOOGLE'
+    let currentUserId = null; // Guest username or Google UID
+    let currentNotes = []; // Array of note objects
 
-        // --- SECTION: Firebase Configuration ---
-        const firebaseConfig = {
-  apiKey: "AIzaSyDzVS_oUSNueLOUj8CtQWCaNKjG_-YTCKk",
-  authDomain: "fake-phone-pe-d0f28.firebaseapp.com",
-  databaseURL: "https://fake-phone-pe-d0f28-default-rtdb.firebaseio.com",
-  projectId: "fake-phone-pe-d0f28",
-  storageBucket: "fake-phone-pe-d0f28.firebasestorage.app",
-  messagingSenderId: "860186859049",
-  appId: "1:860186859049:web:4e19d670c2e24b91a5ae38"
-};
+    // --- SECTION: localStorage Data Manager ---
+    const storageKey = 'webAppData';
 
-        // --- SECTION: Firebase Initialization ---
-        let app, auth, db;
-        try {
-            app = initializeApp(firebaseConfig);
-            auth = getAuth(app);
-            db = getDatabase(app);
-        } catch (error) {
-            console.error("Firebase initialization error:", error);
-            if (error.code === 'invalid-api-key') {
-                alert("Firebase configuration is invalid. Please replace placeholder values in the script.");
-            }
-        }
-        const googleProvider = new GoogleAuthProvider();
-
-        // --- SECTION: DOM Element References ---
-        // Views
-        const loginView = document.getElementById('loginView');
-        const guestFormView = document.getElementById('guestFormView');
-        const dashboardView = document.getElementById('dashboardView');
-        
-        // Login & Guest Form
-        const googleLoginBtn = document.getElementById('googleLoginBtn');
-        const guestLoginBtn = document.getElementById('guestLoginBtn');
-        const guestForm = document.getElementById('guestForm');
-        const fullNameInput = document.getElementById('fullNameInput');
-        const usernameInput = document.getElementById('usernameInput');
-        const guestError = document.getElementById('guestError');
-        
-        // Dashboard
-        const profilePic = document.getElementById('profilePic');
-        const profileName = document.getElementById('profileName');
-        const profileEmail = document.getElementById('profileEmail');
-        const loginTypeBadge = document.getElementById('loginTypeBadge');
-        const logoutBtn = document.getElementById('logoutBtn');
-        
-        // Notes Feature
-        const notesListContainer = document.getElementById('notesListContainer');
-        const noNotesMessage = document.getElementById('noNotesMessage');
-        const addNoteBtn = document.getElementById('addNoteBtn');
-        const noteModal = document.getElementById('noteModal');
-        const modalTitle = document.getElementById('modalTitle');
-        const closeModalBtn = noteModal.querySelector('.close-modal-btn');
-        const noteForm = document.getElementById('noteForm');
-        const noteIdInput = document.getElementById('noteIdInput');
-        const noteTitleInput = document.getElementById('noteTitleInput');
-        const noteDescriptionInput = document.getElementById('noteDescriptionInput');
-        const noteError = document.getElementById('noteError');
-        const saveNoteBtn = document.getElementById('saveNoteBtn');
-        const noteDetailView = document.getElementById('noteDetailView');
-        const noteDetailTitle = document.getElementById('noteDetailTitle');
-        const noteDetailDescription = document.getElementById('noteDetailDescription');
-        const copyNoteBtn = document.getElementById('copyNoteBtn');
-        const updateNoteBtn = document.getElementById('updateNoteBtn');
-        const toast = document.getElementById('toast');
-
-        // --- SECTION: State Management ---
-        let currentUserLoginType = null; // 'GUEST' or 'GOOGLE'
-        let currentUserId = null; // Guest username or Google UID
-        let currentNotes = []; // Array of note objects
-
-        // --- SECTION: UI/View Management ---
-        /**
-         * Hides all views and shows the specified view.
-         * @param {string} viewId - The ID of the view to show.
-         */
-        function switchView(viewId) {
-            loginView.classList.add('hidden');
-            guestFormView.classList.add('hidden');
-            dashboardView.classList.add('hidden');
-            
-            const viewToShow = document.getElementById(viewId);
-            if (viewToShow) {
-                viewToShow.classList.remove('hidden');
-            }
-        }
-
-        /**
-         * Displays a short-lived toast message.
-         * @param {string} message - The message to display.
-         */
-        function showToast(message) {
-            toast.textContent = message;
-            toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-
-        // --- SECTION: Guest Login Logic ---
-        function handleGuestLoginClick() {
-            switchView('guestFormView');
-        }
-
-        function handleGuestFormSubmit(event) {
-            event.preventDefault();
-            guestError.textContent = '';
-            
-            const fullName = fullNameInput.value.trim();
-            const username = usernameInput.value.trim();
-
-            if (!fullName || !username) {
-                guestError.textContent = 'Both fields are required.';
-                return;
-            }
-
-            const usedUsernames = JSON.parse(localStorage.getItem('usedGuestUsernames')) || [];
-            if (usedUsernames.includes(username)) {
-                guestError.textContent = 'This Guest ID is already used. Guest login is allowed only once.';
-                return;
-            }
-
-            usedUsernames.push(username);
-            localStorage.setItem('usedGuestUsernames', JSON.stringify(usedUsernames));
-
-            currentUserLoginType = 'GUEST';
-            currentUserId = username;
-            const guestUserData = {
-                name: fullName,
-                email: null,
-                photoURL: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23757575"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>',
-                loginType: 'Guest'
-            };
-            updateDashboardUI(guestUserData);
-            loadNotes(); // Load notes for the guest user
-            switchView('dashboardView');
-        }
-
-        // --- SECTION: Google Authentication Logic ---
-        async function handleGoogleLoginClick() {
-            if (!auth) {
-                console.error("Firebase Auth is not initialized.");
-                return;
-            }
+    const storageManager = {
+        getData: () => {
             try {
-                const result = await signInWithPopup(auth, googleProvider);
-                const user = result.user;
-                await saveUserDataToDB(user);
-            } catch (error) {
-                console.error("Google Sign-In Error:", error);
-                alert(`Error during sign-in: ${error.message}`);
+                const data = localStorage.getItem(storageKey);
+                return data ? JSON.parse(data) : { users: {} };
+            } catch (e) {
+                console.error("Error parsing localStorage data", e);
+                return { users: {} };
             }
-        }
-
-        async function saveUserDataToDB(user) {
-            if (!db || !user) return;
-            const userRef = ref(db, 'users/' + user.uid);
+        },
+        saveData: (data) => {
             try {
-                const snapshot = await get(userRef);
-                if (!snapshot.exists()) {
-                    await set(userRef, {
-                        uid: user.uid,
-                        name: user.displayName,
-                        email: user.email,
-                        photoURL: user.photoURL,
-                        lastLogin: serverTimestamp()
-                    });
-                } else {
-                     await update(userRef, {
-                        lastLogin: serverTimestamp()
-                    });
-                }
-            } catch (error) {
-                console.error("Error saving user data to DB:", error);
+                localStorage.setItem(storageKey, JSON.stringify(data));
+            } catch (e) {
+                console.error("Error saving to localStorage", e);
             }
-        }
-
-        // --- SECTION: Dashboard & Logout Logic ---
-        function updateDashboardUI(userData) {
-            profilePic.src = userData.photoURL || '';
-            profileName.textContent = userData.name || 'N/A';
-            profileEmail.textContent = userData.email || '';
-            profileEmail.classList.toggle('hidden', !userData.email);
-
-            loginTypeBadge.textContent = userData.loginType;
-            loginTypeBadge.className = `login-type-badge ${userData.loginType.toLowerCase()}`;
-        }
-
-        async function handleLogoutClick() {
-            if (currentUserLoginType === 'GOOGLE' && auth) {
-                await signOut(auth);
-            }
-            // For both Google and Guest, reset the state
-            currentUserLoginType = null;
-            currentUserId = null;
-            currentNotes = [];
-            renderNotesList(); // Clears the list
-            switchView('loginView');
-        }
-
-        // --- SECTION: Notes UI Rendering ---
-        function renderNotesList() {
-            notesListContainer.innerHTML = '';
-            if (currentNotes.length === 0) {
-                noNotesMessage.classList.remove('hidden');
-                return;
-            }
-            noNotesMessage.classList.add('hidden');
+        },
+        getUser: (userId) => {
+            const data = storageManager.getData();
+            return data.users[userId];
+        },
+        saveUser: (userId, userData) => {
+            const data = storageManager.getData();
+            data.users[userId] = { ...data.users[userId], ...userData, lastLogin: Date.now() };
+            storageManager.saveData(data);
+        },
+        getNotes: (userId) => {
+            const user = storageManager.getUser(userId);
+            return user ? user.notes || [] : [];
+        },
+        saveNote: (userId, noteData) => {
+            const data = storageManager.getData();
+            if (!data.users[userId]) return;
+            if (!data.users[userId].notes) data.users[userId].notes = [];
             
-            // Sort notes by createdAt timestamp, newest first
-            const sortedNotes = [...currentNotes].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-
-            sortedNotes.forEach(note => {
-                const noteEl = document.createElement('div');
-                noteEl.className = 'note-item';
-                noteEl.textContent = note.title;
-                noteEl.dataset.id = note.id;
-                noteEl.addEventListener('click', () => handleNoteItemClick(note.id));
-                notesListContainer.appendChild(noteEl);
-            });
-        }
-        
-        function openNoteModal(mode, note = null) {
-            noteError.textContent = '';
-            if (mode === 'add' || mode === 'edit') {
-                noteForm.classList.remove('hidden');
-                noteDetailView.classList.add('hidden');
-                noteIdInput.value = note ? note.id : '';
-                noteTitleInput.value = note ? note.title : '';
-                noteDescriptionInput.value = note ? note.description : '';
-                modalTitle.textContent = mode === 'add' ? 'Add New Note' : 'Update Note';
-                saveNoteBtn.textContent = mode === 'add' ? 'Save Note' : 'Update Note';
-            } else if (mode === 'view' && note) {
-                noteForm.classList.add('hidden');
-                noteDetailView.classList.remove('hidden');
-                modalTitle.textContent = 'Note Details';
-                noteDetailTitle.textContent = note.title;
-                noteDetailDescription.textContent = note.description;
-                // Store note data on buttons for handlers to access
-                copyNoteBtn.dataset.description = note.description;
-                updateNoteBtn.dataset.id = note.id;
-            }
-            noteModal.classList.add('visible');
-        }
-
-        function closeNoteModal() {
-            noteModal.classList.remove('visible');
-        }
-
-        // --- SECTION: Notes Logic (Event Handlers) ---
-        function handleAddNoteClick() {
-            openNoteModal('add');
-        }
-
-        function handleNoteItemClick(noteId) {
-            const note = currentNotes.find(n => n.id === noteId);
-            if (note) {
-                openNoteModal('view', note);
-            }
-        }
-        
-        async function handleSaveNoteForm(event) {
-            event.preventDefault();
-            const id = noteIdInput.value;
-            const title = noteTitleInput.value.trim();
-            const description = noteDescriptionInput.value.trim();
-
-            if (!title || !description) {
-                noteError.textContent = 'Title and description are required.';
-                return;
-            }
-
-            const noteData = { title, description };
+            const newNote = {
+                ...noteData,
+                id: `note_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            };
+            data.users[userId].notes.push(newNote);
+            storageManager.saveData(data);
+        },
+        updateNote: (userId, noteId, noteData) => {
+            const data = storageManager.getData();
+            if (!data.users[userId] || !data.users[userId].notes) return;
             
-            if (id) { // Update existing note
-                await updateNote(id, noteData);
-            } else { // Create new note
-                await saveNote(noteData);
-            }
-            closeNoteModal();
-        }
-        
-        function handleCopyNote() {
-            const description = copyNoteBtn.dataset.description;
-            navigator.clipboard.writeText(description).then(() => {
-                showToast('Note copied successfully');
-            }).catch(err => {
-                console.error('Failed to copy text: ', err);
-                showToast('Failed to copy note');
-            });
-        }
-        
-        function handleUpdateNote() {
-            const noteId = updateNoteBtn.dataset.id;
-            const note = currentNotes.find(n => n.id === noteId);
-            if (note) {
-                openNoteModal('edit', note);
-            }
-        }
-
-        // --- SECTION: Notes Storage Functions (Abstraction Layer) ---
-        async function loadNotes() {
-            if (!currentUserId) return;
-            if (currentUserLoginType === 'GOOGLE') {
-                currentNotes = await loadNotesFromFirebase(currentUserId);
-            } else if (currentUserLoginType === 'GUEST') {
-                currentNotes = await loadNotesFromLocalStorage(currentUserId);
-            }
-            renderNotesList();
-        }
-
-        async function saveNote(noteData) {
-            if (!currentUserId) return;
-            const noteWithTimestamp = {
-                ...noteData,
-                createdAt: Date.now(),
-                updatedAt: Date.now()
-            };
-
-            if (currentUserLoginType === 'GOOGLE') {
-                await saveNoteToFirebase(currentUserId, noteWithTimestamp);
-            } else if (currentUserLoginType === 'GUEST') {
-                await saveNoteToLocalStorage(currentUserId, noteWithTimestamp);
-            }
-            await loadNotes(); // Reload to get updated list with new ID
-        }
-        
-        async function updateNote(noteId, noteData) {
-             if (!currentUserId) return;
-             const noteWithTimestamp = {
-                ...noteData,
-                updatedAt: Date.now()
-            };
-            if (currentUserLoginType === 'GOOGLE') {
-                await updateNoteInFirebase(currentUserId, noteId, noteWithTimestamp);
-            } else if (currentUserLoginType === 'GUEST') {
-                await updateNoteInLocalStorage(currentUserId, noteId, noteWithTimestamp);
-            }
-            await loadNotes();
-        }
-        
-        // LocalStorage Implementation
-        async function loadNotesFromLocalStorage(username) {
-            const allNotes = JSON.parse(localStorage.getItem('guestNotes')) || {};
-            return allNotes[username] || [];
-        }
-
-        async function saveNoteToLocalStorage(username, noteData) {
-            const allNotes = JSON.parse(localStorage.getItem('guestNotes')) || {};
-            if (!allNotes[username]) {
-                allNotes[username] = [];
-            }
-            const newNote = { ...noteData, id: `guest_${Date.now()}` };
-            allNotes[username].push(newNote);
-            localStorage.setItem('guestNotes', JSON.stringify(allNotes));
-        }
-        
-        async function updateNoteInLocalStorage(username, noteId, noteData) {
-            const allNotes = JSON.parse(localStorage.getItem('guestNotes')) || {};
-            if (!allNotes[username]) return;
-
-            const noteIndex = allNotes[username].findIndex(note => note.id === noteId);
+            const noteIndex = data.users[userId].notes.findIndex(note => note.id === noteId);
             if (noteIndex > -1) {
-                const originalNote = allNotes[username][noteIndex];
-                allNotes[username][noteIndex] = { ...originalNote, ...noteData };
-                localStorage.setItem('guestNotes', JSON.stringify(allNotes));
+                const originalNote = data.users[userId].notes[noteIndex];
+                data.users[userId].notes[noteIndex] = { ...originalNote, ...noteData };
+                storageManager.saveData(data);
             }
+        },
+        isGuestUsernameTaken: (username) => {
+            const user = storageManager.getUser(username);
+            return !!user;
         }
+    };
 
-        // Firebase Realtime DB Implementation
-        async function loadNotesFromFirebase(uid) {
-            const notesRef = ref(db, `users/${uid}/notes`);
-            const snapshot = await get(notesRef);
-            if (!snapshot.exists()) return [];
-            
-            const notesData = snapshot.val();
-            return Object.keys(notesData).map(key => ({
-                id: key,
-                ...notesData[key]
-            }));
-        }
 
-        async function saveNoteToFirebase(uid, noteData) {
-            const notesRef = ref(db, `users/${uid}/notes`);
-            const newNoteRef = push(notesRef);
-            await set(newNoteRef, {
-                ...noteData,
-                createdAt: serverTimestamp(),
-                updatedAt: serverTimestamp()
-            });
-        }
+    // --- SECTION: UI/View Management ---
+    function switchView(viewId) {
+        loginView.classList.add('hidden');
+        guestFormView.classList.add('hidden');
+        dashboardView.classList.add('hidden');
         
-        async function updateNoteInFirebase(uid, noteId, noteData) {
-             const noteRef = ref(db, `users/${uid}/notes/${noteId}`);
-             await update(noteRef, {
-                ...noteData,
-                updatedAt: serverTimestamp()
-             });
+        const viewToShow = document.getElementById(viewId);
+        if (viewToShow) {
+            viewToShow.classList.remove('hidden');
+        }
+    }
+
+    function showToast(message) {
+        toast.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+
+    // --- SECTION: Guest Login Logic ---
+    function handleGuestLoginClick() {
+        switchView('guestFormView');
+    }
+
+    function handleGuestFormSubmit(event) {
+        event.preventDefault();
+        guestError.textContent = '';
+        
+        const fullName = fullNameInput.value.trim();
+        const username = usernameInput.value.trim();
+
+        if (!fullName || !username) {
+            guestError.textContent = 'Both fields are required.';
+            return;
         }
 
-        // --- SECTION: Main App Initialization ---
-        function initializeAuthObserver() {
-            if (!auth) {
-                switchView('loginView');
-                return;
-            }
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    currentUserLoginType = 'GOOGLE';
-                    currentUserId = user.uid;
-                    const userRef = ref(db, 'users/' + user.uid);
-                    const snapshot = await get(userRef);
-                    const dbUserData = snapshot.val();
-
-                    const userData = {
-                        name: user.displayName,
-                        email: user.email,
-                        photoURL: user.photoURL,
-                        loginType: 'Google',
-                        ...dbUserData
-                    };
-                    updateDashboardUI(userData);
-                    await loadNotes(); // Load notes for the Google user
-                    switchView('dashboardView');
-                } else {
-                    if (currentUserLoginType !== 'GUEST') { // Avoid resetting view if a guest is active
-                         switchView('loginView');
-                    }
-                }
-            });
+        if (storageManager.isGuestUsernameTaken(username)) {
+            guestError.textContent = 'This Guest ID is already used. Guest login is allowed only once.';
+            return;
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            // Login/Logout listeners
-            guestLoginBtn.addEventListener('click', handleGuestLoginClick);
-            googleLoginBtn.addEventListener('click', handleGoogleLoginClick);
-            guestForm.addEventListener('submit', handleGuestFormSubmit);
-            logoutBtn.addEventListener('click', handleLogoutClick);
-            
-            // Notes listeners
-            addNoteBtn.addEventListener('click', handleAddNoteClick);
-            closeModalBtn.addEventListener('click', closeNoteModal);
-            noteModal.addEventListener('click', (e) => {
-                if (e.target === noteModal) closeNoteModal();
-            });
-            noteForm.addEventListener('submit', handleSaveNoteForm);
-            copyNoteBtn.addEventListener('click', handleCopyNote);
-            updateNoteBtn.addEventListener('click', handleUpdateNote);
+        currentUserLoginType = 'GUEST';
+        currentUserId = username;
+        const guestUserData = {
+            name: fullName,
+            email: null,
+            photoURL: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23757575"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>',
+            loginType: 'Guest',
+            notes: []
+        };
+        storageManager.saveUser(username, { type: 'guest', name: fullName, notes: [] });
 
-            initializeAuthObserver();
+        updateDashboardUI(guestUserData);
+        loadNotes(); // Load notes for the guest user
+        switchView('dashboardView');
+    }
+
+    // --- SECTION: Google Authentication Logic ---
+    async function handleGoogleLoginClick() {
+        if (!auth) {
+            console.error("Firebase Auth is not initialized.");
+            return;
+        }
+        try {
+            const result = await signInWithPopup(auth, googleProvider);
+            const user = result.user;
+            saveUserDataToLocalStorage(user);
+            // onAuthStateChanged will handle the view switch
+        } catch (error) {
+            console.error("Google Sign-In Error:", error);
+            alert(`Error during sign-in: ${error.message}`);
+        }
+    }
+
+    function saveUserDataToLocalStorage(user) {
+        if (!user) return;
+        const existingUser = storageManager.getUser(user.uid);
+        const userData = {
+            type: 'google',
+            name: user.displayName,
+            email: user.email,
+            photoURL: user.photoURL
+        };
+
+        if (!existingUser) {
+            userData.notes = [];
+        }
+        storageManager.saveUser(user.uid, userData);
+    }
+
+    // --- SECTION: Dashboard & Logout Logic ---
+    function updateDashboardUI(userData) {
+        profilePic.src = userData.photoURL || '';
+        profileName.textContent = userData.name || 'N/A';
+        profileEmail.textContent = userData.email || '';
+        profileEmail.classList.toggle('hidden', !userData.email);
+
+        loginTypeBadge.textContent = userData.loginType;
+        loginTypeBadge.className = `login-type-badge ${userData.loginType.toLowerCase()}`;
+    }
+
+    async function handleLogoutClick() {
+        if (currentUserLoginType === 'GOOGLE' && auth) {
+            await signOut(auth);
+        }
+        // For both Google and Guest, reset the state
+        currentUserLoginType = null;
+        currentUserId = null;
+        currentNotes = [];
+        renderNotesList(); // Clears the list
+        switchView('loginView');
+    }
+
+    // --- SECTION: Notes UI Rendering ---
+    function renderNotesList() {
+        notesListContainer.innerHTML = '';
+        if (currentNotes.length === 0) {
+            noNotesMessage.classList.remove('hidden');
+            return;
+        }
+        noNotesMessage.classList.add('hidden');
+        
+        // Sort notes by createdAt timestamp, newest first
+        const sortedNotes = [...currentNotes].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+        sortedNotes.forEach(note => {
+            const noteEl = document.createElement('div');
+            noteEl.className = 'note-item';
+            noteEl.textContent = note.title;
+            noteEl.dataset.id = note.id;
+            noteEl.addEventListener('click', () => handleNoteItemClick(note.id));
+            notesListContainer.appendChild(noteEl);
         });
+    }
+    
+    function openNoteModal(mode, note = null) {
+        noteError.textContent = '';
+        if (mode === 'add' || mode === 'edit') {
+            noteForm.classList.remove('hidden');
+            noteDetailView.classList.add('hidden');
+            noteIdInput.value = note ? note.id : '';
+            noteTitleInput.value = note ? note.title : '';
+            noteDescriptionInput.value = note ? note.description : '';
+            modalTitle.textContent = mode === 'add' ? 'Add New Note' : 'Update Note';
+            saveNoteBtn.textContent = mode === 'add' ? 'Save Note' : 'Update Note';
+        } else if (mode === 'view' && note) {
+            noteForm.classList.add('hidden');
+            noteDetailView.classList.remove('hidden');
+            modalTitle.textContent = 'Note Details';
+            noteDetailTitle.textContent = note.title;
+            noteDetailDescription.textContent = note.description;
+            // Store note data on buttons for handlers to access
+            copyNoteBtn.dataset.description = note.description;
+            updateNoteBtn.dataset.id = note.id;
+        }
+        noteModal.classList.add('visible');
+    }
 
-    </script>
+    function closeNoteModal() {
+        noteModal.classList.remove('visible');
+    }
+
+    // --- SECTION: Notes Logic (Event Handlers) ---
+    function handleAddNoteClick() {
+        openNoteModal('add');
+    }
+
+    function handleNoteItemClick(noteId) {
+        const note = currentNotes.find(n => n.id === noteId);
+        if (note) {
+            openNoteModal('view', note);
+        }
+    }
+    
+    async function handleSaveNoteForm(event) {
+        event.preventDefault();
+        const id = noteIdInput.value;
+        const title = noteTitleInput.value.trim();
+        const description = noteDescriptionInput.value.trim();
+
+        if (!title || !description) {
+            noteError.textContent = 'Title and description are required.';
+            return;
+        }
+
+        if (id) { // Update existing note
+            const noteData = { title, description, updatedAt: Date.now() };
+            updateNote(id, noteData);
+        } else { // Create new note
+            const noteData = { title, description, createdAt: Date.now(), updatedAt: Date.now() };
+            saveNote(noteData);
+        }
+        closeNoteModal();
+    }
+    
+    function handleCopyNote() {
+        const description = copyNoteBtn.dataset.description;
+        navigator.clipboard.writeText(description).then(() => {
+            showToast('Note copied successfully');
+        }).catch(err => {
+            console.error('Failed to copy text: ', err);
+            showToast('Failed to copy note');
+        });
+    }
+    
+    function handleUpdateNote() {
+        const noteId = updateNoteBtn.dataset.id;
+        const note = currentNotes.find(n => n.id === noteId);
+        if (note) {
+            openNoteModal('edit', note);
+        }
+    }
+
+    // --- SECTION: Notes Storage Functions (Abstraction Layer) ---
+    function loadNotes() {
+        if (!currentUserId) return;
+        currentNotes = storageManager.getNotes(currentUserId);
+        renderNotesList();
+    }
+
+    function saveNote(noteData) {
+        if (!currentUserId) return;
+        storageManager.saveNote(currentUserId, noteData);
+        loadNotes();
+    }
+    
+    function updateNote(noteId, noteData) {
+         if (!currentUserId) return;
+         storageManager.updateNote(currentUserId, noteId, noteData);
+         loadNotes();
+    }
+
+    // --- SECTION: Main App Initialization ---
+    function initializeAuthObserver() {
+        if (!auth) {
+            switchView('loginView');
+            return;
+        }
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // This block only runs for Google authenticated users
+                currentUserLoginType = 'GOOGLE';
+                currentUserId = user.uid;
+                
+                // Save/update user data in localStorage on every auth state change
+                saveUserDataToLocalStorage(user);
+
+                const localUserData = storageManager.getUser(user.uid);
+
+                const displayData = {
+                    name: localUserData.name,
+                    email: localUserData.email,
+                    photoURL: localUserData.photoURL,
+                    loginType: 'Google'
+                };
+                
+                updateDashboardUI(displayData);
+                loadNotes();
+                switchView('dashboardView');
+            } else {
+                if (currentUserLoginType !== 'GUEST') { // Avoid resetting view if a guest is active
+                     switchView('loginView');
+                }
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Login/Logout listeners
+        guestLoginBtn.addEventListener('click', handleGuestLoginClick);
+        googleLoginBtn.addEventListener('click', handleGoogleLoginClick);
+        guestForm.addEventListener('submit', handleGuestFormSubmit);
+        logoutBtn.addEventListener('click', handleLogoutClick);
+        
+        // Notes listeners
+        addNoteBtn.addEventListener('click', handleAddNoteClick);
+        closeModalBtn.addEventListener('click', closeNoteModal);
+        noteModal.addEventListener('click', (e) => {
+            if (e.target === noteModal) closeNoteModal();
+        });
+        noteForm.addEventListener('submit', handleSaveNoteForm);
+        copyNoteBtn.addEventListener('click', handleCopyNote);
+        updateNoteBtn.addEventListener('click', handleUpdateNote);
+
+        initializeAuthObserver();
+    });
+
+</script>
 </body>
 </html>
