@@ -193,10 +193,10 @@
             width: calc(100% - 3rem);
         }
         
-        .ad-container {
-            margin-top: 20px;
+        .top-ad-container, .bottom-ad-container {
             display: flex;
             justify-content: center;
+            margin: 15px 0;
         }
         
         .input-group {
@@ -722,6 +722,7 @@
     // --- SECTION: HTML View Templates ---
     const getLoginViewHTML = () => `
         <div id="loginView" class="view-container">
+            <div class="top-ad-container"></div>
             <h1>Welcome</h1>
             <p>Sign in to continue to your dashboard.</p>
             <button type="button" id="googleLoginBtn" class="btn btn-google" ${!firebaseReady ? 'disabled' : ''}>
@@ -729,7 +730,7 @@
                 ${firebaseReady ? 'Continue with Google' : 'Google Login Unavailable'}
             </button>
             <button type="button" id="guestLoginBtn" class="btn btn-guest">Continue with Guest</button>
-            <div class="ad-container"></div>
+            <div class="bottom-ad-container"></div>
         </div>`;
 
     const getGuestFormViewHTML = () => `
@@ -834,18 +835,28 @@
         document.getElementById('googleLoginBtn')?.addEventListener('click', handleGoogleLoginClick);
         document.getElementById('guestLoginBtn')?.addEventListener('click', handleGuestLoginClick);
 
-        const adContainer = document.querySelector(".ad-container");
-        if (adContainer && !adContainer.dataset.loaded) {
-            adContainer.dataset.loaded = "true";
-    
+        // TOP AD INJECTION
+        const topAdContainer = document.querySelector(".top-ad-container");
+        if (topAdContainer && !topAdContainer.dataset.loaded) {
+            topAdContainer.dataset.loaded = "true";
+            const s1 = document.createElement("script");
+            s1.textContent = "atOptions = { 'key' : 'ce0891d27d7dad00e3aecf15a7eee194', 'format' : 'iframe', 'height' : 250, 'width' : 300, 'params' : {} };";
+            const s2 = document.createElement("script");
+            s2.src = "https://www.highperformanceformat.com/ce0891d27d7dad00e3aecf15a7eee194/invoke.js";
+            topAdContainer.appendChild(s1);
+            topAdContainer.appendChild(s2);
+        }
+
+        // BOTTOM AD INJECTION
+        const bottomAdContainer = document.querySelector(".bottom-ad-container");
+        if (bottomAdContainer && !bottomAdContainer.dataset.loaded) {
+            bottomAdContainer.dataset.loaded = "true";
             const script1 = document.createElement("script");
             script1.textContent = "atOptions = { 'key' : '35d5c63b298f8ff23422e1a3199e7984', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };";
-    
             const script2 = document.createElement("script");
             script2.src = "https://www.highperformanceformat.com/35d5c63b298f8ff23422e1a3199e7984/invoke.js";
-            
-            adContainer.appendChild(script1);
-            adContainer.appendChild(script2);
+            bottomAdContainer.appendChild(script1);
+            bottomAdContainer.appendChild(script2);
         }
     }
     
