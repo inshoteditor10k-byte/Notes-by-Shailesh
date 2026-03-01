@@ -1,1156 +1,1118 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern Web App</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>
-        /* --- SECTION: CSS Reset & Variables --- */
-        :root {
-            --primary-color: #4285F4; /* Google Blue */
-            --primary-color-dark: #357ae8;
-            --secondary-color: #34A853; /* Google Green */
-            --background-color: #f5f5f5;
-            --surface-color: #ffffff;
-            --text-color: #333333;
-            --text-color-light: #757575;
-            --error-color: #db4437;
-            --border-color: #e0e0e0;
-            --shadow-color: rgba(0, 0, 0, 0.1);
-            --font-family: 'Roboto', sans-serif;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modern Web App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* --- SECTION: CSS Reset & Variables --- */
+:root {
+--primary-color: #4285F4; /* Google Blue */
+--primary-color-dark: #357ae8;
+--secondary-color: #34A853; /* Google Green */
+--background-color: #f5f5f5;
+--surface-color: #ffffff;
+--text-color: #333333;
+--text-color-light: #757575;
+--error-color: #db4437;
+--border-color: #e0e0e0;
+--shadow-color: rgba(0, 0, 0, 0.1);
+--font-family: 'Roboto', sans-serif;
+}
 
-        *, *::before, *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+code
+Code
+download
+content_copy
+expand_less
+*, *::before, *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
 
-        /* --- SECTION: Body & Global Styles --- */
-        html, body {
-            height: 100%;
-        }
+    /* --- SECTION: Body & Global Styles --- */
+    html, body {
+        height: 100%;
+    }
 
-        body {
-            font-family: var(--font-family);
-            background-color: var(--background-color);
-            color: var(--text-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            line-height: 1.6;
-            overflow: hidden; /* Prevent body scroll, delegate to inner containers */
-        }
-        
-        #app {
-            width: 100%;
-            height: 100%;
-            max-width: 420px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+    body {
+        font-family: var(--font-family);
+        background-color: var(--background-color);
+        color: var(--text-color);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        line-height: 1.6;
+        overflow: hidden; /* Prevent body scroll, delegate to inner containers */
+    }
+    
+    #app {
+        width: 100%;
+        height: 100%;
+        max-width: 420px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-        h1 {
-            font-size: 2rem;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-        }
+    h1 {
+        font-size: 2rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
 
-        h2 {
-            font-size: 1.25rem;
-            font-weight: 500;
-            margin-bottom: 1rem;
-            text-align: left;
-        }
+    h2 {
+        font-size: 1.25rem;
+        font-weight: 500;
+        margin-bottom: 1rem;
+        text-align: left;
+    }
 
-        p {
-            color: var(--text-color-light);
-            margin-bottom: 1.5rem;
-        }
-        
-        h3 {
-             text-align: left; margin-bottom: 0.5rem;
-        }
+    p {
+        color: var(--text-color-light);
+        margin-bottom: 1.5rem;
+    }
+    
+    h3 {
+         text-align: left; margin-bottom: 0.5rem;
+    }
 
-        /* --- SECTION: Helper Classes --- */
-        .hidden {
-            display: none !important;
-        }
+    /* --- SECTION: Helper Classes --- */
+    .hidden {
+        display: none !important;
+    }
 
-        /* --- SECTION: Page Containers/Views --- */
-        .view-container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background-color: var(--surface-color);
-            padding: 2.5rem;
-            border-radius: 16px;
-            box-shadow: 0 4px 12px var(--shadow-color);
-            position: relative;
-            overflow: hidden;
-        }
+    /* --- SECTION: Page Containers/Views --- */
+    .view-container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--surface-color);
+        padding: 2.5rem;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px var(--shadow-color);
+        position: relative;
+        overflow: hidden;
+    }
 
-        #dashboardView, #secureDashboardView {
-            justify-content: flex-start;
-            padding-top: 1.5rem;
-        }
+    #dashboardView, #secureDashboardView {
+        justify-content: flex-start;
+        padding-top: 1.5rem;
+    }
 
-        /* --- SECTION: Component Styles (Buttons, Inputs, Cards) --- */
-        .btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            padding: 12px 20px;
-            font-size: 1rem;
-            font-weight: 500;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.2s ease-in-out, transform 0.1s ease, box-shadow 0.2s ease;
-            -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
-        }
+    /* --- SECTION: Component Styles (Buttons, Inputs, Cards) --- */
+    .btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 12px 20px;
+        font-size: 1rem;
+        font-weight: 500;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.2s ease-in-out, transform 0.1s ease, box-shadow 0.2s ease;
+        -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+    }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        }
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
 
-        .btn:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .btn-sm {
-            padding: 8px 16px;
-            font-size: 0.875rem;
-            width: auto;
-            margin: 0 0.5rem;
-        }
+    .btn:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .btn-sm {
+        padding: 8px 16px;
+        font-size: 0.875rem;
+        width: auto;
+        margin: 0 0.5rem;
+    }
 
-        .btn-guest {
-            background-color: var(--surface-color);
-            color: var(--primary-color);
-            border: 1px solid var(--border-color);
-            margin-top: 1rem;
-        }
+    .btn-guest {
+        background-color: var(--surface-color);
+        color: var(--primary-color);
+        border: 1px solid var(--border-color);
+        margin-top: 1rem;
+    }
 
-        .btn-guest:hover {
-            background-color: #f8f9fa;
-        }
-        
-        .btn-secondary {
-            background-color: #f1f3f4;
-            color: #5f6368;
-            margin-top: 0.5rem;
-        }
+    .btn-guest:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .btn-secondary {
+        background-color: #f1f3f4;
+        color: #5f6368;
+        margin-top: 0.5rem;
+    }
 
-        .btn-google {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        .btn-google:hover {
-            background-color: var(--primary-color-dark);
-        }
+    .btn-google {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    .btn-google:hover {
+        background-color: var(--primary-color-dark);
+    }
 
-        .btn-google svg {
-            width: 20px;
-            height: 20px;
-            margin-right: 12px;
-            background-color: white;
-            padding: 2px;
-            border-radius: 50%;
-        }
+    .btn-google svg {
+        width: 20px;
+        height: 20px;
+        margin-right: 12px;
+        background-color: white;
+        padding: 2px;
+        border-radius: 50%;
+    }
 
-        .btn-logout {
-            background-color: #f1f3f4;
-            color: #5f6368;
-            margin-top: 1rem; /* Adjust margin */
-            position: absolute;
-            bottom: 80px; /* Position above FAB */
-            left: 50%;
-            transform: translateX(-50%);
-            width: calc(100% - 5rem);
-        }
-        
-        .input-group {
-            width: 100%;
-            position: relative;
-            margin-bottom: 1.5rem;
-        }
-        
-        .input-group:last-of-type {
-            margin-bottom: 1rem;
-        }
+    .btn-logout {
+        background-color: #f1f3f4;
+        color: #5f6368;
+        margin-top: 1rem; /* Adjust margin */
+        position: absolute;
+        bottom: 80px; /* Position above FAB */
+        left: 50%;
+        transform: translateX(-50%);
+        width: calc(100% - 5rem);
+    }
+    
+    .input-group {
+        width: 100%;
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+    
+    .input-group:last-of-type {
+        margin-bottom: 1rem;
+    }
 
-        .input-field {
-            width: 100%;
-            padding: 14px 16px;
-            font-size: 1rem;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            outline: none;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        }
-        
-        textarea.input-field {
-            min-height: 120px;
-            resize: vertical;
-            overflow-y: auto; /* SCROLL FIX: Ensure textarea is scrollable */
-        }
+    .input-field {
+        width: 100%;
+        padding: 14px 16px;
+        font-size: 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        outline: none;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    textarea.input-field {
+        min-height: 120px;
+        resize: vertical;
+        overflow-y: auto; /* SCROLL FIX: Ensure textarea is scrollable */
+    }
 
-        .input-field:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
-        }
+    .input-field:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+    }
 
-        .error-message {
-            color: var(--error-color);
-            font-size: 0.875rem;
-            margin-top: 0.5rem;
-            text-align: left;
-            display: block;
-        }
+    .error-message {
+        color: var(--error-color);
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        text-align: left;
+        display: block;
+    }
 
-        /* --- SECTION: Dashboard & Profile Styles --- */
-        #dashboardView .profile-card {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 1rem;
-            margin-bottom: 1rem;
-            cursor: pointer;
-        }
-        
-        #securityPanel {
-            display: none;
-            width: 100%;
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid var(--border-color);
-        }
-        
-        #securityPanel .btn {
-            margin-bottom: 0.5rem;
-        }
-        
-        .profile-pic {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-bottom: 1rem;
-            box-shadow: 0 2px 6px var(--shadow-color);
-        }
+    /* --- SECTION: Dashboard & Profile Styles --- */
+    #dashboardView .profile-card {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+        cursor: pointer;
+    }
+    
+    #securityPanel {
+        display: none;
+        width: 100%;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-color);
+    }
+    
+    #securityPanel .btn {
+        margin-bottom: 0.5rem;
+    }
+    
+    .profile-pic {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 6px var(--shadow-color);
+    }
 
-        .profile-name {
-            font-size: 1.5rem;
-            font-weight: 500;
-            color: var(--text-color);
-        }
+    .profile-name {
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: var(--text-color);
+    }
 
-        .profile-email {
-            font-size: 1rem;
-            color: var(--text-color-light);
-        }
+    .profile-email {
+        font-size: 1rem;
+        color: var(--text-color-light);
+    }
 
-        .login-type-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 16px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            margin-top: 0.75rem;
-        }
+    .login-type-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 16px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        margin-top: 0.75rem;
+    }
 
-        .login-type-badge.google {
-            background-color: #e8f0fe;
-            color: #1967d2;
-        }
+    .login-type-badge.google {
+        background-color: #e8f0fe;
+        color: #1967d2;
+    }
 
-        .login-type-badge.guest {
-            background-color: #e6f4ea;
-            color: #1e8e3e;
-        }
-        
-        /* --- SECTION: Notes Feature Styles --- */
-        #notesSection, #secureDashboardContent {
-            width: 100%;
-            flex-grow: 1;
-            overflow-y: auto;
-            padding-bottom: 150px; /* Space for FAB and logout button */
-            min-height: 0; /* SCROLL FIX: Critical for making flex-grow item scrollable */
-        }
+    .login-type-badge.guest {
+        background-color: #e6f4ea;
+        color: #1e8e3e;
+    }
+    
+    /* --- SECTION: Notes Feature Styles --- */
+    #notesSection, #secureDashboardContent {
+        width: 100%;
+        flex-grow: 1;
+        overflow-y: auto;
+        padding-bottom: 150px; /* Space for FAB and logout button */
+        min-height: 0; /* SCROLL FIX: Critical for making flex-grow item scrollable */
+    }
 
-        #notesListContainer {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        
-        .note-item {
-            background-color: #f8f9fa;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 12px 16px;
-            text-align: left;
-            transition: background-color 0.2s ease, transform 0.2s ease;
-            position: relative;
-        }
-        
-        .note-item-content {
-             cursor: pointer;
-        }
-        
-        .note-item:hover {
-            background-color: #f1f3f4;
-            transform: scale(1.02);
-        }
-        
-        .note-actions {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 8px;
-            border-top: 1px solid var(--border-color);
-            padding-top: 8px;
-        }
-        
-        .note-actions .btn-sm {
-            background-color: #fff;
-            color: var(--text-color-light);
-        }
-        
-        .note-actions .btn-sm.delete {
-            color: var(--error-color);
-        }
+    #notesListContainer {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .note-item {
+        background-color: #f8f9fa;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 12px 16px;
+        text-align: left;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+        position: relative;
+    }
+    
+    .note-item-content {
+         cursor: pointer;
+    }
+    
+    .note-item:hover {
+        background-color: #f1f3f4;
+        transform: scale(1.02);
+    }
+    
+    .note-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 8px;
+        border-top: 1px solid var(--border-color);
+        padding-top: 8px;
+    }
+    
+    .note-actions .btn-sm {
+        background-color: #fff;
+        color: var(--text-color-light);
+    }
+    
+    .note-actions .btn-sm.delete {
+        color: var(--error-color);
+    }
 
-        #noNotesMessage {
-            color: var(--text-color-light);
-            margin-top: 2rem;
-        }
-        
-        #addNoteBtn {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            font-size: 24px;
-            color: white;
-            background-color: var(--secondary-color);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            padding: 0;
-            z-index: 100;
-        }
-        
-        #addNoteBtn:hover {
-            background-color: #2e8c45;
-        }
+    #noNotesMessage {
+        color: var(--text-color-light);
+        margin-top: 2rem;
+    }
+    
+    #addNoteBtn {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        font-size: 24px;
+        color: white;
+        background-color: var(--secondary-color);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        padding: 0;
+        z-index: 100;
+    }
+    
+    #addNoteBtn:hover {
+        background-color: #2e8c45;
+    }
 
-        /* Modal Styles */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-        
-        .modal-overlay.visible {
-            opacity: 1;
-            visibility: visible;
-        }
+    /* Modal Styles */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    
+    .modal-overlay.visible {
+        opacity: 1;
+        visibility: visible;
+    }
 
-        .modal-content {
-            background-color: var(--surface-color);
-            padding: 1.5rem;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 500px;
-            transform: scale(0.95);
-            transition: transform 0.3s ease;
-            max-height: 85vh; /* SCROLL FIX: Limit modal height */
-            overflow-y: auto; /* SCROLL FIX: Make modal content scrollable */
-        }
-        
-        .modal-overlay.visible .modal-content {
-            transform: scale(1);
-        }
-        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-        
-        .modal-header h2 {
-            margin-bottom: 0;
-        }
+    .modal-content {
+        background-color: var(--surface-color);
+        padding: 1.5rem;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 500px;
+        transform: scale(0.95);
+        transition: transform 0.3s ease;
+        max-height: 85vh; /* SCROLL FIX: Limit modal height */
+        overflow-y: auto; /* SCROLL FIX: Make modal content scrollable */
+    }
+    
+    .modal-overlay.visible .modal-content {
+        transform: scale(1);
+    }
+    
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .modal-header h2 {
+        margin-bottom: 0;
+    }
 
-        .close-modal-btn {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: var(--text-color-light);
-        }
-        
-        #noteDetailView p {
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            text-align: left;
-            background-color: #f8f9fa;
-            padding: 1rem;
-            border-radius: 8px;
-            min-height: 100px;
-        }
-        
-        #noteDetailButtons {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 1rem;
-        }
-        
-        /* Toast Notification */
-        #toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(0,0,0,0.7);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 20px;
-            z-index: 2000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, bottom 0.3s ease;
-        }
-        
-        #toast.show {
-            opacity: 1;
-            visibility: visible;
-            bottom: 30px;
-        }
-        
-        /* Security Features Styles */
-        #patternLockGrid {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
-            width: 240px; margin: 1rem auto; position: relative;
-        }
-        .pattern-dot {
-            width: 30px; height: 30px; background-color: var(--border-color);
-            border-radius: 50%; border: 6px solid white; outline: 1px solid var(--border-color);
-        }
-        .pattern-dot.active { background-color: var(--primary-color); }
-        #patternLockCanvas { position: absolute; top:0; left:0; width: 100%; height: 100%; pointer-events: none; }
+    .close-modal-btn {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: var(--text-color-light);
+    }
+    
+    #noteDetailView p {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        text-align: left;
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+        min-height: 100px;
+    }
+    
+    #noteDetailButtons {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 1rem;
+    }
+    
+    /* Toast Notification */
+    #toast {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(0,0,0,0.7);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 20px;
+        z-index: 2000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, bottom 0.3s ease;
+    }
+    
+    #toast.show {
+        opacity: 1;
+        visibility: visible;
+        bottom: 30px;
+    }
+    
+    /* Security Features Styles */
+    #patternLockGrid {
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+        width: 240px; margin: 1rem auto; position: relative;
+    }
+    .pattern-dot {
+        width: 30px; height: 30px; background-color: var(--border-color);
+        border-radius: 50%; border: 6px solid white; outline: 1px solid var(--border-color);
+    }
+    .pattern-dot.active { background-color: var(--primary-color); }
+    #patternLockCanvas { position: absolute; top:0; left:0; width: 100%; height: 100%; pointer-events: none; }
 
-        #pinKeypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 240px; margin: auto; }
-        #pinKeypad button { font-size: 1.5rem; padding: 16px; }
-        #pinDisplay { height: 40px; background: #f1f3f4; border-radius: 8px; margin-bottom: 1rem; font-size: 2rem; letter-spacing: 0.5rem; line-height: 40px; }
-        
-        /* Secure Dashboard & Hidden Content */
-        #secureDashboardHeader { display: flex; justify-content: space-between; align-items: center; width:100%; margin-bottom: 1rem; }
-        .image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-top: 1rem; }
-        .image-card { position: relative; }
-        .image-card img { width: 100%; height: auto; border-radius: 8px; object-fit: cover; aspect-ratio: 1/1; display: block; }
-        .image-actions { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.5); border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; display: flex; justify-content: space-around; padding: 4px; opacity: 0; transition: opacity 0.2s; }
-        .image-card:hover .image-actions { opacity: 1; }
-        .image-actions button { background: none; border: none; color: white; cursor: pointer; font-size: 1.2rem; }
-        
-        /* --- SECTION: Media Queries for Responsiveness --- */
-        @media (max-width: 480px) {
-            #app { max-width: 100%; }
-            .view-container { padding: 1.5rem; box-shadow: none; border-radius: 0; }
-            body { align-items: flex-start; }
-            #app { padding: 0; }
-        }
-    </style>
+    #pinKeypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 240px; margin: auto; }
+    #pinKeypad button { font-size: 1.5rem; padding: 16px; }
+    #pinDisplay { height: 40px; background: #f1f3f4; border-radius: 8px; margin-bottom: 1rem; font-size: 2rem; letter-spacing: 0.5rem; line-height: 40px; }
+    
+    /* Secure Dashboard & Hidden Content */
+    #secureDashboardHeader { display: flex; justify-content: space-between; align-items: center; width:100%; margin-bottom: 1rem; }
+    .image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-top: 1rem; }
+    .image-card { position: relative; }
+    .image-card img { width: 100%; height: auto; border-radius: 8px; object-fit: cover; aspect-ratio: 1/1; display: block; }
+    .image-actions { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.5); border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; display: flex; justify-content: space-around; padding: 4px; opacity: 0; transition: opacity 0.2s; }
+    .image-card:hover .image-actions { opacity: 1; }
+    .image-actions button { background: none; border: none; color: white; cursor: pointer; font-size: 1.2rem; }
+    
+    /* --- SECTION: Media Queries for Responsiveness --- */
+    @media (max-width: 480px) {
+        #app { max-width: 100%; }
+        .view-container { padding: 1.5rem; box-shadow: none; border-radius: 0; }
+        body { align-items: flex-start; }
+        #app { padding: 0; }
+    }
+</style>
 </head>
 <body>
 
-<!-- Main App Container -->
-<main id="app">
+<!-- Main App Container - Content will be rendered here by JavaScript -->
 
-    <!-- 1. Login View -->
-    <div id="loginView" class="view-container">
-        <h1>Welcome</h1>
-        <p>Sign in to continue to your dashboard.</p>
-        <button id="googleLoginBtn" class="btn btn-google">
-            <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12s5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.222,0-9.618-3.317-11.28-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.574l6.19,5.238C42.022,35.138,44,30.025,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path></svg>
-            Continue with Google
-        </button>
-        <button id="guestLoginBtn" class="btn btn-guest">Continue with Guest</button>
-    </div>
-
-    <!-- 2. Guest Form View -->
-    <div id="guestFormView" class="view-container hidden">
-        <h1>Guest Details</h1>
-        <p>Please provide your name and a unique ID.</p>
-        <form id="guestForm" style="width: 100%;">
-            <div class="input-group">
-                <input type="text" id="fullNameInput" class="input-field" placeholder="Full Name" required>
-            </div>
-            <div class="input-group">
-                <input type="text" id="usernameInput" class="input-field" placeholder="Guest ID (e.g., user123)" required>
-            </div>
-            <span id="guestError" class="error-message"></span>
-            <button type="submit" class="btn btn-google">Start as Guest</button>
-        </form>
-    </div>
-
-    <!-- 3. Dashboard View -->
-    <div id="dashboardView" class="view-container">
-        <div id="profileCard" class="profile-card">
-            <img id="profilePic" class="profile-pic" src="" alt="Profile Picture">
-            <h1 id="profileName" class="profile-name"></h1>
-            <p id="profileEmail" class="profile-email"></p>
-            <span id="loginTypeBadge" class="login-type-badge"></span>
-             <div id="securityPanel">
-                <button id="changeLockBtn" class="btn btn-secondary btn-sm">Change PIN / Pattern</button>
-                <button id="viewHiddenNotesBtn" class="btn btn-google btn-sm">View Hidden Content</button>
-            </div>
-        </div>
-        <section id="notesSection">
-            <h2>My Notes</h2>
-            <div id="notesListContainer"></div>
-            <p id="noNotesMessage" class="hidden">You have no notes yet. Tap the '+' button to add one!</p>
-        </section>
-        <button id="logoutBtn" class="btn btn-logout">Logout</button>
-        <button id="addNoteBtn" class="btn" title="Add Note">➕</button>
-    </div>
-
-    <!-- 4. Secure Dashboard View -->
-    <div id="secureDashboardView" class="view-container hidden">
-        <div id="secureDashboardHeader">
-            <h2>Secure Area</h2>
-            <button id="backToMainDashboardBtn" class="btn btn-sm btn-secondary">Back</button>
-        </div>
-        <div id="secureDashboardContent">
-            <h3>Hidden Notes</h3>
-            <div id="hiddenNotesListContainer"></div>
-            <h3>Hidden Images</h3>
-            <button id="addImageBtn" class="btn btn-secondary" style="margin-bottom: 1rem; width: auto; padding: 8px 16px;">Add Image</button>
-            <div id="hiddenImagesContainer" class="image-grid"></div>
-        </div>
-    </div>
-</main>
+<main id="app"></main>
 
 <!-- Modals -->
+
 <div id="noteModal" class="modal-overlay">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 id="modalTitle"></h2>
-            <button class="close-modal-btn" title="Close">&times;</button>
-        </div>
-        <form id="noteForm">
-            <input type="hidden" id="noteIdInput">
-            <div class="input-group"><input type="text" id="noteTitleInput" class="input-field" placeholder="Note Title" required></div>
-            <div class="input-group"><textarea id="noteDescriptionInput" class="input-field" placeholder="Note content..." required></textarea></div>
-            <span id="noteError" class="error-message"></span>
-            <button type="submit" id="saveNoteBtn" class="btn btn-google">Save Note</button>
-        </form>
-        <div id="noteDetailView" class="hidden">
-            <h3 id="noteDetailTitle"></h3>
-            <p id="noteDetailDescription"></p>
-            <div id="noteDetailButtons">
-                <button id="copyNoteBtn" class="btn btn-sm btn-guest">Copy</button>
-                <button id="unhideNoteBtn" class="btn btn-sm btn-secondary">Unhide</button>
-                <button id="updateNoteBtn" class="btn btn-sm btn-google">Update</button>
-            </div>
-        </div>
-    </div>
+<div class="modal-content">
+<div class="modal-header">
+<h2 id="modalTitle"></h2>
+<button class="close-modal-btn" title="Close">&times;</button>
+</div>
+<form id="noteForm">
+<input type="hidden" id="noteIdInput">
+<div class="input-group"><input type="text" id="noteTitleInput" class="input-field" placeholder="Note Title" required></div>
+<div class="input-group"><textarea id="noteDescriptionInput" class="input-field" placeholder="Note content..." required></textarea></div>
+<span id="noteError" class="error-message"></span>
+<button type="submit" id="saveNoteBtn" class="btn btn-google">Save Note</button>
+</form>
+<div id="noteDetailView" class="hidden">
+<h3 id="noteDetailTitle"></h3>
+<p id="noteDetailDescription"></p>
+<div id="noteDetailButtons">
+<button id="copyNoteBtn" class="btn btn-sm btn-guest">Copy</button>
+<button id="unhideNoteBtn" class="btn btn-sm btn-secondary">Unhide</button>
+<button id="updateNoteBtn" class="btn btn-sm btn-google">Update</button>
+</div>
+</div>
+</div>
 </div>
 
 <div id="securityModal" class="modal-overlay">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 id="securityModalTitle"></h2>
-            <button class="close-modal-btn" title="Close">&times;</button>
-        </div>
-        <div id="securityModalBody"></div>
-    </div>
+<div class="modal-content">
+<div class="modal-header">
+<h2 id="securityModalTitle"></h2>
+<button class="close-modal-btn" title="Close">&times;</button>
+</div>
+<div id="securityModalBody"></div>
+</div>
 </div>
 
 <!-- Toast Notification -->
+
 <div id="toast"></div>
 
 <script type="module">
-    // --- SECTION: Firebase SDK Imports ---
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-    import {
-        getAuth,
-        onAuthStateChanged,
-        GoogleAuthProvider,
-        signInWithPopup,
-        signOut,
-    } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
-   
-    // --- SECTION: Firebase Configuration ---
-    const firebaseConfig = {
-        apiKey: "AIzaSyDzVS_oUSNueLOUj8CtQWCaNKjG_-YTCKk",
-        authDomain: "fake-phone-pe-d0f28.firebaseapp.com",
-        databaseURL: "https://fake-phone-pe-d0f28-default-rtdb.firebaseio.com",
-        projectId: "fake-phone-pe-d0f28",
-        storageBucket: "fake-phone-pe-d0f28.appspot.com",
-        messagingSenderId: "860186859049",
-        appId: "1:860186859049:web:4e19d670c2e24b91a5ae38"
-    };
+// --- SECTION: Firebase SDK Imports ---
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+import {
+getAuth,
+onAuthStateChanged,
+GoogleAuthProvider,
+signInWithPopup,
+signOut,
+} from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
 
-    // --- SECTION: Firebase Initialization ---
-    let app, auth;
-    try {
-        app = initializeApp(firebaseConfig);
-        auth = getAuth(app);
-    } catch (error) {
-        console.error("Firebase initialization error:", error);
-        alert("Firebase initialization failed. The app cannot work correctly.");
-    }
-    const googleProvider = new GoogleAuthProvider();
+// --- SECTION: Firebase Configuration ---
+const firebaseConfig = {
+apiKey: "AIzaSyDzVS_oUSNueLOUj8CtQWCaNKjG_-YTCKk",
+authDomain: "fake-phone-pe-d0f28.firebaseapp.com",
+databaseURL: "https://fake-phone-pe-d0f28-default-rtdb.firebaseio.com",
+projectId: "fake-phone-pe-d0f28",
+storageBucket: "fake-phone-pe-d0f28.appspot.com",
+messagingSenderId: "860186859049",
+appId: "1:860186859049:web:4e19d670c2e24b91a5ae38"
+};
 
-    // --- SECTION: DOM Element References ---
-    const loginView = document.getElementById('loginView');
-    const guestFormView = document.getElementById('guestFormView');
-    const dashboardView = document.getElementById('dashboardView');
-    const secureDashboardView = document.getElementById('secureDashboardView');
-    const googleLoginBtn = document.getElementById('googleLoginBtn');
-    const guestLoginBtn = document.getElementById('guestLoginBtn');
-    const guestForm = document.getElementById('guestForm');
-    const fullNameInput = document.getElementById('fullNameInput');
-    const usernameInput = document.getElementById('usernameInput');
-    const guestError = document.getElementById('guestError');
-    const profileCard = document.getElementById('profileCard');
-    const profilePic = document.getElementById('profilePic');
-    const profileName = document.getElementById('profileName');
-    const profileEmail = document.getElementById('profileEmail');
-    const loginTypeBadge = document.getElementById('loginTypeBadge');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const notesSection = document.getElementById('notesSection');
-    const notesListContainer = document.getElementById('notesListContainer');
-    const noNotesMessage = document.getElementById('noNotesMessage');
-    const addNoteBtn = document.getElementById('addNoteBtn');
-    const noteModal = document.getElementById('noteModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const noteForm = document.getElementById('noteForm');
-    const noteIdInput = document.getElementById('noteIdInput');
-    const noteTitleInput = document.getElementById('noteTitleInput');
-    const noteDescriptionInput = document.getElementById('noteDescriptionInput');
-    const noteError = document.getElementById('noteError');
-    const saveNoteBtn = document.getElementById('saveNoteBtn');
-    const noteDetailView = document.getElementById('noteDetailView');
-    const noteDetailTitle = document.getElementById('noteDetailTitle');
-    const noteDetailDescription = document.getElementById('noteDetailDescription');
-    const copyNoteBtn = document.getElementById('copyNoteBtn');
-    const unhideNoteBtn = document.getElementById('unhideNoteBtn');
-    const updateNoteBtn = document.getElementById('updateNoteBtn');
-    const toast = document.getElementById('toast');
-    const securityPanel = document.getElementById('securityPanel');
-    const changeLockBtn = document.getElementById('changeLockBtn');
-    const viewHiddenNotesBtn = document.getElementById('viewHiddenNotesBtn');
-    const securityModal = document.getElementById('securityModal');
-    const securityModalTitle = document.getElementById('securityModalTitle');
-    const securityModalBody = document.getElementById('securityModalBody');
-    const backToMainDashboardBtn = document.getElementById('backToMainDashboardBtn');
-    const hiddenNotesListContainer = document.getElementById('hiddenNotesListContainer');
-    const addImageBtn = document.getElementById('addImageBtn');
-    const hiddenImagesContainer = document.getElementById('hiddenImagesContainer');
-    
-    // --- SECTION: State Management ---
-    let currentUserLoginType = null;
-    let currentUserId = null;
-    let currentNotes = [];
-    
-    // --- SECTION: Crypto Helper ---
-    async function sha256(message) {
-        const msgBuffer = new TextEncoder().encode(message);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    }
+// --- SECTION: Firebase Initialization ---
+let app, auth;
+try {
+app = initializeApp(firebaseConfig);
+auth = getAuth(app);
+} catch (error) {
+console.error("Firebase initialization error:", error);
+alert("Firebase initialization failed. The app cannot work correctly.");
+}
+const googleProvider = new GoogleAuthProvider();
 
-    // --- SECTION: localStorage Data Manager ---
-    const storageKey = 'webAppData';
-    const storageManager = {
-        getData: () => {
-            try {
-                const data = localStorage.getItem(storageKey);
-                return data ? JSON.parse(data) : { users: {} };
-            } catch (e) { console.error("Error parsing localStorage data", e); return { users: {} }; }
-        },
-        saveData: (data) => {
-            try {
-                localStorage.setItem(storageKey, JSON.stringify(data));
-            } catch (e) { console.error("Error saving to localStorage", e); }
-        },
-        getUser: (userId) => storageManager.getData().users[userId],
-        saveUser: (userId, userData) => {
-            const data = storageManager.getData();
-            if(!data.users[userId]) data.users[userId] = {};
-            data.users[userId] = { ...data.users[userId], ...userData, lastLogin: Date.now() };
-            storageManager.saveData(data);
-        },
-        getNotes: (userId) => storageManager.getUser(userId)?.notes || [],
-        saveNote: (userId, noteData) => {
-            const data = storageManager.getData();
-            if (!data.users[userId]) return;
-            if (!data.users[userId].notes) data.users[userId].notes = [];
-            const newNote = { ...noteData, id: `note_${Date.now()}` };
-            data.users[userId].notes.push(newNote);
-            storageManager.saveData(data);
-        },
-        updateNote: (userId, noteId, noteData, isHidden = false) => {
-            const data = storageManager.getData();
-            const noteListName = isHidden ? 'hiddenNotes' : 'notes';
-            if (!data.users[userId]?.[noteListName]) return;
-            const noteIndex = data.users[userId][noteListName].findIndex(n => n.id === noteId);
-            if (noteIndex > -1) {
-                data.users[userId][noteListName][noteIndex] = { ...data.users[userId][noteListName][noteIndex], ...noteData };
-                storageManager.saveData(data);
-            }
-        },
-        deleteNote: (userId, noteId) => {
-            const data = storageManager.getData();
-            if (!data.users[userId]?.notes) return;
-            data.users[userId].notes = data.users[userId].notes.filter(n => n.id !== noteId);
-            storageManager.saveData(data);
-        },
-        hideNote: (userId, noteId) => {
-            const data = storageManager.getData();
-            const user = data.users[userId];
-            if (!user?.notes) return;
-            const noteIndex = user.notes.findIndex(n => n.id === noteId);
-            if (noteIndex > -1) {
-                const [noteToHide] = user.notes.splice(noteIndex, 1);
-                if (!user.hiddenNotes) user.hiddenNotes = [];
-                user.hiddenNotes.push(noteToHide);
-                storageManager.saveData(data);
-            }
-        },
-        unhideNote: (userId, noteId) => {
-            const data = storageManager.getData();
-            const user = data.users[userId];
-            if (!user?.hiddenNotes) return;
-            const noteIndex = user.hiddenNotes.findIndex(n => n.id === noteId);
-            if (noteIndex > -1) {
-                const [noteToUnhide] = user.hiddenNotes.splice(noteIndex, 1);
-                if (!user.notes) user.notes = [];
-                user.notes.push(noteToUnhide);
-                storageManager.saveData(data);
-            }
-        },
-        getHiddenNotes: (userId) => storageManager.getUser(userId)?.hiddenNotes || [],
-        saveLock: (userId, lockData) => {
-            const data = storageManager.getData();
-            if(!data.users[userId]) return;
-            data.users[userId].lock = lockData;
-            storageManager.saveData(data);
-        },
-        getLock: (userId) => storageManager.getUser(userId)?.lock,
-        getHiddenImages: (userId) => storageManager.getUser(userId)?.hiddenImages || [],
-        addHiddenImage: (userId, url) => {
-            const data = storageManager.getData();
-            if (!data.users[userId]) return;
-            if (!data.users[userId].hiddenImages) data.users[userId].hiddenImages = [];
-            data.users[userId].hiddenImages.push({id: `img_${Date.now()}`, url});
-            storageManager.saveData(data);
-        },
-        deleteHiddenImage: (userId, imageId) => {
-            const data = storageManager.getData();
-            if (!data.users[userId]?.hiddenImages) return;
-            data.users[userId].hiddenImages = data.users[userId].hiddenImages.filter(img => img.id !== imageId);
-            storageManager.saveData(data);
-        },
-        isGuestUsernameTaken: (username) => !!storageManager.getUser(username)
-    };
-    
-    // --- SECTION: UI/View Management ---
-    function switchView(viewId) {
-        [loginView, guestFormView, dashboardView, secureDashboardView].forEach(v => v.classList.add('hidden'));
-        document.getElementById(viewId)?.classList.remove('hidden');
-    }
+// --- SECTION: DOM Element References (for Modals/Toast only) ---
+const noteModal = document.getElementById('noteModal');
+const securityModal = document.getElementById('securityModal');
+const toast = document.getElementById('toast');
 
-    function showToast(message) {
-        toast.textContent = message;
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 3000);
-    }
-    
-    function openModal(modalEl) { modalEl.classList.add('visible'); }
-    function closeModal(modalEl) { modalEl.classList.remove('visible'); }
+// --- SECTION: State Management ---
+let appState = {
+currentUserId: null,
+currentView: 'login', // 'login', 'guestForm', 'dashboard', 'secureDashboard'
+currentNotes: [],
+};
 
-    // --- SECTION: Guest Login Logic ---
-    function handleGuestLoginClick() { switchView('guestFormView'); }
+// --- SECTION: Session Manager ---
+const sessionManager = {
+key: 'currentAppUserId',
+getUserId: () => localStorage.getItem(sessionManager.key),
+setUserId: (id) => localStorage.setItem(sessionManager.key, id),
+clearUserId: () => localStorage.removeItem(sessionManager.key),
+};
 
-    function handleGuestFormSubmit(event) {
-        event.preventDefault();
-        guestError.textContent = '';
-        const fullName = fullNameInput.value.trim();
-        const username = usernameInput.value.trim();
-        if (!fullName || !username) {
-            guestError.textContent = 'Both fields are required.';
-            return;
-        }
-        if (storageManager.isGuestUsernameTaken(username)) {
-            guestError.textContent = 'This Guest ID is already used. Guest login is allowed only once.';
-            return;
-        }
-        currentUserLoginType = 'GUEST';
-        currentUserId = username;
-        const guestUserData = {
-            name: fullName, email: null,
-            photoURL: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23757575"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>',
-            loginType: 'Guest',
-        };
-        storageManager.saveUser(username, { type: 'guest', ...guestUserData, notes:[], hiddenNotes:[], hiddenImages:[], lock: null });
-        updateDashboardUI(guestUserData);
-        loadNotes();
-        switchView('dashboardView');
-    }
+// --- SECTION: Crypto Helper ---
+async function sha256(message) { /* Unchanged */ }
 
-    // --- SECTION: Google Authentication Logic ---
-    async function handleGoogleLoginClick() {
-        if (!auth) return;
-        try {
-            await signInWithPopup(auth, googleProvider);
-        } catch (error) {
-            console.error("Google Sign-In Error:", error);
-            alert(`Error during sign-in: ${error.message}`);
-        }
-    }
+// --- SECTION: localStorage Data Manager ---
+const storageKey = 'webAppData';
+const storageManager = { /* Unchanged - All methods preserved */
+getData: () => {
+try {
+const data = localStorage.getItem(storageKey);
+return data ? JSON.parse(data) : { users: {} };
+} catch (e) { console.error("Error parsing localStorage data", e); return { users: {} }; }
+},
+saveData: (data) => {
+try {
+localStorage.setItem(storageKey, JSON.stringify(data));
+} catch (e) { console.error("Error saving to localStorage", e); }
+},
+getUser: (userId) => storageManager.getData().users[userId],
+saveUser: (userId, userData) => {
+const data = storageManager.getData();
+if(!data.users[userId]) data.users[userId] = {};
+data.users[userId] = { ...data.users[userId], ...userData, lastLogin: Date.now() };
+storageManager.saveData(data);
+},
+getNotes: (userId) => storageManager.getUser(userId)?.notes || [],
+saveNote: (userId, noteData) => {
+const data = storageManager.getData();
+if (!data.users[userId]) return;
+if (!data.users[userId].notes) data.users[userId].notes = [];
+const newNote = { ...noteData, id: `note_${Date.now()}` };
+data.users[userId].notes.push(newNote);
+storageManager.saveData(data);
+},
+updateNote: (userId, noteId, noteData, isHidden = false) => {
+const data = storageManager.getData();
+const noteListName = isHidden ? 'hiddenNotes' : 'notes';
+if (!data.users[userId]?.[noteListName]) return;
+const noteIndex = data.users[userId][noteListName].findIndex(n => n.id === noteId);
+if (noteIndex > -1) {
+data.users[userId][noteListName][noteIndex] = { ...data.users[userId][noteListName][noteIndex], ...noteData };
+storageManager.saveData(data);
+}
+},
+deleteNote: (userId, noteId) => {
+const data = storageManager.getData();
+if (!data.users[userId]?.notes) return;
+data.users[userId].notes = data.users[userId].notes.filter(n => n.id !== noteId);
+storageManager.saveData(data);
+},
+hideNote: (userId, noteId) => {
+const data = storageManager.getData();
+const user = data.users[userId];
+if (!user?.notes) return;
+const noteIndex = user.notes.findIndex(n => n.id === noteId);
+if (noteIndex > -1) {
+const [noteToHide] = user.notes.splice(noteIndex, 1);
+if (!user.hiddenNotes) user.hiddenNotes = [];
+user.hiddenNotes.push(noteToHide);
+storageManager.saveData(data);
+}
+},
+unhideNote: (userId, noteId) => {
+const data = storageManager.getData();
+const user = data.users[userId];
+if (!user?.hiddenNotes) return;
+const noteIndex = user.hiddenNotes.findIndex(n => n.id === noteId);
+if (noteIndex > -1) {
+const [noteToUnhide] = user.hiddenNotes.splice(noteIndex, 1);
+if (!user.notes) user.notes = [];
+user.notes.push(noteToUnhide);
+storageManager.saveData(data);
+}
+},
+getHiddenNotes: (userId) => storageManager.getUser(userId)?.hiddenNotes || [],
+saveLock: (userId, lockData) => {
+const data = storageManager.getData();
+if(!data.users[userId]) return;
+data.users[userId].lock = lockData;
+storageManager.saveData(data);
+},
+getLock: (userId) => storageManager.getUser(userId)?.lock,
+getHiddenImages: (userId) => storageManager.getUser(userId)?.hiddenImages || [],
+addHiddenImage: (userId, url) => {
+const data = storageManager.getData();
+if (!data.users[userId]) return;
+if (!data.users[userId].hiddenImages) data.users[userId].hiddenImages = [];
+data.users[userId].hiddenImages.push({id: `img_${Date.now()}`, url});
+storageManager.saveData(data);
+},
+deleteHiddenImage: (userId, imageId) => {
+const data = storageManager.getData();
+if (!data.users[userId]?.hiddenImages) return;
+data.users[userId].hiddenImages = data.users[userId].hiddenImages.filter(img => img.id !== imageId);
+storageManager.saveData(data);
+},
+isGuestUsernameTaken: (username) => !!storageManager.getUser(username)
+};
 
-    function saveGoogleUserDataToLocalStorage(user) {
-        if (!user) return;
-        const existingUser = storageManager.getUser(user.uid);
-        const userData = { type: 'google', name: user.displayName, email: user.email, photoURL: user.photoURL };
-        if (!existingUser) {
-            Object.assign(userData, { notes: [], hiddenNotes: [], hiddenImages: [], lock: null });
-        }
-        storageManager.saveUser(user.uid, userData);
-    }
-    
-    // --- SECTION: Dashboard & Logout Logic ---
-    function updateDashboardUI(userData) {
-        profilePic.src = userData.photoURL || '';
-        profileName.textContent = userData.name || 'N/A';
-        profileEmail.textContent = userData.email || '';
-        profileEmail.classList.toggle('hidden', !userData.email);
-        loginTypeBadge.textContent = userData.loginType;
-        loginTypeBadge.className = `login-type-badge ${userData.loginType.toLowerCase()}`;
-    }
+// --- SECTION: HTML View Templates ---
+const getLoginViewHTML = () => `
+<div id="loginView" class="view-container">
+<h1>Welcome</h1>
+<p>Sign in to continue to your dashboard.</p>
+<button id="googleLoginBtn" class="btn btn-google">
+<svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12s5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.222,0-9.618-3.317-11.28-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.574l6.19,5.238C42.022,35.138,44,30.025,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path></svg>
+Continue with Google
+</button>
+<button id="guestLoginBtn" class="btn btn-guest">Continue with Guest</button>
+</div>`;
 
-    async function handleLogoutClick() {
-        if (currentUserLoginType === 'GOOGLE' && auth) await signOut(auth);
-        currentUserLoginType = null;
-        currentUserId = null;
-        currentNotes = [];
-        renderNotesList();
-        switchView('loginView');
-    }
+const getGuestFormViewHTML = () => `
+<div id="guestFormView" class="view-container">
+<h1>Guest Details</h1>
+<p>Please provide your name and a unique ID.</p>
+<form id="guestForm" style="width: 100%;">
+<div class="input-group">
+<input type="text" id="fullNameInput" class="input-field" placeholder="Full Name" required>
+</div>
+<div class="input-group">
+<input type="text" id="usernameInput" class="input-field" placeholder="Guest ID (e.g., user123)" required>
+</div>
+<span id="guestError" class="error-message"></span>
+<button type="submit" class="btn btn-google">Start as Guest</button>
+</form>
+</div>`;
 
-    // --- SECTION: Notes UI & Logic ---
-    function renderNotesList() {
-        notesListContainer.innerHTML = '';
-        noNotesMessage.classList.toggle('hidden', currentNotes.length > 0);
-        const sortedNotes = [...currentNotes].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-        sortedNotes.forEach(note => {
-            const noteEl = document.createElement('div');
-            noteEl.className = 'note-item';
-            noteEl.dataset.id = note.id;
-            noteEl.innerHTML = `
-                <div class="note-item-content">${note.title}</div>
-                <div class="note-actions">
-                    <button class="btn btn-sm hide-note-btn" title="Hide">Hide</button>
-                    <button class="btn btn-sm delete-note-btn delete" title="Delete">Delete</button>
-                </div>`;
-            noteEl.querySelector('.note-item-content').addEventListener('click', () => handleNoteItemClick(note.id));
-            noteEl.querySelector('.hide-note-btn').addEventListener('click', () => handleHideNote(note.id));
-            noteEl.querySelector('.delete-note-btn').addEventListener('click', () => handleDeleteNote(note.id));
-            notesListContainer.appendChild(noteEl);
-        });
-    }
+const getDashboardViewHTML = (userData) => `
+<div id="dashboardView" class="view-container">
+<div id="profileCard" class="profile-card">
+<img id="profilePic" class="profile-pic" src="${userData.photoURL || ''}" alt="Profile Picture">
+<h1 id="profileName" class="profile-name">${userData.name || ''}</h1>
+<p id="profileEmail" class="profile-email ${!userData.email ? 'hidden' : ''}">${userData.email || ''}</p>
+<span id="loginTypeBadge" class="login-type-badge ${userData.loginType.toLowerCase()}">${userData.loginType}</span>
+<div id="securityPanel" style="display: none;">
+<button id="changeLockBtn" class="btn btn-secondary btn-sm">Change PIN / Pattern</button>
+<button id="viewHiddenNotesBtn" class="btn btn-google btn-sm">View Hidden Content</button>
+</div>
+</div>
+<section id="notesSection">
+<h2>My Notes</h2>
+<div id="notesListContainer"></div>
+<p id="noNotesMessage" class="hidden">You have no notes yet. Tap the '+' button to add one!</p>
+</section>
+<button id="logoutBtn" class="btn btn-logout">Logout</button>
+<button id="addNoteBtn" class="btn" title="Add Note">➕</button>
+</div>`;
 
-    function openNoteModal(mode, note = null, isHidden = false) {
-        noteError.textContent = '';
-        if (mode === 'add' || mode === 'edit') {
-            noteForm.classList.remove('hidden');
-            noteDetailView.classList.add('hidden');
-            noteIdInput.value = note?.id || '';
-            noteTitleInput.value = note?.title || '';
-            noteDescriptionInput.value = note?.description || '';
-            modalTitle.textContent = mode === 'add' ? 'Add New Note' : 'Update Note';
-            updateNoteBtn.classList.toggle('hidden', isHidden);
-            unhideNoteBtn.classList.add('hidden');
-        } else if (mode === 'view' && note) {
-            noteForm.classList.add('hidden');
-            noteDetailView.classList.remove('hidden');
-            modalTitle.textContent = 'Note Details';
-            noteDetailTitle.textContent = note.title;
-            noteDetailDescription.textContent = note.description;
-            copyNoteBtn.dataset.description = note.description;
-            updateNoteBtn.dataset.id = note.id;
-            unhideNoteBtn.dataset.id = note.id;
-            updateNoteBtn.classList.toggle('hidden', isHidden);
-            unhideNoteBtn.classList.toggle('hidden', !isHidden);
-        }
-        openModal(noteModal);
-    }
-    function handleAddNoteClick() { openNoteModal('add'); }
-    function handleNoteItemClick(noteId) {
-        const note = currentNotes.find(n => n.id === noteId);
-        if (note) openNoteModal('view', note);
-    }
-    async function handleSaveNoteForm(event) {
-        event.preventDefault();
-        const id = noteIdInput.value;
-        const title = noteTitleInput.value.trim();
-        const description = noteDescriptionInput.value.trim();
-        if (!title || !description) {
-            noteError.textContent = 'Title and description are required.'; return;
-        }
-        if (id) {
-            updateNote(id, { title, description, updatedAt: Date.now() });
-        } else {
-            saveNote({ title, description, createdAt: Date.now(), updatedAt: Date.now() });
-        }
-        closeModal(noteModal);
-    }
-    async function handleHideNote(noteId) {
-        const lock = storageManager.getLock(currentUserId);
-        if (!lock) {
-            const lockCreated = await new Promise(resolve => createInitialLock(resolve));
-            if (!lockCreated) { showToast("Lock creation cancelled. Note not hidden."); return; }
-        }
-        storageManager.hideNote(currentUserId, noteId);
-        loadNotes();
-        showToast('Note hidden successfully');
-    }
-    function handleDeleteNote(noteId) {
-        if(confirm('Are you sure you want to delete this note?')) {
-            storageManager.deleteNote(currentUserId, noteId);
-            loadNotes();
-            showToast('Note deleted');
-        }
-    }
-    function handleUnhideNote() {
-        const noteId = unhideNoteBtn.dataset.id;
-        storageManager.unhideNote(currentUserId, noteId);
-        loadNotes();
-        renderSecureDashboard();
-        closeModal(noteModal);
-        showToast('Note unhidden');
-    }
-    function loadNotes() {
-        if (!currentUserId) return;
-        currentNotes = storageManager.getNotes(currentUserId);
-        renderNotesList();
-    }
-    function saveNote(noteData) {
-        storageManager.saveNote(currentUserId, noteData); loadNotes();
-    }
-    function updateNote(noteId, noteData, isHidden = false) {
-        storageManager.updateNote(currentUserId, noteId, noteData, isHidden);
-        if (isHidden) { renderSecureDashboard(); } else { loadNotes(); }
-    }
-    
-    // --- SECTION: Security & Locks UI ---
-    let lockVerificationResolve = null;
-    function openSecurityModal(title, bodyHTML, onOpen) {
-        securityModalTitle.textContent = title;
-        securityModalBody.innerHTML = bodyHTML;
-        openModal(securityModal);
-        if (onOpen) onOpen(securityModalBody);
-    }
+const getSecureDashboardViewHTML = () => `
+<div id="secureDashboardView" class="view-container">
+<div id="secureDashboardHeader">
+<h2>Secure Area</h2>
+<button id="backToMainDashboardBtn" class="btn btn-sm btn-secondary">Back</button>
+</div>
+<div id="secureDashboardContent">
+<h3>Hidden Notes</h3>
+<div id="hiddenNotesListContainer"></div>
+<h3>Hidden Images</h3>
+<button id="addImageBtn" class="btn btn-secondary" style="margin-bottom: 1rem; width: auto; padding: 8px 16px;">Add Image</button>
+<div id="hiddenImagesContainer" class="image-grid"></div>
+</div>
+</div>`;
 
-    function createInitialLock(onFinish) {
-        const body = `<p>Set a PIN or Pattern to secure your hidden content.</p>
-            <button id="createPatternBtn" class="btn btn-secondary">Create Pattern</button>
-            <button id="createPinBtn" class="btn btn-secondary">Create PIN</button>`;
-        openSecurityModal('Set Your Security Lock', body, (el) => {
-            el.querySelector('#createPatternBtn').addEventListener('click', () => createPatternLock(onFinish));
-            el.querySelector('#createPinBtn').addEventListener('click', () => createPinLock(onFinish));
-            securityModal.querySelector('.close-modal-btn').addEventListener('click', () => onFinish(false));
-        });
-    }
+// --- SECTION: Central Rendering Engine ---
+async function renderApp() {
+const appContainer = document.getElementById('app');
 
-    async function handleChangeLock() {
-        const lock = storageManager.getLock(currentUserId);
-        if (!lock) { createInitialLock(() => {}); return; }
-        const verified = await new Promise(resolve => verifyLock(resolve));
-        if (verified) { createInitialLock(() => {}); } 
-        else { showToast("Verification failed. Cannot change lock."); }
-    }
+switch (appState.currentView) {
+case 'guestForm':
+appContainer.innerHTML = getGuestFormViewHTML();
+attachGuestFormEventListeners();
+break;
+case 'dashboard':
+const userData = storageManager.getUser(appState.currentUserId);
+if (userData) {
+appContainer.innerHTML = getDashboardViewHTML(userData);
+attachDashboardEventListeners();
+loadNotes();
+} else {
+await handleLogoutClick(); // User data not found, force logout
+}
+break;
+case 'secureDashboard':
+appContainer.innerHTML = getSecureDashboardViewHTML();
+attachSecureDashboardEventListeners();
+renderSecureDashboard();
+break;
+case 'login':
+default:
+appContainer.innerHTML = getLoginViewHTML();
+attachLoginEventListeners();
+break;
+}
+}
 
-    async function verifyLock(resolveCallback) {
-        lockVerificationResolve = resolveCallback;
-        const lock = storageManager.getLock(currentUserId);
-        if (!lock) { return lockVerificationResolve(true); }
-        if (lock.type === 'pin') verifyPinLock();
-        else if (lock.type === 'pattern') verifyPatternLock();
-    }
-    function handleLockSuccess() {
-        showToast('Verified!');
-        if(lockVerificationResolve) lockVerificationResolve(true);
-        closeModal(securityModal);
-    }
-    function handleLockFailure() {
-        showToast('Incorrect.');
-        if(lockVerificationResolve) lockVerificationResolve(false);
-        closeModal(securityModal);
-    }
+// --- SECTION: Event Listener Attachment ---
+function attachLoginEventListeners() {
+document.getElementById('googleLoginBtn')?.addEventListener('click', handleGoogleLoginClick);
+document.getElementById('guestLoginBtn')?.addEventListener('click', handleGuestLoginClick);
+}
 
-    function createPatternLock(onFinish) { /* Unchanged from previous step */ }
-    async function createPinLock(onFinish) { /* Unchanged from previous step */ }
-    function verifyPinLock() { /* Unchanged from previous step */ }
-    function verifyPatternLock() { /* Unchanged from previous step */ }
-    
-    // --- SECTION: Secure Dashboard ---
-    async function handleViewHiddenContent() {
-        const verified = await new Promise(resolve => verifyLock(resolve));
-        if (verified) {
-            renderSecureDashboard();
-            switchView('secureDashboardView');
-        }
-    }
+function attachGuestFormEventListeners() {
+document.getElementById('guestForm')?.addEventListener('submit', handleGuestFormSubmit);
+}
 
-    function renderSecureDashboard() {
-        // Render hidden notes
-        const hiddenNotes = storageManager.getHiddenNotes(currentUserId);
-        hiddenNotesListContainer.innerHTML = '';
-        if (hiddenNotes.length > 0) {
-            hiddenNotes.forEach(note => {
-                const noteEl = document.createElement('div');
-                noteEl.className = 'note-item';
-                noteEl.textContent = note.title;
-                noteEl.addEventListener('click', () => openNoteModal('view', note, true));
-                hiddenNotesListContainer.appendChild(noteEl);
-            });
-        } else {
-            hiddenNotesListContainer.innerHTML = '<p>No hidden notes.</p>';
-        }
+function attachDashboardEventListeners() {
+document.getElementById('logoutBtn')?.addEventListener('click', handleLogoutClick);
+document.getElementById('addNoteBtn')?.addEventListener('click', handleAddNoteClick);
+document.getElementById('profileCard')?.addEventListener('click', () => {
+const panel = document.getElementById('securityPanel');
+if (panel) panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+});
+document.getElementById('changeLockBtn')?.addEventListener('click', handleChangeLock);
+document.getElementById('viewHiddenNotesBtn')?.addEventListener('click', handleViewHiddenContent);
 
-        // Render hidden images
-        const hiddenImages = storageManager.getHiddenImages(currentUserId);
-        hiddenImagesContainer.innerHTML = '';
-        if (hiddenImages.length > 0) {
-            hiddenImages.forEach(image => {
-                const imgCard = document.createElement('div');
-                imgCard.className = 'image-card';
-                imgCard.innerHTML = `
-                    <img src="${image.url}" alt="Hidden Image">
-                    <div class="image-actions">
-                        <button class="download-img-btn" title="Download">⬇️</button>
-                        <button class="share-img-btn" title="Share">📤</button>
-                        <button class="delete-img-btn" title="Delete">🗑️</button>
-                    </div>`;
-                imgCard.querySelector('.download-img-btn').addEventListener('click', () => downloadImage(image.url));
-                imgCard.querySelector('.share-img-btn').addEventListener('click', () => shareImage(image.url));
-                imgCard.querySelector('.delete-img-btn').addEventListener('click', () => deleteImage(image.id));
-                hiddenImagesContainer.appendChild(imgCard);
-            });
-        }
-    }
-    
-    function handleAddImage() {
-        const url = prompt("Enter Image URL:");
-        if (url && url.trim() !== '') {
-            try {
-                new URL(url);
-                storageManager.addHiddenImage(currentUserId, url);
-                renderSecureDashboard();
-                showToast("Image added to secure area.");
-            } catch (_) {
-                alert("Invalid URL format.");
-            }
-        }
-    }
+// Event delegation for notes list
+const notesListContainer = document.getElementById('notesListContainer');
+if (notesListContainer) {
+notesListContainer.addEventListener('click', (e) => {
+const target = e.target;
+const noteItem = target.closest('.note-item');
+if (!noteItem) return;
+const noteId = noteItem.dataset.id;
 
-    function downloadImage(url) {
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `image_${Date.now()}`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-    }
+if (target.closest('.note-item-content')) handleNoteItemClick(noteId);
+if (target.closest('.hide-note-btn')) handleHideNote(noteId);
+if (target.closest('.delete-note-btn')) handleDeleteNote(noteId);
+});
+}
+}
 
-    async function shareImage(url) {
-        if (navigator.share) {
-            try {
-                await navigator.share({
-                    title: 'Shared Image',
-                    text: 'Check out this image!',
-                    url: url,
-                });
-            } catch (error) {
-                console.error('Error sharing', error);
-            }
-        } else {
-            alert('Web Share API is not supported in your browser.');
-        }
-    }
+function attachSecureDashboardEventListeners() {
+document.getElementById('backToMainDashboardBtn')?.addEventListener('click', () => {
+appState.currentView = 'dashboard';
+renderApp();
+});
+document.getElementById('addImageBtn')?.addEventListener('click', handleAddImage);
 
-    function deleteImage(imageId) {
-        if (confirm("Are you sure you want to delete this image?")) {
-            storageManager.deleteHiddenImage(currentUserId, imageId);
-            renderSecureDashboard();
-            showToast("Image deleted.");
-        }
-    }
+// Event delegation for hidden images
+const hiddenImagesContainer = document.getElementById('hiddenImagesContainer');
+if (hiddenImagesContainer) {
+hiddenImagesContainer.addEventListener('click', e => {
+const target = e.target;
+const imageCard = target.closest('.image-card');
+const image = storageManager.getHiddenImages(appState.currentUserId).find(img => imageCard?.querySelector('img')?.src === img.url);
+if (!image) return;
 
-    // --- SECTION: Main App Initialization ---
-    function initializeAuthObserver() { /* Unchanged */ }
+if (target.closest('.download-img-btn')) downloadImage(image.url);
+if (target.closest('.share-img-btn')) shareImage(image.url);
+if (target.closest('.delete-img-btn')) deleteImage(image.id);
+});
+}
 
-    document.addEventListener('DOMContentLoaded', () => {
-        guestLoginBtn.addEventListener('click', handleGuestLoginClick);
-        googleLoginBtn.addEventListener('click', handleGoogleLoginClick);
-        guestForm.addEventListener('submit', handleGuestFormSubmit);
-        logoutBtn.addEventListener('click', handleLogoutClick);
-        addNoteBtn.addEventListener('click', handleAddNoteClick);
-        noteModal.querySelector('.close-modal-btn').addEventListener('click', () => closeModal(noteModal));
-        noteModal.addEventListener('click', (e) => e.target === noteModal && closeModal(noteModal));
-        noteForm.addEventListener('submit', handleSaveNoteForm);
-        copyNoteBtn.addEventListener('click', () => navigator.clipboard.writeText(copyNoteBtn.dataset.description).then(() => showToast('Note copied')));
-        unhideNoteBtn.addEventListener('click', handleUnhideNote);
-        updateNoteBtn.addEventListener('click', () => {
-            const note = currentNotes.find(n => n.id === updateNoteBtn.dataset.id); if(note) openNoteModal('edit', note);
-        });
-        profileCard.addEventListener('click', () => securityPanel.style.display = securityPanel.style.display === 'block' ? 'none' : 'block');
-        changeLockBtn.addEventListener('click', handleChangeLock);
-        viewHiddenNotesBtn.addEventListener('click', handleViewHiddenContent);
-        securityModal.querySelector('.close-modal-btn').addEventListener('click', () => closeModal(securityModal));
-        securityModal.addEventListener('click', (e) => e.target === securityModal && closeModal(securityModal));
-        backToMainDashboardBtn.addEventListener('click', () => switchView('dashboardView'));
-        addImageBtn.addEventListener('click', handleAddImage);
-        
-        // Re-assign createPatternLock, createPinLock, verifyPinLock, verifyPatternLock to the window object or bind them
-        // to avoid issues with event listeners inside dynamically generated HTML. For simplicity, just redefine here.
-        // The definitions are already above, so this just confirms they are in scope.
-        // This is not strictly necessary with how the code is structured but is a good practice.
-        
-        initializeAuthObserver();
-        switchView('loginView'); // Start at login
-    });
+const hiddenNotesContainer = document.getElementById('hiddenNotesListContainer');
+if (hiddenNotesContainer) {
+hiddenNotesContainer.addEventListener('click', e => {
+const noteItem = e.target.closest('.note-item');
+if(noteItem) {
+const note = storageManager.getHiddenNotes(appState.currentUserId).find(n => n.id === noteItem.dataset.id);
+if(note) openNoteModal('view', note, true);
+}
+});
+}
+}
 
+// --- SECTION: UI/View Management ---
+function showToast(message) { /* Unchanged */ }
+function openModal(modalEl) { modalEl.classList.add('visible'); }
+function closeModal(modalEl) { modalEl.classList.remove('visible'); }
+
+// --- SECTION: Guest Login Logic ---
+function handleGuestLoginClick() {
+appState.currentView = 'guestForm';
+renderApp();
+}
+
+function handleGuestFormSubmit(event) {
+event.preventDefault();
+const guestError = document.getElementById('guestError');
+guestError.textContent = '';
+const fullName = document.getElementById('fullNameInput').value.trim();
+const username = document.getElementById('usernameInput').value.trim();
+if (!fullName || !username) {
+guestError.textContent = 'Both fields are required.';
+return;
+}
+if (storageManager.isGuestUsernameTaken(username)) {
+guestError.textContent = 'This Guest ID is already used. Guest login is allowed only once.';
+return;
+}
+
+const guestUserData = {
+name: fullName, email: null,
+photoURL: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23757575"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>',
+loginType: 'Guest',
+};
+storageManager.saveUser(username, { type: 'guest', ...guestUserData, notes:[], hiddenNotes:[], hiddenImages:[], lock: null });
+
+appState.currentUserId = username;
+sessionManager.setUserId(username);
+appState.currentView = 'dashboard';
+renderApp();
+}
+
+// --- SECTION: Google Authentication Logic ---
+async function handleGoogleLoginClick() {
+if (!auth) return;
+try {
+const result = await signInWithPopup(auth, googleProvider);
+const user = result.user;
+if (user) {
+saveGoogleUserDataToLocalStorage(user);
+appState.currentUserId = user.uid;
+sessionManager.setUserId(user.uid);
+appState.currentView = 'dashboard';
+await renderApp();
+}
+} catch (error) {
+console.error("Google Sign-In Error:", error);
+showToast(`Error during sign-in: ${error.message}`);
+}
+}
+
+function saveGoogleUserDataToLocalStorage(user) { /* Unchanged */ }
+
+// --- SECTION: Dashboard & Logout Logic ---
+async function handleLogoutClick() {
+if (auth.currentUser) await signOut(auth);
+sessionManager.clearUserId();
+appState.currentUserId = null;
+appState.currentNotes = [];
+appState.currentView = 'login';
+await renderApp();
+}
+
+// --- SECTION: Notes UI & Logic ---
+function renderNotesList() {
+const notesListContainer = document.getElementById('notesListContainer');
+const noNotesMessage = document.getElementById('noNotesMessage');
+if (!notesListContainer || !noNotesMessage) return;
+
+notesListContainer.innerHTML = '';
+noNotesMessage.classList.toggle('hidden', appState.currentNotes.length > 0);
+const sortedNotes = [...appState.currentNotes].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+sortedNotes.forEach(note => {
+const noteEl = document.createElement('div');
+noteEl.className = 'note-item';
+noteEl.dataset.id = note.id;
+noteEl.innerHTML = `
+<div class="note-item-content">${note.title}</div>
+<div class="note-actions">
+<button class="btn btn-sm hide-note-btn" title="Hide">Hide</button>
+<button class="btn btn-sm delete-note-btn delete" title="Delete">Delete</button>
+</div>`;
+notesListContainer.appendChild(noteEl);
+});
+}
+
+function openNoteModal(mode, note = null, isHidden = false) { /* Unchanged */ }
+function handleAddNoteClick() { openNoteModal('add'); }
+function handleNoteItemClick(noteId) {
+const note = appState.currentNotes.find(n => n.id === noteId);
+if (note) openNoteModal('view', note);
+}
+async function handleSaveNoteForm(event) { /* Unchanged */ }
+async function handleHideNote(noteId) {
+if (!appState.currentUserId) return;
+const lock = storageManager.getLock(appState.currentUserId);
+if (!lock) {
+const lockCreated = await new Promise(resolve => createInitialLock(resolve));
+if (!lockCreated) { showToast("Lock creation cancelled. Note not hidden."); return; }
+}
+storageManager.hideNote(appState.currentUserId, noteId);
+loadNotes();
+showToast('Note hidden successfully');
+}
+function handleDeleteNote(noteId) {
+if(confirm('Are you sure you want to delete this note?')) {
+storageManager.deleteNote(appState.currentUserId, noteId);
+loadNotes();
+showToast('Note deleted');
+}
+}
+function handleUnhideNote() { /* Unchanged */ }
+function loadNotes() {
+if (!appState.currentUserId) return;
+appState.currentNotes = storageManager.getNotes(appState.currentUserId);
+renderNotesList();
+}
+function saveNote(noteData) {
+storageManager.saveNote(appState.currentUserId, noteData); loadNotes();
+}
+function updateNote(noteId, noteData, isHidden = false) {
+storageManager.updateNote(appState.currentUserId, noteId, noteData, isHidden);
+if (isHidden) { renderSecureDashboard(); } else { loadNotes(); }
+}
+
+// --- SECTION: Security & Locks UI ---
+let lockVerificationResolve = null;
+function openSecurityModal(title, bodyHTML, onOpen) { /* Unchanged */ }
+function createInitialLock(onFinish) { /* Unchanged */ }
+async function handleChangeLock() { /* Unchanged */ }
+async function verifyLock(resolveCallback) { /* Unchanged */ }
+function handleLockSuccess() { /* Unchanged */ }
+function handleLockFailure() { /* Unchanged */ }
+function createPatternLock(onFinish) { /* Unchanged */ }
+async function createPinLock(onFinish) { /* Unchanged */ }
+function verifyPinLock() { /* Unchanged */ }
+function verifyPatternLock() { /* Unchanged */ }
+
+// --- SECTION: Secure Dashboard ---
+async function handleViewHiddenContent() {
+const verified = await new Promise(resolve => verifyLock(resolve));
+if (verified) {
+appState.currentView = 'secureDashboard';
+renderApp();
+}
+}
+
+function renderSecureDashboard() {
+const hiddenNotesListContainer = document.getElementById('hiddenNotesListContainer');
+const hiddenImagesContainer = document.getElementById('hiddenImagesContainer');
+if(!hiddenNotesListContainer || !hiddenImagesContainer) return;
+
+// Render hidden notes
+const hiddenNotes = storageManager.getHiddenNotes(appState.currentUserId);
+hiddenNotesListContainer.innerHTML = '';
+if (hiddenNotes.length > 0) {
+hiddenNotes.forEach(note => {
+const noteEl = document.createElement('div');
+noteEl.className = 'note-item';
+noteEl.dataset.id = note.id;
+noteEl.textContent = note.title;
+noteEl.style.cursor = 'pointer';
+hiddenNotesListContainer.appendChild(noteEl);
+});
+} else {
+hiddenNotesListContainer.innerHTML = '<p>No hidden notes.</p>';
+}
+
+// Render hidden images
+const hiddenImages = storageManager.getHiddenImages(appState.currentUserId);
+hiddenImagesContainer.innerHTML = '';
+if (hiddenImages.length > 0) {
+hiddenImages.forEach(image => {
+const imgCard = document.createElement('div');
+imgCard.className = 'image-card';
+imgCard.innerHTML = `
+<img src="${image.url}" alt="Hidden Image">
+<div class="image-actions">
+<button class="download-img-btn" title="Download">⬇️</button>
+<button class="share-img-btn" title="Share">📤</button>
+<button class="delete-img-btn" title="Delete">🗑️</button>
+</div>`;
+hiddenImagesContainer.appendChild(imgCard);
+});
+}
+}
+
+function handleAddImage() { /* Unchanged */ }
+function downloadImage(url) { /* Unchanged */ }
+async function shareImage(url) { /* Unchanged */ }
+function deleteImage(imageId) {
+if (confirm("Are you sure you want to delete this image?")) {
+storageManager.deleteHiddenImage(appState.currentUserId, imageId);
+renderSecureDashboard();
+showToast("Image deleted.");
+}
+}
+
+// --- SECTION: Main App Initialization ---
+function initializeAuthObserver() {
+onAuthStateChanged(auth, async (user) => {
+const storedUserId = sessionManager.getUserId();
+const storedUser = storedUserId ? storageManager.getUser(storedUserId) : null;
+
+if (user) { // Firebase user is logged in
+if (appState.currentUserId !== user.uid) {
+saveGoogleUserDataToLocalStorage(user);
+appState.currentUserId = user.uid;
+sessionManager.setUserId(user.uid);
+appState.currentView = 'dashboard';
+await renderApp();
+}
+} else { // Firebase user is logged out
+// If the currently logged-in user was a Google user, log them out of the app state too.
+// Don't log out if it's a guest user.
+if (storedUser && storedUser.type === 'google') {
+await handleLogoutClick();
+}
+}
+});
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+// Attach modal listeners globally since they are outside the #app container
+noteModal.querySelector('.close-modal-btn').addEventListener('click', () => closeModal(noteModal));
+noteModal.addEventListener('click', (e) => e.target === noteModal && closeModal(noteModal));
+noteModal.querySelector('#noteForm').addEventListener('submit', handleSaveNoteForm);
+noteModal.querySelector('#copyNoteBtn').addEventListener('click', () => navigator.clipboard.writeText(noteModal.querySelector('#copyNoteBtn').dataset.description).then(() => showToast('Note copied')));
+noteModal.querySelector('#unhideNoteBtn').addEventListener('click', handleUnhideNote);
+noteModal.querySelector('#updateNoteBtn').addEventListener('click', () => {
+const note = appState.currentNotes.find(n => n.id === noteModal.querySelector('#updateNoteBtn').dataset.id);
+if(note) openNoteModal('edit', note);
+});
+securityModal.querySelector('.close-modal-btn').addEventListener('click', () => closeModal(securityModal));
+securityModal.addEventListener('click', (e) => e.target === securityModal && closeModal(securityModal));
+
+// Restore session on page load
+const storedUserId = sessionManager.getUserId();
+if (storedUserId) {
+appState.currentUserId = storedUserId;
+appState.currentView = 'dashboard';
+} else {
+appState.currentView = 'login';
+}
+
+initializeAuthObserver();
+await renderApp(); // Initial render based on stored session
+});
 </script>
+
 </body>
 </html>
