@@ -150,6 +150,7 @@
         .btn-secondary {
             background-color: #f1f3f4;
             color: #5f6368;
+            margin-top: 0.5rem;
         }
 
         .btn-google {
@@ -875,7 +876,7 @@
     // --- SECTION: Notes UI & Logic ---
     function renderNotesList() {
         notesListContainer.innerHTML = '';
-        noNotesMessage.classList.toggle('hidden', currentNotes.length > 0);
+        noNotesMessage.classList.toggle('hidden', currentNotes.length === 0);
         const sortedNotes = [...currentNotes].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
         sortedNotes.forEach(note => {
             const noteEl = document.createElement('div');
@@ -982,8 +983,8 @@
         const body = `
             <p>Choose a lock type to create.</p>
             <button id="createFingerprintBtn" class="btn btn-secondary">Fingerprint</button>
-            <br/><button id="createPatternBtn" class="btn btn-secondary">Pattern</button>
-            <br/><button id="createPinBtn" class="btn btn-secondary">PIN</button>`;
+            <button id="createPatternBtn" class="btn btn-secondary">Pattern</button>
+            <button id="createPinBtn" class="btn btn-secondary">PIN</button>`;
         openSecurityModal('Create New Lock', body, (el) => {
             el.querySelector('#createFingerprintBtn').addEventListener('click', createFingerprintLock);
             el.querySelector('#createPatternBtn').addEventListener('click', createPatternLock);
@@ -998,7 +999,7 @@
             const scanner = el.querySelector('#fingerprintScanner');
             const status = el.querySelector('#fpStatus');
             let pressTimer;
-            scanner.addEventListener('mousedown', () => {
+            const startScan = () => {
                 scanner.classList.add('scanning');
                 status.textContent = "Scanning...";
                 pressTimer = setTimeout(() => {
@@ -1008,18 +1009,22 @@
                     showToast('Fingerprint lock created!');
                     setTimeout(() => closeModal(securityModal), 1000);
                 }, 2000);
-            });
-            scanner.addEventListener('mouseup', () => {
+            };
+            const stopScan = () => {
                 scanner.classList.remove('scanning');
                 clearTimeout(pressTimer);
-            });
+            };
+            scanner.addEventListener('mousedown', startScan);
+            scanner.addEventListener('mouseup', stopScan);
+            scanner.addEventListener('mouseleave', stopScan);
+            scanner.addEventListener('touchstart', startScan);
+            scanner.addEventListener('touchend', stopScan);
         });
     }
 
     function createPatternLock() {
         let currentPattern = [];
         let isDrawing = false;
-    
         const body = `
             <p>Connect at least 4 dots to create a pattern.</p>
             <div id="patternLockGrid">
@@ -1048,19 +1053,17 @@
                 for (let i = 1; i < currentPattern.length; i++) {
                     ctx.lineTo(getDotCenter(dots[currentPattern[i]]).x, getDotCenter(dots[currentPattern[i]]).y);
                 }
-                ctx.strokeStyle = var(--primary-color);
+                ctx.strokeStyle = 'var(--primary-color)';
                 ctx.lineWidth = 4;
                 ctx.stroke();
             }
 
-            function startDraw(e) {
-                isDrawing = true;
-            }
-
+            function startDraw() { isDrawing = true; }
             function draw(e) {
                 if (!isDrawing) return;
                 e.preventDefault();
-                const target = document.elementFromPoint(e.clientX || e.touches[0].clientX, e.clientY || e.touches[0].clientY);
+                const touch = e.touches ? e.touches[0] : e;
+                const target = document.elementFromPoint(touch.clientX, touch.clientY);
                 if (target && target.classList.contains('pattern-dot')) {
                     const dotId = parseInt(target.dataset.id);
                     if (!currentPattern.includes(dotId)) {
@@ -1070,19 +1073,16 @@
                     }
                 }
             }
-
-            function endDraw() {
-                isDrawing = false;
-            }
-
+            function endDraw() { isDrawing = false; }
             grid.addEventListener('mousedown', startDraw);
             grid.addEventListener('mousemove', draw);
-            window.addEventListener('mouseup', endDraw, {once: true});
-            grid.addEventListener('touchstart', startDraw);
-            grid.addEventListener('touchmove', draw);
+            document.body.addEventListener('mouseup', endDraw);
+            grid.addEventListener('touchstart', startDraw, { passive: false });
+            grid.addEventListener('touchmove', draw, { passive: false });
             grid.addEventListener('touchend', endDraw);
 
             el.querySelector('#savePatternBtn').addEventListener('click', () => {
+                document.body.removeEventListener('mouseup', endDraw);
                 if (currentPattern.length < 4) {
                     showToast('Pattern must have at least 4 dots.');
                     return;
@@ -1098,7 +1098,7 @@
         let pin = "";
         const body = `<div id="pinDisplay"></div>
         <div id="pinKeypad">
-            ${[1,2,3,4,5,6,7,8,9,'C',0,'OK'].map(k => `<button data-key="${k}">${k}</button>`).join('')}
+            ${[1,2,3,4,5,6,7,8,9,'C',0,'OK'].map(k => `<button data-key="${k}" type="button">${k}</button>`).join('')}
         </div>`;
         openSecurityModal('Create PIN Lock (min 4 digits)', body, (el) => {
             const display = el.querySelector('#pinDisplay');
@@ -1113,7 +1113,7 @@
                     closeModal(securityModal);
                 }
                 else if (pin.length < 8) pin += key;
-                display.textContent = '*'.repeat(pin.length);
+                display.textContent = '•'.repeat(pin.length);
             });
         });
     }
@@ -1122,7 +1122,7 @@
         verifyLock().then(success => {
             if(success) {
                 closeModal(securityModal);
-                setTimeout(handleCreateLock, 300); // Open create modal after verification modal closes
+                setTimeout(handleCreateLock, 300);
             } else {
                 showToast('Verification Failed');
             }
@@ -1134,14 +1134,13 @@
             lockVerificationResolve = resolve;
             const locks = storageManager.getLocks(currentUserId);
             if(Object.keys(locks).length === 0) {
-                showToast('No locks set up. Please create one first.');
-                return resolve(true); // Allow access if no lock is set
+                showToast('No locks set up. You can proceed.');
+                return resolve(true);
             }
-
-            // For now, simple verification. This can be expanded to show tabs for each lock type.
             if(locks.pin) verifyPinLock();
             else if(locks.pattern) verifyPatternLock();
             else if(locks.fingerprint) verifyFingerprintLock();
+            else resolve(true);
         });
     }
 
@@ -1150,12 +1149,12 @@
         const savedPin = storageManager.getLocks(currentUserId).pin.value;
         const body = `<div id="pinDisplay"></div>
         <div id="pinKeypad">
-            ${[1,2,3,4,5,6,7,8,9,'C',0,'OK'].map(k => `<button data-key="${k}">${k}</button>`).join('')}
+            ${[1,2,3,4,5,6,7,8,9,'C',0,'OK'].map(k => `<button data-key="${k}" type="button">${k}</button>`).join('')}
         </div>`;
         openSecurityModal('Enter Your PIN', body, (el) => {
             const display = el.querySelector('#pinDisplay');
             el.querySelector('#pinKeypad').addEventListener('click', (e) => {
-                 if(e.target.tagName !== 'BUTTON') return;
+                if(e.target.tagName !== 'BUTTON') return;
                 const key = e.target.dataset.key;
                 if(key === 'C') pin = "";
                 else if(key === 'OK') {
@@ -1163,42 +1162,44 @@
                     else { pin = ""; showToast('Incorrect PIN'); lockVerificationResolve(false); }
                     closeModal(securityModal);
                 } else if (pin.length < 8) pin += key;
-                display.textContent = '*'.repeat(pin.length);
+                display.textContent = '•'.repeat(pin.length);
             });
         });
     }
-    // Pattern and Fingerprint verification functions would be similar, omitted for brevity but logic follows create funcs.
+    
     function verifyFingerprintLock(){
-        const savedHash = storageManager.getLocks(currentUserId).fingerprint.hash;
         const body = `<p>Press and hold the scanner for 2 seconds to verify.</p>
             <div id="fingerprintScanner"></div><p id="fpStatus"></p>`;
         openSecurityModal('Verify Fingerprint', body, (el) => {
             const scanner = el.querySelector('#fingerprintScanner');
             const status = el.querySelector('#fpStatus');
             let pressTimer;
-            scanner.addEventListener('mousedown', () => {
+            const startScan = () => {
                 scanner.classList.add('scanning');
                 status.textContent = "Verifying...";
                 pressTimer = setTimeout(() => {
-                    // This is a simulation, in a real app, you'd compare actual biometric data
-                    // Here, we just check if they held it long enough. A real app would be more complex.
                     lockVerificationResolve(true);
                     showToast('Verified!');
                     closeModal(securityModal);
                 }, 2000);
-            });
-             scanner.addEventListener('mouseup', () => {
+            };
+            const stopScan = () => {
                 scanner.classList.remove('scanning');
                 clearTimeout(pressTimer);
-            });
+            };
+            scanner.addEventListener('mousedown', startScan);
+            scanner.addEventListener('mouseup', stopScan);
+            scanner.addEventListener('mouseleave', stopScan);
+            scanner.addEventListener('touchstart', startScan);
+            scanner.addEventListener('touchend', stopScan);
         });
     }
-    function verifyPatternLock() { /* Similar logic to createPatternLock but compares with saved sequence */ }
+    function verifyPatternLock() { /* Logic similar to createPatternLock but compares with saved sequence */ }
 
 
     function handleSeeLocks() {
         const locks = storageManager.getLocks(currentUserId);
-        const body = `<ul style="list-style:none; text-align:left;">
+        const body = `<ul style="list-style:none; text-align:left; padding:0;">
             <li>${locks.fingerprint ? '✅' : '❌'} Fingerprint Lock</li>
             <li>${locks.pattern ? '✅' : '❌'} Pattern Lock</li>
             <li>${locks.pin ? '✅' : '❌'} PIN Lock</li>
@@ -1211,7 +1212,7 @@
         <div class="input-group">
             <input type="url" id="contentUrlInput" class="input-field" placeholder="https://example.com/image.png" required>
         </div>
-        <button id="hideImageBtn" class="btn btn-secondary">Hide Image</button><br/>
+        <button id="hideImageBtn" class="btn btn-secondary">Hide Image</button>
         <button id="hideVideoBtn" class="btn btn-secondary">Hide Video</button>`;
         openSecurityModal('Hide Content', body, (el) => {
             const urlInput = el.querySelector('#contentUrlInput');
@@ -1227,28 +1228,22 @@
     function handleSeeHiddenContent() {
         verifyLock().then(success => {
             if(success) {
+                closeModal(securityModal);
                 const content = storageManager.getHiddenContent(currentUserId);
                 const hiddenNotes = storageManager.getHiddenNotes(currentUserId);
                 let galleryHTML = '<h3>Hidden Notes</h3>';
                 if(hiddenNotes.length > 0) {
                     hiddenNotes.forEach(note => { galleryHTML += `<div class="note-item">${note.title}</div>`; });
-                } else {
-                    galleryHTML += `<p>No hidden notes.</p>`;
-                }
+                } else { galleryHTML += `<p>No hidden notes.</p>`; }
 
                 galleryHTML += '<h3>Hidden Media</h3><div class="gallery-grid">';
                 content.images.forEach(url => { galleryHTML += `<img src="${url}" alt="Hidden Image">`; });
                 content.videos.forEach(url => { galleryHTML += `<video src="${url}" controls></video>`; });
                 galleryHTML += '</div>';
-                
-                if(content.images.length === 0 && content.videos.length === 0) {
-                    galleryHTML += '<p>No hidden images or videos.</p>';
-                }
+                if(content.images.length === 0 && content.videos.length === 0) galleryHTML += '<p>No hidden images or videos.</p>';
                 
                 openSecurityModal('Your Hidden Gallery', `<div id="hiddenGallery">${galleryHTML}</div>`);
-            } else {
-                showToast('Verification Failed!');
-            }
+            } else { showToast('Verification Failed!'); }
         });
     }
 
@@ -1307,4 +1302,4 @@
 
 </script>
 </body>
-                    </html>
+                                         </html>
