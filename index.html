@@ -767,31 +767,41 @@ console.error("#app container not found!");
 return;
 }
 
-switch (appState.currentView) {
-case 'guestForm':
-appContainer.innerHTML = getGuestFormViewHTML();
-attachGuestFormEventListeners();
-break;
-case 'dashboard':
+// This is the main routing logic based on the app state
+if (appState.currentUserId) {
 const userData = storageManager.getUser(appState.currentUserId);
 if (userData) {
+if (appState.currentView === 'dashboard') {
 appContainer.innerHTML = getDashboardViewHTML(userData);
 attachDashboardEventListeners();
 loadNotes();
-} else {
-handleLogoutClick(); // User data not found, force logout
-}
-break;
-case 'secureDashboard':
+} else if (appState.currentView === 'secureDashboard') {
 appContainer.innerHTML = getSecureDashboardViewHTML();
 attachSecureDashboardEventListeners();
 renderSecureDashboard();
-break;
-case 'login':
-default:
+} else {
+// Fallback to dashboard if view is invalid
+appState.currentView = 'dashboard';
+appContainer.innerHTML = getDashboardViewHTML(userData);
+attachDashboardEventListeners();
+loadNotes();
+}
+} else {
+// If a user ID is set but no user data is found, log out to clear the bad state.
+console.warn(`User ID ${appState.currentUserId} found in session, but no data in storageManager. Logging out.`);
+handleLogoutClick();
+}
+} else {
+// No user is logged in, show login or guest form
+if (appState.currentView === 'guestForm') {
+appContainer.innerHTML = getGuestFormViewHTML();
+attachGuestFormEventListeners();
+} else {
+// Default to login screen
+appState.currentView = 'login';
 appContainer.innerHTML = getLoginViewHTML();
 attachLoginEventListeners();
-break;
+}
 }
 }
 
@@ -804,7 +814,12 @@ console.error("A critical error occurred during rendering:", error);
 appState.currentUserId = null;
 appState.currentView = 'login';
 sessionManager.clearUserId();
+try {
 renderApp();
+} catch (fallbackError) {
+console.error("Fallback render also failed:", fallbackError);
+document.getElementById('app').innerHTML = `<div style="color:red;padding:1rem;">Render failed completely. Check console.</div>`;
+}
 }
 }
 
@@ -929,6 +944,8 @@ try {
 const result = await signInWithPopup(auth, googleProvider);
 const user = result.user;
 if (user) {
+// This block is now redundant due to onAuthStateChanged, but serves as a fast path for UI update
+// and is good practice.
 saveGoogleUserDataToLocalStorage(user);
 appState.currentUserId = user.uid;
 sessionManager.setUserId(user.uid);
@@ -937,11 +954,26 @@ await renderAppSafe();
 }
 } catch (error) {
 console.error("Google Sign-In Error:", error);
-showToast(`Error during sign-in: ${error.message}`);
+showToast(`Error during sign-in: ${error.code}`);
 }
 }
 
-function saveGoogleUserDataToLocalStorage(user) { /* Unchanged */ }
+function saveGoogleUserDataToLocalStorage(user) {
+if (!user) return;
+const existingUser = storageManager.getUser(user.uid);
+const userData = {
+type: 'google',
+name: user.displayName,
+email: user.email,
+photoURL: user.photoURL,
+loginType: 'Google'
+};
+// Only initialize notes/etc if it's a new user in our system
+if (!existingUser) {
+Object.assign(userData, { notes: [], hiddenNotes: [], hiddenImages: [], lock: null });
+}
+storageManager.saveUser(user.uid, userData);
+}
 
 // --- SECTION: Dashboard & Logout Logic ---
 async function handleLogoutClick() {
@@ -1032,6 +1064,7 @@ function verifyPatternLock() { /* Unchanged */ }
 
 // --- SECTION: Secure Dashboard ---
 async function handleViewHiddenContent() {
+if (!appState.currentUserId) return;
 const verified = await new Promise(resolve => verifyLock(resolve));
 if (verified) {
 appState.currentView = 'secureDashboard';
@@ -1096,14 +1129,17 @@ const storedUserId = sessionManager.getUserId();
 const storedUser = storedUserId ? storageManager.getUser(storedUserId) : null;
 
 if (user) {
-if (appState.currentUserId !== user.uid) {
+// A Firebase user is signed in. This is the source of truth for Google accounts.
 saveGoogleUserDataToLocalStorage(user);
+// Sync our app state ONLY if it's different.
+if (appState.currentUserId !== user.uid) {
 appState.currentUserId = user.uid;
 sessionManager.setUserId(user.uid);
 appState.currentView = 'dashboard';
 await renderAppSafe();
 }
 } else {
+// No Firebase user. If our session was for a Google user, clear it.
 if (storedUser && storedUser.type === 'google') {
 await handleLogoutClick();
 }
@@ -1177,6 +1213,5 @@ document.body.innerHTML = `
 });
 
 </script>
-
 </body>
 </html>
