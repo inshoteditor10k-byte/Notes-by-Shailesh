@@ -43,6 +43,7 @@
             align-items: center;
             text-align: center;
             line-height: 1.6;
+            overflow: hidden; /* Prevent body scroll, delegate to inner containers */
         }
         
         #app {
@@ -193,6 +194,7 @@
         textarea.input-field {
             min-height: 120px;
             resize: vertical;
+            overflow-y: auto; /* SCROLL FIX: Ensure textarea is scrollable */
         }
 
         .input-field:focus {
@@ -264,6 +266,7 @@
             flex-grow: 1;
             overflow-y: auto;
             padding-bottom: 150px; /* Space for FAB and logout button */
+            min-height: 0; /* SCROLL FIX: Critical for making flex-grow item scrollable */
         }
 
         #notesListContainer {
@@ -341,6 +344,8 @@
             max-width: 500px;
             transform: scale(0.95);
             transition: transform 0.3s ease;
+            max-height: 85vh; /* SCROLL FIX: Limit modal height */
+            overflow-y: auto; /* SCROLL FIX: Make modal content scrollable */
         }
         
         .modal-overlay.visible .modal-content {
