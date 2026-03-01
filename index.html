@@ -506,6 +506,12 @@
         .image-card:hover .image-actions { opacity: 1; transform: translateY(0); pointer-events: auto; }
         .image-actions button { background: none; border: none; color: white; cursor: pointer; font-size: 1.2rem; padding: 8px;}
         
+        .hidden-note-detail-view .btn-sm { margin-top: 0.5rem; }
+        .hidden-note-detail-view p { margin-bottom: 1rem; }
+        .hidden-note-detail-header { display: flex; align-items: center; margin-bottom: 1rem; }
+        .hidden-note-detail-header h2 { margin: 0 0 0 1rem; }
+        .hidden-note-detail-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 1rem; }
+        
         /* --- SECTION: Media Queries for Responsiveness --- */
         @media (max-width: 480px) {
             #app { max-width: 100%; }
@@ -529,6 +535,7 @@
         </div>
         <form id="noteForm">
             <input type="hidden" id="noteIdInput">
+            <input type="hidden" id="noteIsHiddenInput" value="false">
             <div class="input-group"><input type="text" id="noteTitleInput" class="input-field" placeholder="Note Title" required></div>
             <div class="input-group"><textarea id="noteDescriptionInput" class="input-field" placeholder="Note content..." required></textarea></div>
             <span id="noteError" class="error-message"></span>
@@ -649,12 +656,14 @@
         updateNote: (userId, noteId, noteData, isHidden = false) => {
             const data = storageManager.getData();
             const noteListName = isHidden ? 'hiddenNotes' : 'notes';
-            if (!data.users[userId]?.[noteListName]) return;
+            if (!data.users[userId]?.[noteListName]) return false;
             const noteIndex = data.users[userId][noteListName].findIndex(n => n.id === noteId);
             if (noteIndex > -1) {
                 data.users[userId][noteListName][noteIndex] = { ...data.users[userId][noteListName][noteIndex], ...noteData };
                 storageManager.saveData(data);
+                return true;
             }
+            return false;
         },
         deleteNote: (userId, noteId) => {
             const data = storageManager.getData();
@@ -768,11 +777,7 @@
                 <button type="button" id="backToMainDashboardBtn" class="btn btn-sm btn-secondary">Back</button>
             </div>
             <div id="secureDashboardContent">
-                <h3>Hidden Notes</h3>
-                <div id="hiddenNotesListContainer"></div>
-                <h3>Hidden Images</h3>
-                <button type="button" id="addImageBtn" class="btn btn-secondary" style="margin-bottom: 1rem; width: auto; padding: 8px 16px;">Add Image</button>
-                <div id="hiddenImagesContainer" class="image-grid"></div>
+                <!-- Content is rendered dynamically here -->
             </div>
         </div>`;
 
@@ -795,7 +800,7 @@
 
             attachAllEventListeners();
             if (appState.currentView === 'dashboard') loadNotes();
-            else if (appState.currentView === 'secureDashboard') renderSecureDashboard();
+            else if (appState.currentView === 'secureDashboard') renderSecureDashboardListView();
 
         } else {
             console.log("Rendering logged-out view:", appState.currentView);
@@ -859,13 +864,48 @@
     
     function attachSecureDashboardEventListeners() {
         document.getElementById('backToMainDashboardBtn')?.addEventListener('click', (e) => { e.preventDefault(); appState.currentView = 'dashboard'; renderAppSafe(); });
-        document.getElementById('addImageBtn')?.addEventListener('click', (e) => { e.preventDefault(); handleAddImage(); });
-        document.getElementById('hiddenImagesContainer')?.addEventListener('click', (e) => {
-            const card = e.target.closest('.image-card');
-            if (card && !e.target.closest('.image-actions')) {
-                 openImageActionsModal(card.dataset.url);
-            }
-        });
+        
+        const contentArea = document.getElementById('secureDashboardContent');
+        if (contentArea) {
+            contentArea.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                // Hidden Note List
+                const hiddenNoteItem = e.target.closest('.note-item');
+                if (hiddenNoteItem) renderHiddenNoteDetail(hiddenNoteItem.dataset.id);
+
+                // Hidden Note Detail View
+                const detailView = e.target.closest('.hidden-note-detail-view');
+                if (detailView) {
+                    const noteId = detailView.dataset.id;
+                    if (e.target.closest('#backToHiddenListBtn')) renderSecureDashboardListView();
+                    if (e.target.closest('.copy-hidden-note-btn')) {
+                        const content = detailView.querySelector('p').textContent;
+                        navigator.clipboard.writeText(content).then(() => showToast('Note content copied!'));
+                    }
+                    if (e.target.closest('.update-hidden-note-btn')) {
+                        const note = storageManager.getHiddenNotes(appState.currentUserId).find(n => n.id === noteId);
+                        if (note) openNoteModal('edit', note, true);
+                    }
+                    if (e.target.closest('.unhide-hidden-note-btn')) {
+                        storageManager.unhideNote(appState.currentUserId, noteId);
+                        showToast('Note has been unhidden.');
+                        renderSecureDashboardListView();
+                    }
+                }
+
+                // Image Grid
+                if (e.target.closest('#addImageBtn')) handleAddImage();
+                const card = e.target.closest('.image-card');
+                if (card && !e.target.closest('.image-actions')) openImageActionsModal(card.dataset.url);
+                const deleteBtn = e.target.closest('.delete-img-btn');
+                if (deleteBtn) {
+                     const imageId = deleteBtn.closest('.image-card').dataset.id;
+                     deleteImage(imageId);
+                }
+            });
+        }
     }
     
     // --- SECTION: UI/View Management ---
@@ -902,7 +942,6 @@
         if (!firebaseReady || !auth) { showToast("Google Auth unavailable."); return; }
         try {
             await signInWithPopup(auth, googleProvider);
-            // onAuthStateChanged will handle the render
         } catch (error) { console.error("Google Sign-In Error:", error); showToast(`Sign-in error: ${error.code}`); }
     }
 
@@ -941,6 +980,7 @@
             document.getElementById('noteIdInput').value = note?.id || '';
             document.getElementById('noteTitleInput').value = note?.title || '';
             document.getElementById('noteDescriptionInput').value = note?.description || '';
+            document.getElementById('noteIsHiddenInput').value = isHidden;
             title.textContent = mode === 'add' ? 'Add New Note' : 'Update Note';
         } else if (mode === 'view' && note) {
             form.classList.add('hidden'); detail.classList.remove('hidden');
@@ -959,10 +999,21 @@
     function handleNoteItemClick(noteId) { const note = appState.currentNotes.find(n => n.id === noteId); if (note) openNoteModal('view', note); }
     async function handleSaveNoteForm(event) {
         event.preventDefault();
-        const id = document.getElementById('noteIdInput').value, title = document.getElementById('noteTitleInput').value.trim(), description = document.getElementById('noteDescriptionInput').value.trim();
+        const id = document.getElementById('noteIdInput').value;
+        const title = document.getElementById('noteTitleInput').value.trim();
+        const description = document.getElementById('noteDescriptionInput').value.trim();
+        const isHidden = document.getElementById('noteIsHiddenInput').value === 'true';
+        
         if (!title || !description) { document.getElementById('noteError').textContent = 'All fields are required.'; return; }
-        if (id) { updateNote(id, { title, description, updatedAt: Date.now() }); } 
-        else { saveNote({ title, description, createdAt: Date.now(), updatedAt: Date.now() }); }
+        
+        if (id) { 
+            updateNote(id, { title, description, updatedAt: Date.now() }, isHidden);
+            if (isHidden) {
+                renderHiddenNoteDetail(id);
+            }
+        } else { 
+            saveNote({ title, description, createdAt: Date.now(), updatedAt: Date.now() }); 
+        }
         closeModal(document.getElementById('noteModal'));
     }
     async function handleHideNote(noteId) {
@@ -972,10 +1023,13 @@
         storageManager.hideNote(appState.currentUserId, noteId); loadNotes(); showToast('Note hidden');
     }
     function handleDeleteNote(noteId) { if(confirm('Delete this note?')) { storageManager.deleteNote(appState.currentUserId, noteId); loadNotes(); showToast('Note deleted'); } }
-    function handleUnhideNote() { const id = document.getElementById('unhideNoteBtn').dataset.id; storageManager.unhideNote(appState.currentUserId, id); loadNotes(); if(appState.currentView === 'secureDashboard') renderSecureDashboard(); closeModal(document.getElementById('noteModal')); showToast('Note unhidden'); }
     function loadNotes() { if (appState.currentUserId) { appState.currentNotes = storageManager.getNotes(appState.currentUserId); renderNotesList(); } }
     function saveNote(noteData) { storageManager.saveNote(appState.currentUserId, noteData); loadNotes(); }
-    function updateNote(noteId, noteData, isHidden = false) { storageManager.updateNote(appState.currentUserId, noteId, noteData, isHidden); if (isHidden) { if(appState.currentView === 'secureDashboard') renderSecureDashboard(); } else { loadNotes(); } }
+    function updateNote(noteId, noteData, isHidden = false) { 
+        if (storageManager.updateNote(appState.currentUserId, noteId, noteData, isHidden)) {
+            if (!isHidden) loadNotes();
+        }
+    }
     
     // --- SECTION: Security & Locks UI ---
     let lockVerificationResolve = null;
@@ -1007,11 +1061,7 @@
         let firstPin = '';
         const showPinScreen = (isConfirm) => {
             const title = isConfirm ? 'Confirm your PIN' : 'Set a PIN (min. 4 digits)';
-            const body = `
-                <div id="pinDisplay"></div>
-                <div id="pinKeypad">
-                    ${[1,2,3,4,5,6,7,8,9,'C',0,'✅'].map(k => `<button type="button" class="btn">${k}</button>`).join('')}
-                </div>`;
+            const body = `<div id="pinDisplay"></div><div id="pinKeypad">${[1,2,3,4,5,6,7,8,9,'C',0,'✅'].map(k => `<button type="button" class="btn">${k}</button>`).join('')}</div>`;
             openSecurityModal(title, body, (el) => {
                 let currentPin = '';
                 const display = el.querySelector('#pinDisplay');
@@ -1028,14 +1078,8 @@
                                 showToast('PIN set successfully!');
                                 closeModal(document.getElementById('securityModal'));
                                 if (onFinish) onFinish(true);
-                            } else {
-                                showToast('PINs do not match. Try again.');
-                                createPinLock(onFinish);
-                            }
-                        } else {
-                            firstPin = currentPin;
-                            showPinScreen(true);
-                        }
+                            } else { showToast('PINs do not match. Try again.'); createPinLock(onFinish); }
+                        } else { firstPin = currentPin; showPinScreen(true); }
                         return;
                     }
                     display.innerHTML = '●'.repeat(currentPin.length);
@@ -1045,25 +1089,15 @@
         showPinScreen(false);
     }
     async function verifyPinLock() {
-        const lock = storageManager.getLock(appState.currentUserId);
-        if (!lock || lock.type !== 'pin') { handleLockFailure(); return; }
-        const body = `
-            <div id="pinDisplay"></div>
-            <div id="pinKeypad">
-                ${[1,2,3,4,5,6,7,8,9,'C',0,'✅'].map(k => `<button type="button" class="btn">${k}</button>`).join('')}
-            </div>`;
+        const lock = storageManager.getLock(appState.currentUserId); if (!lock || lock.type !== 'pin') { handleLockFailure(); return; }
+        const body = `<div id="pinDisplay"></div><div id="pinKeypad">${[1,2,3,4,5,6,7,8,9,'C',0,'✅'].map(k => `<button type="button" class="btn">${k}</button>`).join('')}</div>`;
         openSecurityModal('Enter your PIN', body, (el) => {
-            let currentPin = '';
-            const display = el.querySelector('#pinDisplay');
+            let currentPin = ''; const display = el.querySelector('#pinDisplay');
             el.querySelector('#pinKeypad').addEventListener('click', async e => {
                 const key = e.target.textContent;
                 if (!isNaN(parseInt(key))) { currentPin += key; }
                 if (key === 'C') { currentPin = ''; }
-                if (key === '✅') {
-                    const hash = await sha256(currentPin);
-                    if (hash === lock.hash) { handleLockSuccess(); }
-                    else { handleLockFailure(); currentPin = ''; }
-                }
+                if (key === '✅') { const hash = await sha256(currentPin); if (hash === lock.hash) { handleLockSuccess(); } else { handleLockFailure(); currentPin = ''; } }
                 display.innerHTML = '●'.repeat(currentPin.length);
             });
         });
@@ -1075,213 +1109,148 @@
             const body = `<div id="patternLockGrid"><canvas id="patternLockCanvas"></canvas>${Array(9).fill(0).map((_, i) => `<div class="pattern-dot" data-id="${i}"></div>`).join('')}</div>`;
             openSecurityModal(title, body, (el) => {
                 setupPatternGrid(el.querySelector('#patternLockGrid'), (sequence) => {
-                    if (sequence.length < 4) { showToast("Pattern must connect at least 4 dots."); setupPatternGrid(el.querySelector('#patternLockGrid'), arguments.callee); return; }
+                    if (sequence.length < 4) { showToast("Pattern must connect at least 4 dots."); return; }
                     if (isConfirm) {
                         if (JSON.stringify(sequence) === JSON.stringify(firstPattern)) {
                             storageManager.saveLock(appState.currentUserId, { type: 'pattern', sequence });
-                            showToast('Pattern set successfully!');
-                            closeModal(document.getElementById('securityModal'));
+                            showToast('Pattern set successfully!'); closeModal(document.getElementById('securityModal'));
                             if (onFinish) onFinish(true);
-                        } else {
-                            showToast('Patterns do not match. Try again.');
-                            createPatternLock(onFinish);
-                        }
-                    } else {
-                        firstPattern = sequence;
-                        showPatternScreen(true);
-                    }
-                });
+                        } else { showToast('Patterns do not match. Try again.'); createPatternLock(onFinish); }
+                    } else { firstPattern = sequence; showPatternScreen(true); }
+                }, false, true);
             });
         };
         showPatternScreen(false);
     }
     function verifyPatternLock() {
-        const lock = storageManager.getLock(appState.currentUserId);
-        if (!lock || lock.type !== 'pattern') { handleLockFailure(); return; }
+        const lock = storageManager.getLock(appState.currentUserId); if (!lock || lock.type !== 'pattern') { handleLockFailure(); return; }
         const body = `<div id="patternLockGrid"><canvas id="patternLockCanvas"></canvas>${Array(9).fill(0).map((_, i) => `<div class="pattern-dot" data-id="${i}"></div>`).join('')}</div>`;
         openSecurityModal('Enter your pattern', body, (el) => {
             setupPatternGrid(el.querySelector('#patternLockGrid'), (sequence) => {
                 if (JSON.stringify(sequence) === JSON.stringify(lock.sequence)) { handleLockSuccess(); }
-                else { handleLockFailure(); setupPatternGrid(el.querySelector('#patternLockGrid'), arguments.callee, true); }
-            }, false);
+                else { handleLockFailure(); setupPatternGrid(el.querySelector('#patternLockGrid'), arguments.callee, true, false); }
+            }, false, true);
         });
     }
-    function setupPatternGrid(grid, onComplete, isError = false) { /* ... Pattern drawing logic ... */
+    function setupPatternGrid(grid, onComplete, isError = false, shouldClearOnEnd = true) {
         const dots = Array.from(grid.querySelectorAll('.pattern-dot'));
-        const canvas = grid.querySelector('#patternLockCanvas');
-        const ctx = canvas.getContext('2d');
-        let sequence = [];
-        let isDrawing = false;
-        
+        const canvas = grid.querySelector('#patternLockCanvas'); const ctx = canvas.getContext('2d');
+        let sequence = []; let isDrawing = false; let endTimeout;
         const resetGrid = (showError = false) => {
-            sequence = [];
+            clearTimeout(endTimeout); sequence = [];
             dots.forEach(d => d.classList.remove('active', 'error'));
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            if(showError) {
-                dots.forEach(d => d.classList.add('error'));
-                setTimeout(() => dots.forEach(d => d.classList.remove('error')), 500);
-            }
+            if (showError) { dots.forEach(d => d.classList.add('error')); setTimeout(() => dots.forEach(d => d.classList.remove('error')), 500); }
         };
-
-        const drawLine = () => {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            if (sequence.length < 2) return;
-            ctx.beginPath();
-            ctx.strokeStyle = 'var(--primary-color)';
-            ctx.lineWidth = 4;
+        const drawLine = () => { /* ... drawing logic unchanged ... */
+            ctx.clearRect(0, 0, canvas.width, canvas.height); if (sequence.length < 2) return;
+            ctx.beginPath(); ctx.strokeStyle = 'var(--primary-color)'; ctx.lineWidth = 4;
             for(let i = 0; i < sequence.length; i++) {
-                const dot = dots[sequence[i]];
-                const rect = dot.getBoundingClientRect();
-                const gridRect = grid.getBoundingClientRect();
-                const x = rect.left + rect.width / 2 - gridRect.left;
-                const y = rect.top + rect.height / 2 - gridRect.top;
+                const dot = dots[sequence[i]]; if (!dot) continue;
+                const rect = dot.getBoundingClientRect(); const gridRect = grid.getBoundingClientRect();
+                const x = rect.left + rect.width / 2 - gridRect.left; const y = rect.top + rect.height / 2 - gridRect.top;
                 if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
             }
             ctx.stroke();
         };
-
-        const getDotFromPoint = (e) => {
+        const getDotFromPoint = (e) => { /* ... unchanged ... */
             const x = (e.touches ? e.touches[0].clientX : e.clientX) - grid.getBoundingClientRect().left;
             const y = (e.touches ? e.touches[0].clientY : e.clientY) - grid.getBoundingClientRect().top;
             for (const dot of dots) {
-                const rect = dot.getBoundingClientRect();
-                const gridRect = grid.getBoundingClientRect();
-                const dx = x - (rect.left - gridRect.left + rect.width / 2);
-                const dy = y - (rect.top - gridRect.top + rect.height / 2);
-                if (Math.sqrt(dx * dx + dy * dy) < rect.width / 2) return dot;
+                const rect = dot.getBoundingClientRect(); const gridRect = grid.getBoundingClientRect();
+                const dx = x - (rect.left - gridRect.left + rect.width / 2); const dy = y - (rect.top - gridRect.top + rect.height / 2);
+                if (Math.sqrt(dx * dx + dy * dy) < rect.width) return dot;
             }
             return null;
         };
-
-        const onStart = (e) => { resetGrid(); isDrawing = true; onMove(e); };
-        const onMove = (e) => {
-            if (!isDrawing) return;
-            const dot = getDotFromPoint(e);
-            if (dot) {
-                const id = parseInt(dot.dataset.id);
-                if (!sequence.includes(id)) {
-                    sequence.push(id);
-                    dot.classList.add('active');
-                    drawLine();
-                }
-            }
-        };
-        const onEnd = () => {
-            if (!isDrawing) return;
-            isDrawing = false;
-            if (sequence.length > 0) onComplete(sequence);
-        };
-        
+        const onStart = (e) => { e.preventDefault(); resetGrid(); isDrawing = true; onMove(e); };
+        const onMove = (e) => { e.preventDefault(); if (!isDrawing) return; const dot = getDotFromPoint(e); if (dot) { const id = parseInt(dot.dataset.id); if (!sequence.includes(id)) { sequence.push(id); dot.classList.add('active'); drawLine(); } } };
+        const onEnd = () => { if (!isDrawing) return; isDrawing = false; if (sequence.length > 0) { onComplete(sequence); if (shouldClearOnEnd) { endTimeout = setTimeout(() => resetGrid(), 300); } } };
         canvas.width = grid.clientWidth; canvas.height = grid.clientHeight;
         if(isError) resetGrid(true);
-        grid.addEventListener('mousedown', onStart); grid.addEventListener('mousemove', onMove);
-        window.addEventListener('mouseup', onEnd, { once: true });
-        grid.addEventListener('touchstart', onStart, { passive: false });
-        grid.addEventListener('touchmove', onMove, { passive: false });
-        grid.addEventListener('touchend', onEnd);
+        grid.addEventListener('mousedown', onStart); grid.addEventListener('mousemove', onMove); window.addEventListener('mouseup', onEnd);
+        grid.addEventListener('touchstart', onStart, { passive: false }); grid.addEventListener('touchmove', onMove, { passive: false }); grid.addEventListener('touchend', onEnd);
     }
     
     // --- SECTION: Secure Dashboard ---
     async function handleViewHiddenContent() { if (!appState.currentUserId) return; const verified = await new Promise(r => verifyLock(r)); if (verified) { appState.currentView = 'secureDashboard'; renderAppSafe(); } }
-    function renderSecureDashboard() {
-        const notesContainer = document.getElementById('hiddenNotesListContainer'), imagesContainer = document.getElementById('hiddenImagesContainer');
-        if(!notesContainer || !imagesContainer) return;
-        const hiddenNotes = storageManager.getHiddenNotes(appState.currentUserId); notesContainer.innerHTML = '';
-        if (hiddenNotes.length > 0) { hiddenNotes.forEach(note => { const el=document.createElement('div');el.className='note-item';el.dataset.id=note.id;el.textContent=note.title;el.style.cursor='pointer';notesContainer.appendChild(el);}); } else { notesContainer.innerHTML = '<p>No hidden notes.</p>'; }
-        const hiddenImages = storageManager.getHiddenImages(appState.currentUserId); imagesContainer.innerHTML = '';
-        if (hiddenImages.length > 0) {
-            hiddenImages.forEach(image => {
-                const card=document.createElement('div');card.className='image-card'; card.dataset.id = image.id; card.dataset.url = image.url;
-                card.innerHTML = `<img src="${image.url}" alt="Hidden"><div class="image-actions"><button type="button" class="delete-img-btn" title="Delete">🗑️</button></div>`;
-                imagesContainer.appendChild(card);
-            });
-            imagesContainer.querySelectorAll('.delete-img-btn').forEach(btn => btn.addEventListener('click', (e) => {
-                 e.stopPropagation();
-                 const imageId = e.target.closest('.image-card').dataset.id;
-                 deleteImage(imageId);
-            }));
+    function renderSecureDashboardListView() {
+        const contentContainer = document.getElementById('secureDashboardContent'); if (!contentContainer) return;
+        const hiddenNotes = storageManager.getHiddenNotes(appState.currentUserId);
+        const hiddenImages = storageManager.getHiddenImages(appState.currentUserId);
+
+        let notesHtml = `<h3>Hidden Notes</h3>`;
+        if (hiddenNotes.length > 0) {
+            notesHtml += hiddenNotes.map(note => `<div class="note-item" data-id="${note.id}" style="cursor: pointer;">${note.title}</div>`).join('');
+        } else {
+            notesHtml += '<p>No hidden notes.</p>';
         }
-        attachSecureDashboardEventListeners();
+
+        let imagesHtml = `<hr style="margin: 1.5rem 0; border: 0; border-top: 1px solid var(--border-color);"><h3>Hidden Images</h3><button type="button" id="addImageBtn" class="btn btn-secondary" style="margin-bottom: 1rem; width: auto; padding: 8px 16px;">Add Image</button>`;
+        if (hiddenImages.length > 0) {
+            imagesHtml += `<div class="image-grid">${hiddenImages.map(image => `<div class="image-card" data-id="${image.id}" data-url="${image.url}"><img src="${image.url}" alt="Hidden"><div class="image-actions"><button type="button" class="delete-img-btn" title="Delete">🗑️</button></div></div>`).join('')}</div>`;
+        } else {
+            imagesHtml += '<p>No hidden images.</p>';
+        }
+
+        contentContainer.innerHTML = notesHtml + imagesHtml;
+    }
+    function renderHiddenNoteDetail(noteId) {
+        const contentContainer = document.getElementById('secureDashboardContent'); if (!contentContainer) return;
+        const note = storageManager.getHiddenNotes(appState.currentUserId).find(n => n.id === noteId);
+        if (!note) { renderSecureDashboardListView(); return; }
+        
+        contentContainer.innerHTML = `
+            <div class="hidden-note-detail-view" data-id="${note.id}">
+                <div class="hidden-note-detail-header">
+                    <button type="button" id="backToHiddenListBtn" class="btn btn-sm btn-secondary" style="margin: 0;">←</button>
+                    <h2>${note.title}</h2>
+                </div>
+                <p style="white-space: pre-wrap; word-wrap: break-word; text-align: left; background-color: #f8f9fa; padding: 1rem; border-radius: 8px; min-height: 100px;">${note.description}</p>
+                <div class="hidden-note-detail-actions">
+                    <button type="button" class="btn btn-sm btn-guest copy-hidden-note-btn">Copy</button>
+                    <button type="button" class="btn btn-sm btn-secondary unhide-hidden-note-btn">Unhide</button>
+                    <button type="button" class="btn btn-sm btn-google update-hidden-note-btn">Update</button>
+                </div>
+            </div>`;
     }
     function handleAddImage() {
-        const body = `
-            <p>Enter the URL of the image you want to hide.</p>
-            <div class="input-group">
-                <input type="url" id="newImageUrlInput" class="input-field" placeholder="https://example.com/image.png" required>
-            </div>
-            <span id="imageUrlError" class="error-message"></span>
-            <button type="button" id="saveNewImageBtn" class="btn btn-google">Save Image</button>`;
+        const body = `<p>Enter the URL of the image you want to hide.</p><div class="input-group"><input type="url" id="newImageUrlInput" class="input-field" placeholder="https://example.com/image.png" required></div><span id="imageUrlError" class="error-message"></span><button type="button" id="saveNewImageBtn" class="btn btn-google">Save Image</button>`;
         openSecurityModal("Add a Hidden Image", body, (el) => {
-            const input = el.querySelector('#newImageUrlInput');
-            const errorEl = el.querySelector('#imageUrlError');
+            const input = el.querySelector('#newImageUrlInput'); const errorEl = el.querySelector('#imageUrlError');
             el.querySelector('#saveNewImageBtn').addEventListener('click', () => {
                 const url = input.value.trim();
                 if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
-                     if(storageManager.addHiddenImage(appState.currentUserId, url)) {
-                        showToast("Image added!");
-                        closeModal(document.getElementById('securityModal'));
-                        renderSecureDashboard();
-                     }
-                } else {
-                    errorEl.textContent = "Please enter a valid URL.";
-                }
+                     if(storageManager.addHiddenImage(appState.currentUserId, url)) { showToast("Image added!"); closeModal(document.getElementById('securityModal')); renderSecureDashboardListView(); }
+                } else { errorEl.textContent = "Please enter a valid URL."; }
             });
         });
     }
     function openImageActionsModal(imageUrl) {
-        const body = `
-            <div style="display:flex; flex-direction: column; gap: 10px;">
-                <button type="button" id="downloadImageBtn" class="btn btn-secondary">Download</button>
-                <button type="button" id="shareImageBtn" class="btn btn-google">Share</button>
-            </div>`;
+        const body = `<div style="display:flex; flex-direction: column; gap: 10px;"><button type="button" id="downloadImageBtn" class="btn btn-secondary">Download</button><button type="button" id="shareImageBtn" class="btn btn-google">Share</button></div>`;
         openSecurityModal("Image Actions", body, (el) => {
             el.querySelector('#downloadImageBtn').addEventListener('click', () => downloadImage(imageUrl));
             el.querySelector('#shareImageBtn').addEventListener('click', () => shareImage(imageUrl));
         });
     }
     function downloadImage(url) {
-        fetch(url)
-            .then(response => response.blob())
-            .then(blob => {
-                const link = document.createElement("a");
-                link.href = URL.createObjectURL(blob);
-                const name = url.substring(url.lastIndexOf('/') + 1);
-                link.download = name || "downloaded-image";
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(link.href);
-                closeModal(document.getElementById('securityModal'));
-            })
-            .catch(err => {
-                console.error("Download failed:", err);
-                showToast("Download failed. Check console for details.");
-            });
+        fetch(url, { mode: 'cors' }).then(response => response.blob()).then(blob => {
+            const link = document.createElement("a"); link.href = URL.createObjectURL(blob);
+            const name = url.substring(url.lastIndexOf('/') + 1) || "downloaded-image";
+            link.download = name; document.body.appendChild(link); link.click(); document.body.removeChild(link);
+            URL.revokeObjectURL(link.href); closeModal(document.getElementById('securityModal'));
+        }).catch(err => { console.error("Download failed:", err); showToast("Download failed. May be a CORS issue."); });
     }
     async function shareImage(url) {
         if (navigator.share) {
-            try {
-                await navigator.share({
-                    title: 'Shared Image',
-                    text: 'Check out this image!',
-                    url: url,
-                });
-                closeModal(document.getElementById('securityModal'));
-            } catch (error) {
-                console.error('Error sharing', error);
-                showToast('Sharing was cancelled or failed.');
-            }
+            try { await navigator.share({ title: 'Shared Image', text: 'Check out this image!', url: url, }); closeModal(document.getElementById('securityModal')); } 
+            catch (error) { console.error('Error sharing', error); showToast('Sharing was cancelled or failed.'); }
         } else {
-            try {
-                await navigator.clipboard.writeText(url);
-                showToast("URL copied to clipboard!");
-                closeModal(document.getElementById('securityModal'));
-            } catch (err) {
-                showToast("Could not copy URL.");
-            }
+            try { await navigator.clipboard.writeText(url); showToast("URL copied to clipboard!"); closeModal(document.getElementById('securityModal')); } 
+            catch (err) { showToast("Could not copy URL."); }
         }
     }
-    function deleteImage(imageId) { if (confirm("Delete this image permanently?")) { storageManager.deleteHiddenImage(appState.currentUserId, imageId); renderSecureDashboard(); showToast("Image deleted."); } }
+    function deleteImage(imageId) { if (confirm("Delete this image permanently?")) { storageManager.deleteHiddenImage(appState.currentUserId, imageId); renderSecureDashboardListView(); showToast("Image deleted."); } }
 
     // --- SECTION: Main App Initialization ---
     function initializeAuthObserver() {
@@ -1291,9 +1260,7 @@
             if (user) {
                 saveGoogleUserDataToLocalStorage(user);
                 if (appState.currentUserId !== user.uid) { 
-                    appState.currentUserId = user.uid; 
-                    sessionManager.setUserId(user.uid); 
-                    appState.currentView = 'dashboard'; 
+                    appState.currentUserId = user.uid; sessionManager.setUserId(user.uid); appState.currentView = 'dashboard'; 
                     await renderAppSafe(); 
                 }
             } else { if (storedUser && storedUser.type === 'google') { await handleLogoutClick(); } }
@@ -1307,7 +1274,7 @@
         noteModal.querySelector('.close-modal-btn').addEventListener('click', () => closeModal(noteModal)); noteModal.addEventListener('click', (e) => e.target === noteModal && closeModal(noteModal)); noteModal.querySelector('#noteForm').addEventListener('submit', handleSaveNoteForm);
         noteModal.querySelector('#copyNoteBtn').addEventListener('click', () => { const d = noteModal.querySelector('#copyNoteBtn').dataset.description; if (d) navigator.clipboard.writeText(d).then(() => showToast('Copied')); });
         noteModal.querySelector('#unhideNoteBtn').addEventListener('click', handleUnhideNote);
-        noteModal.querySelector('#updateNoteBtn').addEventListener('click', () => { const id = noteModal.querySelector('#updateNoteBtn').dataset.id; const note = storageManager.getNotes(appState.currentUserId)?.find(n => n.id === id); if(note) openNoteModal('edit', note); });
+        noteModal.querySelector('#updateNoteBtn').addEventListener('click', () => { const id = noteModal.querySelector('#updateNoteBtn').dataset.id; const note = storageManager.getNotes(appState.currentUserId)?.find(n => n.id === id); if(note) openNoteModal('edit', note, false); });
         securityModal.querySelector('.close-modal-btn').addEventListener('click', () => closeModal(securityModal)); securityModal.addEventListener('click', (e) => e.target === securityModal && closeModal(securityModal));
         restoreSessionSafe(); initializeAuthObserver(); renderAppSafe();
     }
@@ -1320,4 +1287,4 @@
 
 </script>
 </body>
-</html>
+    </html>
